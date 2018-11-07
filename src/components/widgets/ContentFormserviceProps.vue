@@ -1,6 +1,6 @@
 <template lang="pug">
   div
-    .tt-property-header Whatever
+    .tt-property-header Formservice
     .c-element-properties
       .tt-property
         .c-property-label Message
@@ -12,7 +12,7 @@
 import PropertyMixins from '../../mixins/PropertyMixins'
 
 export default {
-  name: 'content-whatever-props',
+  name: 'content-formservice-props',
   mixins: [ PropertyMixins ],
   computed: {
 

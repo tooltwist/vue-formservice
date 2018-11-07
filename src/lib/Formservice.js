@@ -1,6 +1,6 @@
 /*
- *  Client API for Whatever
- *  See https://whatever.io
+ *  Client API for Formservice
+ *  See https://formservice.io
  */
 import axios from 'axios'
 import axiosError from './axiosError.js'
@@ -10,11 +10,11 @@ import { assert, inBrowser } from '../components/misc'
 const DEFAULT_ENDPOINT = 'api.mysite.com'
 
 
-class Whatever {
+class Formservice {
 
   constructor (options) {
     if (!options) {
-      console.error(`Whatever was passed null options, so will be disabled.`)
+      console.error(`Formservice was passed null options, so will be disabled.`)
       this.disabled = true
       return
     }
@@ -33,11 +33,11 @@ class Whatever {
   }
 
   init (app /* Vue component instance */) {
-    console.log('&&& Whatever.init')
+    console.log('&&& Formservice.init')
 
     process.env.NODE_ENV !== 'production' && assert(
       install.installed,
-      `not installed. Make sure to call \`Vue.use(Whatever)\` ` +
+      `not installed. Make sure to call \`Vue.use(Formservice)\` ` +
       `before creating root instance.`
     )
   }
@@ -57,7 +57,7 @@ class Whatever {
    */
   myApiCall (vm, { param1, param2 }) {
 
-    console.log(`Whatever.js:update()`, element)
+    console.log(`Formservice.js:update()`, element)
     console.log(`element.description.length=`, element.description.length)
 
     return new Promise((resolve, reject) => {
@@ -66,7 +66,7 @@ class Whatever {
         console.log('myApiCall()');
       }
       if (this.disabled) {
-        return reject(new Error('Whatever disabled'));
+        return reject(new Error('Formservice disabled'));
       }
 
       let url = `${this.endpoint()}/some/path/here`;
@@ -99,9 +99,9 @@ class Whatever {
   //----------------------------------------------------------------------------//
 }
 
-Whatever.version = '__VERSION__'
+Formservice.version = '__VERSION__'
 if (inBrowser && window.Vue) {
-  window.Vue.use(Whatever)
+  window.Vue.use(Formservice)
 }
 
-export default Whatever
+export default Formservice

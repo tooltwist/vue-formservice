@@ -40,7 +40,7 @@ export default {
       // NEW
       leftPane: true,
       editable: true,
-      anchor: 'whatever.test.layout',
+      anchor: 'formservice.test.layout',
 
       // OLD
       editcontext: {

@@ -1,5 +1,5 @@
 {
-  "name": "vue-whatever",
+  "name": "vue-formservice",
   "version": "0.1.74",
   "private": false,
   "scripts": {
@@ -8,7 +8,7 @@
     "test": "vue-cli-service build",
     "e2e": "vue-cli-service e2e",
     "lint": "vue-cli-service lint",
-    "build-bundle": "vue-cli-service build --target lib --name vue-whatever ./src/components/index.js",
+    "build-bundle": "vue-cli-service build --target lib --name vue-formservice ./src/components/index.js",
     "e2e:open": "vue-cli-service e2e:open",
     "patch-release": "npm version patch && npm publish --registry=https://registry.npmjs.org/ && git push --follow-tags",
     "p1": "npm version patch",
@@ -81,7 +81,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/tooltwist/vue-whatever.git"
+    "url": "https://github.com/tooltwist/vue-formservice.git"
   },
   "files": [
     "dist/*",
@@ -91,12 +91,12 @@
     "*.js"
   ],
   "author": "Joe Bloggs <joe.bloggs@acme.com",
-  "description": "VueJS plugin for whatever.io",
+  "description": "VueJS plugin for formservice.io",
   "license": "MIT",
-  "main": "./dist/vue-whatever.common.js",
+  "main": "./dist/vue-formservice.common.js",
   "keywords": [
     "vue",
     "tooltwist",
-    "whatever"
+    "formservice"
   ]
 }

@@ -1,31 +1,31 @@
 <template lang="pug">
 
-  .c-content-whatever(:class="editModeClass")
+  .c-content-formservice(:class="editModeClass")
     span(v-if="extraDebug")
-      | &lt;content-whatever&gt;
+      | &lt;content-formservice&gt;
       br
 
     // Debug mode
     div(v-if="isPageMode('debug')", @click.stop="selectThisElement")
       .c-layout-mode-heading
         edit-bar-icons(:element="element")
-        | whatever
-      .whatever-box
+        | formservice
+      .formservice-box
         | {{myProperty}}
 
     // Editing
     div(v-else-if="isPageMode('edit')", @click.stop="selectThisElement")
-      .whatever-box
+      .formservice-box
         | {{myProperty}}
 
     // layout
     div(v-else-if="isPageMode('layout')", @click.stop="selectThisElement")
-      .whatever-box
+      .formservice-box
         | {{myProperty}}
 
     // Live mode
     template(v-else)
-      .whatever-box
+      .formservice-box
         | {{myProperty}}
 </template>
 
@@ -34,7 +34,7 @@ import ContentMixins from '../../mixins/ContentMixins'
 import CutAndPasteMixins from '../../mixins/CutAndPasteMixins'
 
 export default {
-  name: 'content-whatever',
+  name: 'content-formservice',
   props: {
     element: {
       type: Object,
@@ -77,7 +77,7 @@ export default {
     color: $text-color;
   }
 
-  .whatever-box {
+  .formservice-box {
     width: 300px;
     padding: 15px;
     border: solid 1px #ccc;

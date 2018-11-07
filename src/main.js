@@ -1,7 +1,7 @@
 import Vue from 'vue'
 
 import ContentService from 'vue-contentservice';
-import Whatever from './components/index.js';
+import Formservice from './components/index.js';
 
 import TestInLayout from './testapp/TestInLayout.vue'
 import TestStandalone from './testapp/TestStandalone.vue'
@@ -26,7 +26,7 @@ const options = {
   froalaActivationKey: FroalaKey
 }
 Vue.use(ContentService, options);
-Vue.use(Whatever, { })
+Vue.use(Formservice, { })
 
 
 // Now run the site

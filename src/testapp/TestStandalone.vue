@@ -8,7 +8,7 @@
       a.other-mode(href="/in-layout") Use this widget in a layout
 
     hr
-    content-whatever(:element="{ myProperty: 'Hello' }")
+    content-formservice(:element="{ myProperty: 'Hello' }")
     hr
 </template>
 
