@@ -1,0 +1,21 @@
+// Styles for editing "debug" mode
+
+
+// The editbar, at the top of the edit area
+$c-editbar-height: 16;
+$c-editbar-color: #dd0038;
+
+
+// The heading above a widget when editing
+$c-heading-height: 13px;
+$c-heading-font-size: 11px;
+$c-heading-icon-font-size: 10px;
+
+// Properties being edited
+$c-property-label-color: #666;
+$c-property-value-color: #88a;
+
+// Margins above and below embeds (slides, videos, etc)
+$c-embed-margin-top: 20px;
+$c-embed-margin-bottom: 20px;
+$c-embed-border-color: #d0d0d0;
