@@ -96,6 +96,8 @@ function install (Vue, options) {
        source: "toolbox",
        layout: {
          type: 'formservice',
+         children: [
+         ]
        }
      }
    })

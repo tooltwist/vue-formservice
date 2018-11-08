@@ -9867,10 +9867,10 @@ vue-awesome@^3.0.3:
   resolved "https://registry.yarnpkg.com/vue-awesome/-/vue-awesome-3.2.0.tgz#885a64eab6fba6f51ba9b6565f2747ac0e35a2cc"
   integrity sha512-wQf8Baxo3d8ijwxYRhYrbnMtw27B9IVc3fSEN/NIWWgJTBvaT3chfpVnVaXanOMBmSR/tmsjgtYvrQMIZt2edA==
 
-vue-contentservice@^0.1.80:
-  version "0.1.81"
-  resolved "https://registry.yarnpkg.com/vue-contentservice/-/vue-contentservice-0.1.81.tgz#9272ae723ced29ebeabcee82c996f835808bf86e"
-  integrity sha512-JqncKDbNXejlO76jZbBsm/zJWA4ZuH3yGBPyBPz7ij0G755fAYvNq8uHlJ5XJBSbHeGdmxXu4oHeCNjQpOm4Qw==
+vue-contentservice@0.1.85:
+  version "0.1.85"
+  resolved "https://registry.yarnpkg.com/vue-contentservice/-/vue-contentservice-0.1.85.tgz#6ddac683802e8eecdae383d39a5cdcc7a595cc20"
+  integrity sha512-7E8vjjoyOC5Lvr2Y2ccKDjanSYao5qmN5NHFer/v5M6yW+qBMDN5eLE/rSmyBlE7YwN645rTzx1aGnztcl3ZuA==
   dependencies:
     "@babel/core" "^7.0.0-beta.47"
     axios "^0.18.0"
