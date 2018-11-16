@@ -1,77 +1,36 @@
 <template lang="pug">
 
-  .c-content-formservice(:class="editModeClass")
+  .c-content-form(:class="editModeClass")
     span(v-if="extraDebug")
       | &lt;content-formservice&gt;
       br
 
-    // Debug mode
-    div(v-if="isPageMode('debug')", @click.stop="selectThisElement")
+    // Design mode
+    div(v-if="isDesignMode", @click.stop="selectThisElement")
       .c-layout-mode-heading
         edit-bar-icons(:element="element")
-        | formservice
-      //| DROPPABLE B {{counter}}, {{element.children}}
-      br
-      div(v-if="element.children", v-for="(child, index) in element.children")
-        | {{index}}: {{child}}, {{child.type}}
-        div(v-if="child.type=='element-position'")
-          | IS POSITION
-        button.button(@click="deletePositionedField(child)") Delete
-        br
-      drop.formservice-box.droparea(@drop="handleDrop(form, ...arguments)")
-        div(v-if="element.children", v-for="(child, index) in element.children")
-          drag(:transfer-data="child", @dragstart="dragStart")
-            div.yarr(:class="positionClass(child)", :style="positionStyle(child)")
-              | YAHOO
+        | form ((element.name))
 
-        div(v-for="field in fields")
-          drag(:transfer-data="field")
-            .c-label(v-if="field.type=='label'", :class="labelClass(field)", :style="labelStyle(field)")
-              | {{field.value}}
-            .c-field(v-else-if="field.type=='field'", :class="inputClass(field)", :style="inputStyle(field)")
-              input.input(:value="field.value", :placeholder="field.property", :readonly="true")
-              //| {{field.value}}
-            .c-other(v-else :class="otherClass(field)", :style="otherStyle(field)")
-              | {{field.type}}={{field.value}}
-      br
+      drop.formservice-box.droparea.my-design-mode(:style="boxStyle", @drop="handleDrop(form, ...arguments)")
+        div(v-if="element.children", v-for="(child, index) in element.children")
+          drag.my-drag(:transfer-data="child", @dragstart="dragStart")
+            .fixed-position(:class="positionClass(child)", :style="positionStyle(child)", @mousedown="mouseDown")
+              component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child")
 
     // Editing
-    div(v-else-if="isPageMode('edit')", @click.stop="selectThisElement")
-      .formservice-box
-        div(v-for="field in fields")
-          .c-label(v-if="field.type=='label'", :class="labelClass(field)", :style="labelStyle(field)")
-            | {{field.value}}
-          .c-field(v-else-if="field.type=='field'", :class="inputClass(field)", :style="inputStyle(field)")
-            input.input(:value="field.value", :placeholder="field.property")
-            //| {{field.value}}
-          .c-other(v-else :class="otherClass(field)", :style="otherStyle(field)")
-            | {{field.type}}={{field.value}}
-
-    // layout
-    div(v-else-if="isPageMode('layout')", @click.stop="selectThisElement")
-      | DROPPABLE X
-      br
-      drop.formservice-box(@drop="handleDrop(form, ...arguments)")
-        div(v-for="field in fields")
-          .c-label(v-if="field.type=='label'", :class="labelClass(field)", :style="labelStyle(field)")
-            | {{field.value}}
-          .c-field(v-else-if="field.type=='field'", :class="inputClass(field)", :style="inputStyle(field)")
-            input.input(:value="field.value", :placeholder="field.property")
-            //| {{field.value}}
-          .c-other(v-else :class="otherClass(field)", :style="otherStyle(field)")
-            | {{field.type}}={{field.value}}
+    div(v-else-if="isEditMode", @click.stop="selectThisElement")
+      drop.formservice-box.droparea.my-edit-mode(:style="boxStyle", @drop="handleDrop(form, ...arguments)")
+        div(v-if="element.children", v-for="(child, index) in element.children")
+          drag.my-drag(:transfer-data="child", @dragstart="dragStart")
+            .fixed-position(:class="positionClass(child)", :style="positionStyle(child)", @mousedown="mouseDown")
+              component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child")
 
     // Live mode
     template(v-else)
-      .formservice-box
-        div(v-for="field in fields")
-          .c-label(v-if="field.type=='label'", :class="labelClass(field)", :style="labelStyle(field)")
-            | {{field.value}}
-          .c-field(v-else-if="field.type=='field'", :class="inputClass(field)", :style="inputStyle(field)")
-            input.input(:value="field.value", :placeholder="field.property")
-            //| {{field.value}}
-          .c-other(v-else :class="otherClass(field)", :style="otherStyle(field)")
-            | {{field.type}}={{field.value}}
+      .formservice-box.my-live-mode(:style="boxStyle")
+        template(v-if="element.children", v-for="(child, index) in element.children")
+            .fixed-position(:class="positionClass(child)", :style="positionStyle(child)")
+              component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child")
 </template>
 
 <script>
@@ -90,6 +49,15 @@ export default {
   data: function () {
     return {
       counter: 1,
+
+      // Position of the mouse, within the object being dragged
+      mouseDownX: 0,
+      mouseDownY: 0,
+
+      // Align to a grid
+      alignToGrid: true,
+      gridSize: 25,
+
       form: {
 
       },
@@ -97,116 +65,113 @@ export default {
         width: null,
         height: 500,
         style: 'chicken-style'
-      },
-      fields: [
-        {
-          type: 'label',
-          x: 50,
-          y: 50,
-          value: 'First name',
-          classname: 'happy'
-        },
-        {
-          type: 'field',
-          x: 160,
-          y: 50,
-          value: 'Wallace',
-          classname: 'happy',
-          property: 'firstname'
-        },
-        {
-          type: 'label',
-          x: 50,
-          y: 80,
-          value: 'Last name'
-        },
-        {
-          type: 'field',
-          x: 160,
-          y: 80,
-          value: 'Grommet',
-          property: 'lastname'
-        },
-      ]
+      }
     }
   },
   computed: {
 
-    myProperty: {
-      get () {
-        let value = this.element['myProperty']
-        return value ? value : ''
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'myProperty', value })
-      }
-    }
+    // myProperty: {
+    //   get () {
+    //     let value = this.element['myProperty']
+    //     return value ? value : ''
+    //   },
+    //   set (value) {
+    //     this.$content.setProperty({ vm: this, element: this.element, name: 'myProperty', value })
+    //   }
+    // }
+
+    boxStyle: function ( ) {
+      let style = this.element['style'] + ';'
+      // width
+      try {
+        let num = parseInt(this.element['width'])
+        if (num >= 20) {
+          style += `width:${num}px;`
+        }
+      } catch (e) { }
+
+      // height
+      try {
+        let num = parseInt(this.element['height'])
+        if (num >= 20) {
+          style += `height:${num}px;`
+        }
+      } catch (e) { }
+      // console.log(`boxStyle=`, style)
+      return style
+    },
 
   },
   methods: {
 
-    labelClass: function (field) {
-      console.log(`fieldClass()`, field);
-
-      if (field.classname) {
-        return field.classname
-      }
-      return null
+    componentNameForElement (element) {
+      let type = element.type
+      let def = this.$content.getLayoutType(type)
+      return def ? def.componentName : null
     },
 
-    labelStyle: function (field) {
-      console.log(`fieldStyle()`, field);
-      // return { }
-      return {
-        // 'background-color': 'red',
-        // color: 'white',
-        left: `${field.x}px`,
-        top: `${field.y}px`,
-      }
-    },
+    // labelClass: function (field) {
+    //   // console.log(`labelClass()`, field);
+    //
+    //   if (field.classname) {
+    //     return field.classname
+    //   }
+    //   return null
+    // },
+    //
+    // labelStyle: function (field) {
+    //   // console.log(`labelStyle()`, field);
+    //   // return { }
+    //   return {
+    //     // 'background-color': 'red',
+    //     // color: 'white',
+    //     left: `${field.x}px`,
+    //     top: `${field.y}px`,
+    //   }
+    // },
 
-    inputClass: function (field) {
-      console.log(`inputClass()`, field);
+    // inputClass: function (field) {
+    //   // console.log(`inputClass()`, field);
+    //
+    //   if (field.classname) {
+    //     return field.classname
+    //   }
+    //   return null
+    // },
+    //
+    // inputStyle: function (field) {
+    //   // console.log(`inputStyle()`, field);
+    //   // return { }
+    //   return {
+    //     //'background-color': 'red',
+    //     //color: 'white',
+    //     left: `${field.x}px`,
+    //     top: `${field.y}px`,
+    //   }
+    // },
 
-      if (field.classname) {
-        return field.classname
-      }
-      return null
-    },
-
-    inputStyle: function (field) {
-      console.log(`inputStyle()`, field);
-      // return { }
-      return {
-        'background-color': 'red',
-        color: 'white',
-        left: `${field.x}px`,
-        top: `${field.y}px`,
-      }
-    },
-
-    otherClass: function (field) {
-      console.log(`otherClass()`, field);
-
-      if (field.classname) {
-        return field.classname
-      }
-      return null
-    },
-
-    otherStyle: function (field) {
-      console.log(`otherStyle()`, field);
-      // return { }
-      return {
-        'background-color': 'red',
-        color: 'white',
-        left: `${field.x}px`,
-        top: `${field.y}px`,
-      }
-    },
+    // otherClass: function (field) {
+    //   // console.log(`otherClass()`, field);
+    //
+    //   if (field.classname) {
+    //     return field.classname
+    //   }
+    //   return null
+    // },
+    //
+    // otherStyle: function (field) {
+    //   // console.log(`otherStyle()`, field);
+    //   // return { }
+    //   return {
+    //     'background-color': 'red',
+    //     color: 'white',
+    //     left: `${field.x}px`,
+    //     top: `${field.y}px`,
+    //   }
+    // },
 
     positionClass: function (element) {
-      console.log(`positionClass()`, element);
+      // console.log(`positionClass()`, element);
 
       if (element.classname) {
         return element.classname
@@ -215,22 +180,40 @@ export default {
     },
 
     positionStyle: function (element) {
-      console.log(`positionStyle()`, element);
+      // console.log(`positionStyle()`, element);
       // return { }
+
+      let x = element._fixed_x ? element._fixed_x : 10
+      let y = element._fixed_y ? element._fixed_y : 10
+
       let style = {
         position: 'absolute',
-        'background-color': 'red',
-        color: 'white',
-        left: `${element.x}px`,
-        top: `${element.y}px`,
+        //'background-color': 'red',
+        //color: 'white',
+        left: `${x}px`,
+        top: `${y}px`,
       }
-      console.log(`style=`, style)
+      // console.log(`style=`, style)
       return style
     },
 
-    dragStart: function (element) {
+    mouseDown: function (p1, p2, p3) {
       // let element = this.element
-      console.log(`dragStart()`);
+      console.log(`mouseDown(). p1=`, p1);
+      console.log(`mouseDown(). p2=`, p2);
+      console.log(`mouseDown(). p3=`, p3);
+
+      this.mouseDownX = event.offsetX
+      this.mouseDownY = event.offsetY
+      // this.mouseDownX = event.layerX
+      // this.mouseDownY = event.layerY
+    },
+
+    dragStart: function (p1, p2, p3) {
+      // let element = this.element
+      console.log(`dragStart(). p1=`, p1);
+      console.log(`dragStart(). p2=`, p2);
+      console.log(`dragStart(). p3=`, p3);
     },
 
     // The drop event normally provides (data, event) but we've added (form, ...) in front.
@@ -239,36 +222,62 @@ export default {
       console.log(`ContentFormservice.handleDrop(), data=`, data)
       console.log(`ContentFormservice.handleDrop(), event=`, event)
 
-      if (data.type == 'element-position') {
+      // Work out the drop position
+      let x = event.layerX - this.mouseDownX
+      let y = event.layerY - this.mouseDownY
+      console.log(`layer: x=${event.layerX}, y=${event.layerY}`)
+      console.log(`mouseDown: x=${this.mouseDownX}, y=${this.mouseDownY}`)
 
-        console.log(`Dropped element-position`)
+      if (this.alignToGrid && this.gridSize > 1) {
+        console.log('truncating position');
+        x = Math.round(x / this.gridSize) * this.gridSize
+        y = Math.round(y / this.gridSize) * this.gridSize
+      }
+      console.log(`new position: x=${x}, y=${y}`)
+
+
+      if (data.dragtype == 'component') {
+
+        // Get the element to be inserted, from the drop data.
+        // let wrapper = {
+        //   type: 'contentservice.io',
+        //   version: "1.0",
+        //   layout: {
+        //     type: 'element-position',
+        //     _fixed_x: event.layerX,
+        //     _fixed_y: event.layerY,
+        //     children: [ ]
+        //   }
+        // }
+        console.log(`rooss 1`, data);
+        let newElement = data.data
+        // wrapper.layout.children.push(newElement)
+        let position = this.element.children.length
+        // console.error(`new wrapper is`, wrapper);
+        console.error(`newElement is`, newElement);
+        console.log(`rooss 2`);
+        let rv = this.$content.insertLayout({ vm: this, parent: this.element, position, layout: newElement })
+        console.log(`rooss 3`);
+        console.log(`return from insertLayout is ${rv}`);
+        this.counter++ //ZZZZZ?
+        console.log(`rooss 4`);
+
+        this.$content.setProperty({ vm: this, element: null, name: '_fixed', value: true })
+        this.$content.setProperty({ vm: this, element: null, name: '_fixed_x', value: x })
+        this.$content.setProperty({ vm: this, element: null, name: '_fixed_y', value: y })
+
+      } else {
+        // console.log(`Dropped non-component: '${data.type}'`)
+        console.log(`Dropped element (not from toolbox)`)
         console.log(`data=`, data);
         // x: event.layerX,
         // y: event.layerY,
-        console.log(`x=${event.layerX}, y=${event.layerY}`)
-
-        this.$content.setPropertyInElement({ vm: this, element: data, name: 'x', value: event.layerX })
-        this.$content.setPropertyInElement({ vm: this, element: data, name: 'y', value: event.layerY })
-
-      } else if (data.dragtype == 'component') {
-
-        // Get the element to be inserted, from the drop data.
-        let wrapper = {
-          type: 'contentservice.io',
-          version: "1.0",
-          layout: {
-            type: 'element-position',
-            x: event.layerX,
-            y: event.layerY,
-            layout: data.data.layout
-          }
-        }
-        let position = this.element.children.length
-        this.$content.insertLayout({ vm: this, parent: this.element, position, layout: wrapper })
-        this.counter++ //ZZZZZ?
-      } else {
-        console.log(`Dropped non-component: '${data.dragtype}'`)
-        return
+        // this.$content.setPropertyInElement({ vm: this, element: data, name: 'x', value: x })
+        // this.$content.setPropertyInElement({ vm: this, element: data, name: 'y', value: y })
+        this.$content.setProperty({ vm: this, element: data, name: '_fixed', value: true })
+        this.$content.setProperty({ vm: this, element: data, name: '_fixed_x', value: x })
+        this.$content.setProperty({ vm: this, element: data, name: '_fixed_y', value: y })
+        // return
       }
 
 
@@ -313,8 +322,22 @@ export default {
 <style lang="scss" scoped>
   @import '../../assets/css/content-variables.scss';
 
-  $frame-color: lightblue;
-  $text-color: darkblue;
+  // $frame-color: lightblue;
+  // $text-color: darkblue;
+
+  $frame-color: lightgreen;
+  $text-color: darkgreen;
+
+  .c-edit-mode-debug {
+    border-left: dashed 2px $frame-color;
+    border-bottom: dashed 2px $frame-color;
+    border-right: dashed 2px $frame-color;
+    margin: 1px;
+
+    .container {
+      width: 90% !important;
+    }
+  }
 
   .c-layout-mode-heading {
     // This overrides the definition in content-editor.scss
@@ -324,15 +347,17 @@ export default {
 
   .formservice-box {
     position: relative;
-    width: 300px;
-    border: solid 1px #ccc;
+    overflow-x: visible;
+    overflow-y: visible;
+
+    zborder: solid 1px #ccc;
     // text-align: center;
     margin: 0 auto;
     padding: 0px;
 
-    width: 400px;
-    height: 400px;
-    background-color: yellow;
+    width: 1500px;
+    height: 1000px;
+    zbackground-color: yellow;
   }
 
   .c-label {
@@ -352,17 +377,46 @@ export default {
   .c-other {
     position: absolute;
     background-color: red;
-    color: white;
+    color: pink;
   }
 
   .happy {
     //font-size: 25px;
   }
 
-  .yarr {
-    width: 50px;
-    height: 50px;
-    background-color: blue;
-    border: solid 1px black;
+  .my-drag {
+    overflow-x: visible;
+    overflow-y: visible;
+    color: black;
   }
+
+  .fixed-position {
+    position: absolute;
+    overflow-x: visible;
+    overflow-y: visible;
+    zwidth: 200px;
+    zheight: 200px;
+    zbackground-color: blue;
+    zborder: solid 1px black;
+    zcolor: black;
+  }
+
+  .my-edit-mode {
+    //min-width: 400px;
+    background-color: #f9f9f9;
+
+    .my-component {
+      //min-width: 300px;
+    }
+  }
+
+  .my-design-mode {
+    //min-width: 400px;
+
+    .my-component {
+      min-width: 120px;
+      background-color: white;
+    }
+  }
+
 </style>

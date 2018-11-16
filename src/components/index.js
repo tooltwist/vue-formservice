@@ -9,8 +9,14 @@ import Formservice from '../lib/Formservice.js'
 import FormserviceStore from '../store/FormserviceStore.js'
 
 // Our components
+import FormElementPosition from './widgets/FormElementPosition.vue'
+import FormElementPositionProps from './widgets/FormElementPositionProps.vue'
 import ContentFormservice from './widgets/ContentFormservice.vue'
 import ContentFormserviceProps from './widgets/ContentFormserviceProps.vue'
+import FormLabel from './widgets/FormLabel.vue'
+import FormLabelProps from './widgets/FormLabelProps.vue'
+import FormInput from './widgets/FormInput.vue'
+import FormInputProps from './widgets/FormInputProps.vue'
 
 let _formservice = null
 
@@ -75,32 +81,86 @@ function install (Vue, options) {
    *  Register our widgets with Contentservice
    */
 
-   // 'formservice' Widget
-   $content.registerWidget(Vue, {
-     name: 'formservice',
-     label: 'Formservice',
-     category: '',
-     iconClass: 'fa fa-vimeo',
-     iconClass5: 'fab fa-vimeo',
-     dragtype: 'component',
+  // 'formservice' Widget
+  $content.registerWidget(Vue, {
+    name: 'formservice',
+    label: 'Formservice',
+    category: 'Forms',
+    iconClass: 'fa fa-vimeo',
+    iconClass5: 'fab fa-vimeo',
+    dragtype: 'component',
 
-     // Register native Vue templates
-     componentName: 'content-formservice',
-     component: ContentFormservice,
-     propertyComponent: ContentFormserviceProps,
+    // Register native Vue templates
+    componentName: 'content-formservice',
+    component: ContentFormservice,
+    propertyComponent: ContentFormserviceProps,
 
-     // Identical structure to a CUT or COPY from edit mode.
-     data: {
-       type: "contentservice.io",
-       version: "1.0",
-       source: "toolbox",
-       layout: {
-         type: 'formservice',
-         children: [
-         ]
-       }
-     }
-   })
+    // Identical structure to a CUT or COPY from edit mode.
+    data: {
+      type: "contentservice.io",
+      version: "1.0",
+      source: "toolbox",
+      layout: {
+        type: 'formservice',
+        children: []
+      }
+    }
+  })
+
+  $content.registerWidget(Vue, {
+    name: 'formlabel',
+    label: 'Label',
+    category: 'Forms',
+    iconClass: 'fa fa-vimeo',
+    iconClass5: 'fab fa-vimeo',
+    dragtype: 'component',
+
+    // Register native Vue templates
+    componentName: 'content-formlabel',
+    component: FormLabel,
+    propertyComponent: FormLabelProps,
+
+    // Identical structure to a CUT or COPY from edit mode.
+    data: {
+      type: "contentservice.io",
+      version: "1.0",
+      source: "toolbox",
+      layout: {
+        type: 'formlabel',
+        label: 'label',
+        children: [ ]
+      }
+    }
+  })
+
+  $content.registerWidget(Vue, {
+    name: 'forminput',
+    label: 'Input',
+    category: 'Forms',
+    iconClass: 'fa fa-vimeo',
+    iconClass5: 'fab fa-vimeo',
+    dragtype: 'component',
+
+    // Register native Vue templates
+    componentName: 'content-form-input',
+    component: FormInput,
+    propertyComponent: FormInputProps,
+
+    // Identical structure to a CUT or COPY from edit mode.
+    data: {
+      type: "contentservice.io",
+      version: "1.0",
+      source: "toolbox",
+      layout: {
+        type: 'forminput',
+        label: 'input',
+        children: [ ]
+      }
+    }
+  })
+
+  // $content.registerLayoutType(Vue, 'element-position', 'element-position', FormElementPosition, FormElementPositionProps)
+
 
   // Initialise the store
   Vue.use(Vuex)

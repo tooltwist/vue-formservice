@@ -24,7 +24,7 @@ export default {
       // NEW
       leftPane: true,
       editable: true,
-      anchor: 'mbc.test.layout',
+      contentId: 'mbc.test.layout',
       /*
       editable: Boolean,
       anchor: {

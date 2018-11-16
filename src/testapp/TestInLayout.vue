@@ -7,7 +7,7 @@
       br
       a.other-mode(href="/standalone") Use this widget standalone
 
-    content-layout-editor.my-triple-pane(:editable="editable", :anchor="anchor", zheight="300px", zeditingHeight="600px")
+    content-layout-editor.my-triple-pane(:editable="editable", :contentId="contentId", zheight="300px", zeditingHeight="600px")
 
       //template(slot="left-pane")
       //  | This is the left pane
@@ -40,7 +40,7 @@ export default {
       // NEW
       leftPane: true,
       editable: true,
-      anchor: 'formservice.test.layout',
+      contentId: 'formservice.test.layout',
 
       // OLD
       editcontext: {
