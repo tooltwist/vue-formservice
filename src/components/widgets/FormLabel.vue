@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import ContentMixins from '../../mixins/ContentMixins'
-import CutAndPasteMixins from '../../mixins/CutAndPasteMixins'
+import ContentMixins from 'vue-contentservice/src/mixins/ContentMixins'
+import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
 
 export default {
   name: 'form-label',

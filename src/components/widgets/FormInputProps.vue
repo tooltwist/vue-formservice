@@ -3,9 +3,9 @@
     .tt-property-header Input
     .c-element-properties
       .tt-property
-        .c-property-label Fieldname
+        .c-property-label Attribute
         .c-property-value
-          input.input(v-model="fieldname")
+          input.input(v-model="attribute")
       .tt-property
         .c-property-label Placeholder
         .c-property-value
@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import PropertyMixins from '../../mixins/PropertyMixins'
+import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
 
 export default {
   name: 'content-formservice-props',
@@ -31,13 +31,13 @@ export default {
     // We cannot update the element directly - it is stored
     // in this.$store and must be updated with a 'commit'.
     // See https://vuex.vuejs.org/en/forms.html
-    fieldname: {
+    attribute: {
       get () {
-        let value = this.element['fieldname']
+        let value = this.element['attribute'] ? this.element['attribute'] : this.element['field']
         return value ? value : ''
       },
       set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
+        this.$content.setProperty({ vm: this, element: this.element, name: 'attribute', value })
       }
     },
     placeholder: {

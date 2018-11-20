@@ -28,7 +28,7 @@
     "v-hotkey": "^0.2.0",
     "vue": "^2.5.16",
     "vue-awesome": "^3.0.3",
-    "vue-contentservice": "0.1.85",
+    "vue-contentservice": "^0.1.87",
     "vue-drag-drop": "^1.1.2",
     "vue-froala-wysiwyg": "^2.8.4",
     "vue-split-panel": "^1.0.4",

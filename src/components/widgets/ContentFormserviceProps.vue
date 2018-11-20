@@ -7,6 +7,10 @@
         .c-property-value
           input.input(v-model="name")
       .tt-property
+        .c-property-label Source
+        .c-property-value
+          input.input(v-model="source")
+      .tt-property
         .c-property-label View
         .c-property-value
           input.input(v-model="view")
@@ -29,7 +33,7 @@
 </template>
 
 <script>
-import PropertyMixins from '../../mixins/PropertyMixins'
+import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
 
 export default {
   name: 'content-formservice-props',
@@ -39,8 +43,18 @@ export default {
     // We cannot update the element directly - it is stored
     // in this.$store and must be updated with a 'commit'.
     // See https://vuex.vuejs.org/en/forms.html
+    source: {
+      get () {
+        let value = this.element['source']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'source', value })
+      }
+    },
     name: {
       get () {
+        console.error(`WOMBO!!`, PropertyMixins);
         let value = this.element['name']
         return value ? value : ''
       },

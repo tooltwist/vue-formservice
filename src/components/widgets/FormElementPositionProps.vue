@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import PropertyMixins from '../../mixins/PropertyMixins'
+import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
 
 export default {
   name: 'form-element-position-props',

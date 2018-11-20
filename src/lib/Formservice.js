@@ -26,10 +26,10 @@ class Formservice {
     this.version = options.version ? options.version : '2.0'
     this.apikey = options.apikey
 
-    this.knownElementTypes = [ ]
-
     // Remember the options
     this.options = options
+
+    this.zzzSnurg = 123
   }
 
   init (app /* Vue component instance */) {
@@ -50,6 +50,15 @@ class Formservice {
     const protocol = this.protocol ? this.protocol : 'http'
     const endpoint = `${protocol}://${this.host}:${this.port}/api/${this.version}/${this.apikey}`
     return endpoint
+  }
+
+
+  getData (recordPath, path) {
+    console.log(`FormserviceLib.getDataValue(${recordPath}, ${path})`);
+    if (!path) {
+      return null
+    }
+    return this.store.getters.getData(recordPath, path)
   }
 
   /*

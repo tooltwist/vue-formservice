@@ -10,25 +10,30 @@
       .c-layout-mode-heading
         edit-bar-icons(:element="element")
         | input
-      input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="`${element.field} - ${placeholder}`")
+      input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="`${attribute} - ${placeholder}`", v-model="actualData")
 
     // Editing
     .my-edit-mode(v-else-if="isEditMode", @click.stop="selectThisElement")
-      input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="`${element.field} - ${placeholder}`")
+      input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="`${attribute} - ${placeholder}`")
 
     // Live mode
     template(v-else)
-      input.input.my-live-mode(:style="inputStyle", :class="inputClass", :placeholder="placeholder")
+      input.input.my-live-mode(:style="inputStyle", :class="inputClass", :placeholder="placeholder", v-model="actualData")
 </template>
 
 <script>
-import ContentMixins from '../../mixins/ContentMixins'
-import CutAndPasteMixins from '../../mixins/CutAndPasteMixins'
+import ContentMixins from 'vue-contentservice/src/mixins/ContentMixins'
+import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
 
 export default {
-  name: 'content-formservice',
+  name: 'content-forminput',
   props: {
     element: {
+      type: Object,
+      required: true
+    },
+
+    context: {
       type: Object,
       required: true
     }
@@ -69,9 +74,9 @@ export default {
       var obj = { }
       let classesForElement = this.element['class']
       if (classesForElement) {
-        console.log(`classesForElement=${classesForElement}`);
+        // console.log(`classesForElement=${classesForElement}`);
         classesForElement.split(' ').forEach(clas => {
-          console.log(`-- ${clas}`);
+          // console.log(`-- ${clas}`);
           let classname = clas.trim()
           if (classname) {
             obj[classname] = true
@@ -98,13 +103,14 @@ export default {
     //   }
     // },
 
-    fieldname: {
+    attribute: {
       get () {
-        let value = this.element['fieldname']
-        return value ? value : ''
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
+
+        //ZZZZZ
+        // console.error(`FormInput.attribute.get(): this.context=`, this.context);
+
+        let attribute = this.element['attribute'] ? this.element['attribute'] : this.element['field']
+        return attribute
       }
     },
 
@@ -116,7 +122,43 @@ export default {
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
       }
-    }
+    },
+
+    /*
+     *  Actual data edited by this input field
+     */
+    actualData: {
+      get () {
+        if (this.attribute == 'name') {
+          console.log(`datavalue.get()`, this.$formservice);
+          console.log(`datavalue.get()`, this.element);
+          console.log(`data:`, this.$formservice.getData('!test[1]', 'firstname'))
+        }
+
+
+        let recordPath = '!test[1]'
+        let attribute = this.attribute
+
+        if (attribute) {
+          // return 'xxxxx'
+          let value = this.$formservice.getData(recordPath, attribute)
+          if (value) {
+            console.log(`value for field ${recordPath}.${attribute} is ${value}`);
+            return value
+          }
+          return ''
+        } else {
+          console.log(`Warning: input is missing 'attribute' property`, this.element);
+          //ZZZZZ Do something about this...
+          return ''
+        }
+      },
+      set (value) {
+        console.log(`datavalue.set(${this.element['fieldname']}, ${value}`);
+        // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
+      }
+    },
+
   },
   methods: {
     componentNameForElement (element) {
@@ -212,6 +254,9 @@ export default {
       this.sane = false
       return
     }
+
+    //ZZZZZ
+    // console.error(`FormInput.created(): this.context=`, this.context);
   }
 }
 </script>

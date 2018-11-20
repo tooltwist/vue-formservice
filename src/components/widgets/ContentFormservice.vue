@@ -1,4 +1,4 @@
-<template lang="pug">
+context<template lang="pug">
 
   .c-content-form(:class="editModeClass")
     span(v-if="extraDebug")
@@ -9,13 +9,14 @@
     div(v-if="isDesignMode", @click.stop="selectThisElement")
       .c-layout-mode-heading
         edit-bar-icons(:element="element")
-        | form ((element.name))
+        | form {{name}}
+        span(v-if="source ") &nbsp;&nbsp;{ source: {{source}} }
 
       drop.formservice-box.droparea.my-design-mode(:style="boxStyle", @drop="handleDrop(form, ...arguments)")
         div(v-if="element.children", v-for="(child, index) in element.children")
           drag.my-drag(:transfer-data="child", @dragstart="dragStart")
             .fixed-position(:class="positionClass(child)", :style="positionStyle(child)", @mousedown="mouseDown")
-              component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child")
+              component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child", :context="newContext")
 
     // Editing
     div(v-else-if="isEditMode", @click.stop="selectThisElement")
@@ -23,19 +24,19 @@
         div(v-if="element.children", v-for="(child, index) in element.children")
           drag.my-drag(:transfer-data="child", @dragstart="dragStart")
             .fixed-position(:class="positionClass(child)", :style="positionStyle(child)", @mousedown="mouseDown")
-              component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child")
+              component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child", :context="newContext")
 
     // Live mode
     template(v-else)
       .formservice-box.my-live-mode(:style="boxStyle")
         template(v-if="element.children", v-for="(child, index) in element.children")
             .fixed-position(:class="positionClass(child)", :style="positionStyle(child)")
-              component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child")
+              component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child", :context="newContext")
 </template>
 
 <script>
-import ContentMixins from '../../mixins/ContentMixins'
-import CutAndPasteMixins from '../../mixins/CutAndPasteMixins'
+import ContentMixins from 'vue-contentservice/src/mixins/ContentMixins'
+import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
 
 export default {
   name: 'content-formservice',
@@ -43,6 +44,11 @@ export default {
     element: {
       type: Object,
       required: true
+    },
+
+    context: {
+      type: Object,
+      required: false
     }
   },
   mixins: [ ContentMixins, CutAndPasteMixins ],
@@ -70,15 +76,51 @@ export default {
   },
   computed: {
 
-    // myProperty: {
-    //   get () {
-    //     let value = this.element['myProperty']
-    //     return value ? value : ''
-    //   },
-    //   set (value) {
-    //     this.$content.setProperty({ vm: this, element: this.element, name: 'myProperty', value })
-    //   }
-    // }
+    newContext: {
+      get () {
+        console.error(`******* newContext(): old=`, this.context);
+
+        if (this.context && this.context.formservice) {
+          console.log(`- need to clone existing context`)
+
+          // This is a form inside a form
+          // Source is inherited if not overridden
+          let newContext = this.cloneContextZZZ(this.context)
+          newContext.formservice = {
+            name: this.element['name'],
+            source: this.element['source'] ? this.element['source'] : this.context.formservice.source
+          }
+          console.log(`newContext(): clone=`, newContext);
+          return newContext
+        } else {
+
+          // Not a form inside a form
+          console.log(`- need an initial context`)
+          let newContext = { }
+          newContext.formservice = {
+            name: this.element['name'],
+            source: this.element['source']
+          }
+          console.log(`newContext(): new=`, newContext);
+          return newContext
+        }
+        return newContext
+      }
+    },
+
+    name: {
+      get () {
+        let value = this.element['name']
+        return value ? value : ''
+      }
+    },
+
+    source: {
+      get () {
+        let value = this.element['source']
+        return value ? value : ''
+      }
+    },
 
     boxStyle: function ( ) {
       let style = this.element['style'] + ';'
@@ -103,6 +145,10 @@ export default {
 
   },
   methods: {
+
+    cloneContextZZZ (context) {
+      return { }
+    },
 
     componentNameForElement (element) {
       let type = element.type

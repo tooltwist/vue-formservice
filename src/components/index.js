@@ -171,7 +171,7 @@ function install (Vue, options) {
 } //- install()
 
 const FormserviceLib = {
-  install: install,
+  install: install
 }
 
 // Object.defineProperty(FormserviceLib, '_formservice', {
