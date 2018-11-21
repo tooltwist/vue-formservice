@@ -54,12 +54,20 @@ class Formservice {
 
 
   getData (recordPath, path) {
-    console.log(`FormserviceLib.getDataValue(${recordPath}, ${path})`);
+    console.log(`FormserviceLib.getData(${recordPath}, ${path})`);
     if (!path) {
       return null
     }
     return this.store.getters.getData(recordPath, path)
   }
+
+
+  // Convenience function - ask the store to save a specific dataset
+  // Same parameters as the store action
+  saveDataset(path) {
+    this.store.dispatch('saveDatasetAction', { vm: this, path })
+  }
+
 
   /*
    *  Call an API

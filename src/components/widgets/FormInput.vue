@@ -1,24 +1,33 @@
 <template lang="pug">
 
   .c-form-input(:class="editModeClass")
-    span(v-if="extraDebug")
-      | &lt;form-input&gt;
-      br
 
-    // Design mode
-    .my-design-mode(v-if="isDesignMode", @click.stop="selectThisElement")
-      .c-layout-mode-heading
-        edit-bar-icons(:element="element")
-        | input
-      input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="`${attribute} - ${placeholder}`", v-model="actualData")
-
-    // Editing
-    .my-edit-mode(v-else-if="isEditMode", @click.stop="selectThisElement")
-      input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="`${attribute} - ${placeholder}`")
-
-    // Live mode
+    // Sanity checks
+    .sanity-error(v-if="!sane_$content")
+      | Missing this.$content
+    .sanity-error(v-else-if="!sane_context_formservice")
+      | Missing this.context.formservice
     template(v-else)
-      input.input.my-live-mode(:style="inputStyle", :class="inputClass", :placeholder="placeholder", v-model="actualData")
+
+      // Normal operation below here
+      span(v-if="extraDebug")
+        | &lt;form-input&gt;
+        br
+
+      // Design mode
+      .my-design-mode(v-if="isDesignMode", @click.stop="selectThisElement")
+        .c-layout-mode-heading
+          edit-bar-icons(:element="element")
+          | input
+        input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder", v-model="actualData")
+
+      // Editing
+      .my-edit-mode(v-else-if="isEditMode", @click.stop="selectThisElement")
+        input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder")
+
+      // Live mode
+      template(v-else)
+        input.input.my-live-mode(:style="inputStyle", :class="inputClass", :placeholder="placeholder", v-model="actualData")
 </template>
 
 <script>
@@ -44,6 +53,20 @@ export default {
     }
   },
   computed: {
+
+    sane_$content: function ( ) {
+      if (this.$content) {
+        return true
+      }
+      return false
+    },
+
+    sane_context_formservice: function ( ) {
+      if (this.context && this.context.formservice) {
+        return true
+      }
+      return false
+    },
 
     inputStyle: function ( ) {
       let style = this.element['style'] + ';'
@@ -116,8 +139,24 @@ export default {
 
     placeholder: {
       get () {
-        let value = this.element['placeholder']
-        return value ? value : ''
+        // Temporary - display a symbol if data is not found
+        let placeholder = this.element['placeholder']
+        if (!placeholder) {
+          placeholder = ''
+        }
+
+        // Display a nice message in design mode
+        if (this.isDesignMode || this.isEditMode) {
+          let symbol = '!'
+          if (placeholder) {
+            return `${symbol}${this.attribute} - ${placeholder}`
+          } else {
+            return `${symbol}${this.attribute}`
+          }
+        }
+
+        // Live mode
+        return placeholder
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
@@ -129,24 +168,29 @@ export default {
      */
     actualData: {
       get () {
-        if (this.attribute == 'name') {
-          console.log(`datavalue.get()`, this.$formservice);
-          console.log(`datavalue.get()`, this.element);
-          console.log(`data:`, this.$formservice.getData('!test[1]', 'firstname'))
-        }
 
-
-        let recordPath = '!test[1]'
+        let recordPath = this.context.formservice.dataPath
+        // console.error(`actualDataZZ ajaja `, this.context.formservice.dataPath);
+        // console.error(`actualDataZZ ajaja `, this.context.formservice);
         let attribute = this.attribute
 
         if (attribute) {
-          // return 'xxxxx'
-          let value = this.$formservice.getData(recordPath, attribute)
-          if (value) {
+          let {data, error} = this.$formservice.getData(recordPath, attribute)
+
+          let value = data
+          console.log(`value`, value);
+          console.log(`error`, error);
+
+
+          if (error) {
+            console.error(`FieldInput: ${error}`);
+            return ''
+          } else if (value) {
             console.log(`value for field ${recordPath}.${attribute} is ${value}`);
             return value
+          } else {
+            return ''
           }
-          return ''
         } else {
           console.log(`Warning: input is missing 'attribute' property`, this.element);
           //ZZZZZ Do something about this...
@@ -161,89 +205,6 @@ export default {
 
   },
   methods: {
-    componentNameForElement (element) {
-      let type = element.type
-      let def = this.$content.getLayoutType(type)
-      return def ? def.componentName : null
-    },
-
-    mouseDown: function (p1, p2, p3) {
-      // let element = this.element
-      console.log(`mouseDown(). p1=`, p1);
-      console.log(`mouseDown(). p2=`, p2);
-      console.log(`mouseDown(). p3=`, p3);
-    },
-
-    dragStart: function (p1, p2, p3) {
-      // let element = this.element
-      console.log(`dragStart(). p1=`, p1);
-      console.log(`dragStart(). p2=`, p2);
-      console.log(`dragStart(). p3=`, p3);
-    },
-
-    // The drop event normally provides (data, event) but we've added (form, ...) in front.
-    handleDrop (form, data, event) {
-      console.log(`ContentFormservice.handleDrop(). form=`, form)
-      console.log(`ContentFormservice.handleDrop(), data=`, data)
-      console.log(`ContentFormservice.handleDrop(), event=`, event)
-
-      if (data.type == 'element-position') {
-
-        console.log(`Dropped element-position`)
-        console.log(`data=`, data);
-        // x: event.layerX,
-        // y: event.layerY,
-        console.log(`x=${event.layerX}, y=${event.layerY}`)
-
-        this.$content.setPropertyInElement({ vm: this, element: data, name: 'x', value: event.layerX })
-        this.$content.setPropertyInElement({ vm: this, element: data, name: 'y', value: event.layerY })
-
-      } else if (data.dragtype == 'component') {
-
-        // Get the element to be inserted, from the drop data.
-        let wrapper = {
-          type: 'contentservice.io',
-          version: "1.0",
-          layout: {
-            type: 'element-position',
-            x: event.layerX,
-            y: event.layerY,
-            layout: data.data.layout
-          }
-        }
-        let position = this.element.children.length
-        this.$content.insertLayout({ vm: this, parent: this.element, position, layout: wrapper })
-        this.counter++ //ZZZZZ?
-      } else {
-        console.log(`Dropped non-component: '${data.dragtype}'`)
-        return
-      }
-
-
-
-      // // Get the element to be inserted, from the drop data.
-      // let insertContent = data.data
-
-      // // Note that 'child' is the existing child, not the child being inserted.
-      // if (child) {
-      //   // Insert before the specified child.
-      //   for (var i = 0; i < element.children.length; i++) {
-      //     if (element.children[i] === child) {
-      //       console.log(`Insert at position ${i}`)
-      //       this.$content.insertLayout({ vm: this, parent: element, position: i, layout: insertContent })
-      //       break
-      //     }
-      //   }
-      // } else {
-      //   // No child specified - add at the end
-      //   this.$content.insertLayout({ vm: this, parent: element, position: -1, layout: insertContent })
-      // }
-    },
-
-    deletePositionedField: function(element) {
-      console.log(`deletePositionedField()`);
-      this.$content.deleteElement({ vm: this, element: element })
-    }
 
   },
   created: function () {

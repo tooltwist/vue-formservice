@@ -1,13 +1,18 @@
+import { parseDataPath } from '../lib/navigation.js'
+
+
 // initial state
 export const state = () => {
   return {
 
-    // dataId -> Array[{ name <String>, source <String>, data <Object> }]
-    // Data is referred to with !
-    dataIndex: {
-      '!test' : {
-        name: '!test',
-        source: 'testdata://',
+    //
+    datasetIndex : {
+      /*
+       *  Each parcel contains: name, schema, layout, and data
+      */
+      'test1' : {
+        name: 'test1',
+        source: 'testdata://mytestdata',
         data: [
           {
             firstname: 'Fred',
@@ -21,31 +26,35 @@ export const state = () => {
             tTenantAdd1: 'First House',
             tTenantAdd2: 'Down the Road',
             tTenantAdd3: 'And around the corner',
-            tTenantPCode: '1234'
+            tTenantPCode: '1234',
+            x: 'x-value',
           }
-        ]
-      }
-    },
+        ],
 
-    // schemaId -> Array[Object]
-    // Data is referred to with @
-    schemaIndex: [ ],
+        schema: null,
 
-    // viewId -> Array[Object]
-    // Data is referred to with #
-    viewIndex: [ ],
-
-    // original-document-id -> { userId, docID }
-    documentMap: {
-      // '1ESlBwmpaCcKm7prdeCKJfVXn6hhddXn7Y6c3XLcYgis': {
-      //   docID: '161rGTvEyrk2XKUmHnf54Lh1RRntvG-q_E2s4hZrx_wA', userID: null
-      // },
-      '1sPBBmWIVvj-ytaAgfer0-j_3eHRXba6UMIo86Ov_ml4': {
-        docID: '1GtiF5fM72nok7uXCrOSX13h1DciyxY78bwoqYsIIf6Y', userID: null
+        layout: null
       },
-      '16qDqMZdIX7VY7Ka4n4k14PuVhlu5KBxv03WOeytFNl4': {
-        docID: '1RB5z_EHJhqdA35NFuE9Pf-LpMnwp5soEaPcS1urg8Aw', userID: null
+
+      'test2' : {
+        name: 'test2',
+        source: 'testdata://mytestdata-set2',
+        data: {
+          firstname: 'William',
+          lastname: 'Wonker',
+          address1: '343 Hennessy Road',
+          address2: 'Room B, Floor 4',
+          city: 'Wanchai',
+          postcode: '',
+          country: 'Hong Kong',
+        },
+
+        schema: null,
+
+        layout: null
       }
+
+
     },
 
     // Refresh for some components can be activated by incrementing this counter.
@@ -77,6 +86,7 @@ export const getters = {
   //   return docID
   // }
 
+  // Returns { data: Object, error: String }
   getData: (state) => (recordPath, path) => {
     console.log(`/------------------------------------------`);
     console.log(`GETTER getData(${recordPath}, ${path})`);
@@ -85,9 +95,10 @@ export const getters = {
     //   console.log(`Found replacement document ${replacement.docID}`);
     //   return replacement.docID
     // }
-    let fullPath = path.startsWith('!') ? path : `${recordPath}.${path}`
+    // let fullPath = path.startsWith('!') ? path : `${recordPath}.${path}`
+    let fullPath = `${recordPath}.${path}`
     let parts = parseDataPath(fullPath)
-    // console.log(`parts=`, parts);
+    console.log(`parts=`, parts);
 
     // Hack test cases for path parsing. During development only.
     // console.log(`parts=`, parseDataPath('~harry'))
@@ -104,125 +115,92 @@ export const getters = {
     // console.log(`parts=`, parseDataPath('!first[123]..second[456]'))
     // console.log(`parts=`, parseDataPath('!first[123].second[456].'))
     if (parts === null) {
-      return null // Error already reported
+      return null // Parse error already reported
     } else if (parts.length === 0) {
       console.error(`Invalid data path (${fullPath}): no path specified!`);
     }
 
-    let data = findData(state.dataIndex, parts, 0)
-    return data
+console.log(`ok 7`);
+    // Check the top level refers to a parcel
+    if (!parts[0].name.startsWith('!')) {
+      return { data: null, error: `Path must start with ! (${fullPath})`}
+    }
+    let datasetName = parts[0].name.substring(1)
 
+    // If we ask for mock data, we always get question marks
+    if (datasetName === 'mock') {
+      return { data: '???', error: null }
+    }
+    let datasetIndex = parts[0].index
+    console.log(`ok 8 ${datasetName}[${datasetIndex}]`)
 
-    // return 'Jumbobat'
-  }
+    let parcel = state.datasetIndex[datasetName]
+    console.log(`ok 9 parcel=`, parcel);
 
-}
+    // Check the package was found
+    if (typeof(parcel) === 'undefined') {
+      return { data: null, error: `Unknown dataset: !${datasetName}`}
+    }
+    console.log(`parcel.data is `, parcel.data);
 
-function parseDataPath (path) {
-  console.log(`--- parseDataPath(${path})`);
-  path = path.trim()
-  if (!path.startsWith('!')) {
-    console.error(`Invalid data path (${path}): must start with '!'.`);
-    return null
-  } else if (path === '!') {
-    console.error(`Invalid data path (${path}): must have a name.`);
-    return null
-  }
-
-  // let p = path.substring(1)
-  let p = path
-  let parts = [ ]
-  for ( ; ; ) {
-    // Check for nothing left (after a trainling dot)
-    if (p === '') {
-      return parts
+    // Are we looking for an array?
+    let data = parcel.data
+    if (datasetIndex >= 0) {
+      if (Array.isArray(data)) {
+        if (datasetIndex >= data.length) {
+          return { data: null, error: `Array overflow: !${datasetName}[${datasetIndex}]`}
+        }
+        console.error(`$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$`, data[datasetIndex]);
+        return findData(data[datasetIndex], parts, 1)
+      } else {
+        return { data: null, error: `Not an array: !${datasetName}[${datasetIndex}]`}
+      }
     }
 
-    let pos = p.indexOf('.')
-    if (pos < 0) {
-
-      // There is no next dot. Everything left is a part spec.
-      let part = parseDataPart(p)
-      if (part) {
-        parts.push(part)
-        return parts
-      } else {
-        return null // error already reported
-      }
-    } else if (pos === 0) {
-      // Have multiple consecutive dots, ignore this one.
-      p = p.substring(1)
+    // Expecting a record
+    if (Array.isArray(data)) {
+      return { data: null, error: `Did not expect an array: !${datasetName}`}
     } else {
-
-      // Parse up to the next dot
-      let spec = p.substring(0, pos)
-      p = p.substring(pos)
-      let part = parseDataPart(spec)
-      if (part) {
-        parts.push(part)
-      } else {
-        return null // error already reported
-      }
-
+      return findData(parcel.data, parts, 1)
     }
+
+    // Cannot get here
   }
+
 }
 
-// Parse a specification of the form <name> or <name>[index].
-function parseDataPart (spec) {
-
-  // Check for '['
-  spec = spec.trim()
-  let openBracketPos = spec.indexOf('[')
-  if (openBracketPos < 0) {
-
-    // Default index of 0
-    console.log(`parseDataPart: default index: ${spec}`)
-    return { name: spec, index: -1}
-  } else {
-
-    // Specify an index
-    console.log(`parseDataPart: with index: ${spec}`);
-    let name = spec.substring(0, openBracketPos)
-    let indexSpec = spec.substring(openBracketPos)
-    console.log(`indexSpec=${indexSpec}`)
-    // Check for ']'
-    let closeBracketPos = indexSpec.indexOf(']')
-    if (closeBracketPos < 0) {
-      console.error(`Invalid path component(${spec}), expected ']'`);
-      return null
-    } else if (closeBracketPos != indexSpec.length - 1) {
-      console.error(`Invalid path component(${spec}), unexpected char after ']'`);
-      // console.log(`closeBracketPos=${closeBracketPos}, indexSpec.length - 1`);
-      return null
-    }
-    // Convert to a number
-    indexSpec = indexSpec.substring(1, closeBracketPos).trim()
-    console.log(`indexSpec=${indexSpec}`)
-    let index = parseInt(indexSpec)
-    if (isNaN(index)) {
-      console.error(`Invalid path component(${spec}), non-integer index.`)
-    }
-    return { name, index }
-  }
-}
-
+// Returns { data: Object, error: String }
 function findData (parentObject, parts, level) {
   // console.log(`||||| findData. parentObject=`, parentObject);
   // console.log(`||||| findData. parts=`, parts);
   // console.log(`||||| findData. level=`, level);
+
   let name = parts[level].name
   let index = parts[level].index
   let isFinalPart = (level >= parts.length - 1)
-  console.log(`||||| findData ${name}[${index}] in`, parentObject);
+  // console.log(`||||| findData ${name}[${index}] ${isFinalPart ? '(final)' : ''} in`, parentObject);
 
-  let obj = parentObject[name]
-  if (level === 0) {
-    obj = obj.data
+
+  // See if this is the start of an absolute path
+  // let obj = null
+  if (name.startsWith('!')) {
+    return { data: null, error: `Invalid path: ${pathFromParts(parts, level)}`}
   }
+
+  // Not an absolute path - find the field within parentObject
+  let obj = parentObject[name]
+
+
+  // Did we find anything?
+
+  // if (level === 0) {
+  //   obj = obj.data
+  // }
   if (typeof(obj) === 'undefined') {
-    console.error(`NOIT FOUDD ZAZWDDSD`, name);
-    return null
+
+    // Unknown field within the parent object
+    // console.error(`NOIT FOUDD ZAZWDDSD`, name);
+    return {data: null, error: `Unknown data ${pathFromParts(parts, level)} ZZZZ` }
   }
 
   console.log(`+++>>> found part ${name}`, obj);
@@ -248,13 +226,13 @@ function findData (parentObject, parts, level) {
       // Find the record at the required index
       if (index >= obj.length) {
         console.log(`Invalid path ${pathFromParts(parts, level)}: array overflow`);
-        return null
+        return { data: null, error: `Array overflow: ${pathFromParts(parts, level)}` }
       }
       obj = obj[index]
       console.log(`array record at ${index} is `, obj);
 
       if (isFinalPart) {
-        return obj
+        return { data: obj, error: null }
       } else {
         // Move on the the next part of the path
         return findData(obj, parts, level + 1)
@@ -267,18 +245,33 @@ function findData (parentObject, parts, level) {
     // Check we aren't asking for a specific record in an array.
     if (index >= 0) {
       console.error(`Invalid path ${pathFromParts(parts, level)}: is not an array`);
-      return null
+      return { data: null, error: `Expected an array: ${pathFromParts(parts, level)}` }
     }
     if (isFinalPart) {
-      return obj
+      return { data: obj, error: null }
     } else {
       // Move on the the next part of the path
       return findData(obj, parts, level + 1)
     }
   }
+  // Cannot get here
+}
 
-  // let index = parts[level].index
-  return 'chickenSuzz'
+function pathFromParts(parts, level) {
+  console.log(`pathFromParts(parts, ${level})`, parts);
+  let path = ''
+  for (let i = 0; (level >= 0 && i <= level) && level < parts.length; i++) {
+    let part = parts[i]
+    if (i > 0) {
+      path += '.'
+    }
+    path += part.name
+    if (part.index >= 0) {
+      path += `[${part.index}]`
+    }
+  }
+  console.log(`--- ${path}`);
+  return path
 }
 
 /********************************************
@@ -321,7 +314,130 @@ export const actions = {
         //this.selectError = true
       })//- axios
     // }, SAVE_INTERVAL)
+  },//- scanDocument
+
+
+  /*
+   *  Save a dataset
+   */
+  saveDatasetAction ({ commit, state }, { vm, path }) {
+    console.log(`ACTION FormserviceStore.saveDatasetAction(${path})`)
+
+    // We might have been passed a path - that's okay - strip off any prefix
+    while (path.startsWith('!')) {
+      path = path.substring(1)
+    }
+
+    let parts = parseDataPath(path)
+    console.log(`parts=`, parts);
+    if (parts === null) {
+      return { data: null, error: `saveDataset: Invalid data path ${path}`} // Parse error already reported
+    } else if (parts.length === 0) {
+      return { data: null, error: `saveDataset: Invalid data path (${path}): no path specified!` }
+    }
+
+    // Check there is actually a name
+    let datasetName = parts[0].name
+    if (datasetName === '') {
+      console.error(`Empty dataset name`);
+      return
+    }
+
+    // Find the dataset
+    let dataset = state.datasetIndex[datasetName]
+    if (!dataset) {
+      console.error(`Unknown dataset ${datasetName}`);
+console.log(`Index is`, state.datasetIndex);
+      return
+    }
+
+    console.log(`Saving dataset ${datasetName}. Source=${dataset.source}. Data is `, dataset.data)
+
+
+
+
+
+
+
+
+
+/*
+    let parts = parseDataPath(path)
+    console.log(`parts=`, parts);
+
+    // Hack test cases for path parsing. During development only.
+    // console.log(`parts=`, parseDataPath('~harry'))
+    // console.log(`parts=`, parseDataPath(' ! '))
+    // console.log(`parts=`, parseDataPath(' ! wally '))
+    // console.log(`parts=`, parseDataPath('!first.second[123]'))
+    // console.log(`parts=`, parseDataPath(' ! first . second [ 123 ]'))
+    // console.log(`parts=`, parseDataPath('!first['))
+    // console.log(`parts=`, parseDataPath('!first[123'))
+    // console.log(`parts=`, parseDataPath('!first[123]'))
+    // console.log(`parts=`, parseDataPath('!first[123]abc'))
+    // console.log(`parts=`, parseDataPath('!first[abc]'))
+    // console.log(`parts=`, parseDataPath('!first[123].second[456]'))
+    // console.log(`parts=`, parseDataPath('!first[123]..second[456]'))
+    // console.log(`parts=`, parseDataPath('!first[123].second[456].'))
+    if (parts === null) {
+      return { data: null, error: `Invalid data path ${path}`} // Parse error already reported
+    } else if (parts.length === 0) {
+      return { data: null, error: `Invalid data path (${path}): no path specified!` }
+    }
+
+console.log(`ok 7`);
+    // Check the top level refers to a parcel
+    // if (!parts[0].name.startsWith('!')) {
+    //   return { data: null, error: `Path must start with ! (${fullPath})`}
+    // }
+    let datasetName = parts[0].name
+
+    // If we ask for mock data, we always get question marks
+    if (datasetName === 'mock') {
+      // Mock data, nothing to save
+      return { data: '???', error: null }
+    }
+    let datasetIndex = parts[0].index
+    console.log(`ok 8 ${datasetName}[${datasetIndex}]`)
+
+    let parcel = state.datasetIndex[datasetName]
+    console.log(`ok 9 parcel=`, parcel);
+
+    // Check the package was found
+    if (typeof(parcel) === 'undefined') {
+      return { data: null, error: `Unknown dataset: !${datasetName}`}
+    }
+    console.log(`parcel.data is `, parcel.data);
+
+    // Are we looking for an array?
+    let data = parcel.data
+    let objectToSave
+    if (datasetIndex >= 0) {
+      if (Array.isArray(data)) {
+        // Have an array
+        console.error(`$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$`, data[datasetIndex]);
+        if (datasetIndex >= data.length) {
+          return { data: null, error: `Array overflow: !${datasetName}[${datasetIndex}]`}
+        }
+        objectToSave = data[datasetIndex]
+      } else {
+        // We don't have the array we expected
+        return { data: null, error: `Not an array: !${datasetName}[${datasetIndex}]`}
+      }
+    } else {
+      // Expecting a record
+      if (Array.isArray(data)) {
+        // Bad - we exected an object but got an array
+        return { data: null, error: `Did not expect an array: !${datasetName}`}
+      } else {
+        // Good - we have the record we expected
+        objectToSave = parcel.data
+      }
+    }
+*/
+
   }
+
 }
 
 
@@ -341,14 +457,6 @@ export const mutations = {
     state.refreshCounter++
   },
 
-  mapDocument(state, { originalDocumentID, replacementDocumentID, userID }) {
-    console.log(`MUTATION mapDocument ${originalDocumentID} -> ${replacementDocumentID}`);
-    state.documentMap[originalDocumentID] = {
-      docID: replacementDocumentID,
-      userID: null
-    }
-    console.log(`map is now`, state.documentMap);
-  },
 
   scanState(state, { currentlyScanning, message }) {
     state.currentlyScanning = currentlyScanning

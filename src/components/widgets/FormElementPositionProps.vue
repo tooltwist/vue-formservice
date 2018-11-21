@@ -1,15 +1,18 @@
 <template lang="pug">
-  div
-    .tt-property-header Position
-    .c-element-properties
-      .tt-property
-        .c-property-label X
-        .c-property-value
-          input.input(v-model="x")
-      .tt-property
-        .c-property-label Y
-        .c-property-value
-          input.input(v-model="y")
+  .c-property-element(:class="propertyClass")
+    .tt-property-header(@click="setExpandedElement")
+      | Position
+
+    transition(name="c-property-list-transition")
+      .c-element-properties(v-show="isExpandedElement")
+        .tt-property
+          .c-property-label X
+          .c-property-value
+            input.input(v-model="x")
+        .tt-property
+          .c-property-label Y
+          .c-property-value
+            input.input(v-model="y")
 </template>
 
 <script>

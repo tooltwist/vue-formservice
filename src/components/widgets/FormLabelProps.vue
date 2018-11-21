@@ -1,7 +1,10 @@
 <template lang="pug">
-  div
-    .tt-property-header Label
-    .c-element-properties
+  .c-property-element(:class="propertyClass")
+    .tt-property-header(@click="setExpandedElement")
+      | Label
+
+    transition(name="c-property-list-transition")
+      .c-element-properties(v-show="isExpandedElement")
       .tt-property
         .c-property-label Label
         .c-property-value

@@ -10,7 +10,7 @@ context<template lang="pug">
       .c-layout-mode-heading
         edit-bar-icons(:element="element")
         | form {{name}}
-        span(v-if="source ") &nbsp;&nbsp;{ source: {{source}} }
+        span(v-if="dataset ") &nbsp;&nbsp;{ dataset: {{dataset}} }
 
       drop.formservice-box.droparea.my-design-mode(:style="boxStyle", @drop="handleDrop(form, ...arguments)")
         div(v-if="element.children", v-for="(child, index) in element.children")
@@ -84,11 +84,26 @@ export default {
           console.log(`- need to clone existing context`)
 
           // This is a form inside a form
-          // Source is inherited if not overridden
+          // Dataset is inherited if not overridden
+          let parentFormservice = this.context.formservice
+
           let newContext = this.cloneContextZZZ(this.context)
+          let name = this.element['name'] ? this.element['name'] : ''
+          let dataset = this.element['dataset']
+          let dataPath
+          if (dataset) {
+            // Override the inherited dataPath - use our own dataset
+            dataPath = '!' + dataset
+
+            // Use inherited dataPath
+            dataPath = this.context.formservice.dataPath
+
+          }
           newContext.formservice = {
-            name: this.element['name'],
-            source: this.element['source'] ? this.element['source'] : this.context.formservice.source
+            name,
+            // dataset,
+            dataPath,
+            parentFormservice
           }
           console.log(`newContext(): clone=`, newContext);
           return newContext
@@ -96,17 +111,23 @@ export default {
 
           // Not a form inside a form
           console.log(`- need an initial context`)
+
+          // Create the context for the fields within this form.
           let newContext = { }
+          let name = this.element['name']
+          let dataset = this.element['dataset']
+          let dataPath = (dataset) ? `!${dataset}` : '!mock'
           newContext.formservice = {
-            name: this.element['name'],
-            source: this.element['source']
+            name,
+            // dataset,
+            dataPath,
+            parentFormservice: null
           }
           console.log(`newContext(): new=`, newContext);
           return newContext
         }
-        return newContext
-      }
-    },
+      } // - newContext.get
+    }, //- newContext
 
     name: {
       get () {
@@ -115,9 +136,9 @@ export default {
       }
     },
 
-    source: {
+    dataset: {
       get () {
-        let value = this.element['source']
+        let value = this.element['dataset']
         return value ? value : ''
       }
     },

@@ -55,8 +55,8 @@ export default {
         // Add property-editing-related classes, for the currently selected
         // element, and the element expanded in the properties editor.
         if (this.element) {
-          if (this.element === this.$content.store.state.propertyElement) {
-            console.log(`HEY THATS ME!!! ${this.element.id} (${this.element.type})`)
+          if (this.element === this.$content.store.getters.propertyElement) {
+            // console.log(`HEY THATS ME!!! ${this.element.id} (${this.element.type})`)
             cls += ` c-selected`
           }
           if (this.element === this.$content.store.state.expandedElement) {
@@ -94,7 +94,7 @@ export default {
     },
 
     selectThisElement () {
-      console.log(`selectThisElement()`, this.element)
+      console.log(`selectThisElement()`)
       if (this.pageEditMode != 'view') {
         let element = this.element
         this.$content.setPropertyElement({ element })

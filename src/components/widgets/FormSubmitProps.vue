@@ -1,18 +1,14 @@
 <template lang="pug">
   .c-property-element(:class="propertyClass")
     .tt-property-header(@click="setExpandedElement")
-      | Input
+      | Submit button
 
     transition(name="c-property-list-transition")
       .c-element-properties(v-show="isExpandedElement")
         .tt-property
-          .c-property-label Attribute
+          .c-property-label Label
           .c-property-value
-            input.input(v-model="attribute")
-        .tt-property
-          .c-property-label Placeholder
-          .c-property-value
-            input.input(v-model="placeholder")
+            input.input(v-model="label")
         .tt-property
           .c-property-label Style
           .c-property-value
@@ -34,22 +30,13 @@ export default {
     // We cannot update the element directly - it is stored
     // in this.$store and must be updated with a 'commit'.
     // See https://vuex.vuejs.org/en/forms.html
-    attribute: {
+    label: {
       get () {
-        let value = this.element['attribute'] ? this.element['attribute'] : this.element['field']
+        let value = this.element['label']
         return value ? value : ''
       },
       set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'attribute', value })
-      }
-    },
-    placeholder: {
-      get () {
-        let value = this.element['placeholder']
-        return value ? value : ''
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
+        this.$content.setProperty({ vm: this, element: this.element, name: 'label', value })
       }
     },
     style: {

@@ -17,6 +17,8 @@ import FormLabel from './widgets/FormLabel.vue'
 import FormLabelProps from './widgets/FormLabelProps.vue'
 import FormInput from './widgets/FormInput.vue'
 import FormInputProps from './widgets/FormInputProps.vue'
+import FormSubmit from './widgets/FormSubmit.vue'
+import FormSubmitProps from './widgets/FormSubmitProps.vue'
 
 let _formservice = null
 
@@ -154,6 +156,32 @@ function install (Vue, options) {
       layout: {
         type: 'forminput',
         label: 'input',
+        children: [ ]
+      }
+    }
+  })
+
+  $content.registerWidget(Vue, {
+    name: 'formsubmit',
+    label: 'Submit',
+    category: 'Forms',
+    iconClass: 'fa fa-vimeo',
+    iconClass5: 'fab fa-vimeo',
+    dragtype: 'component',
+
+    // Register native Vue templates
+    componentName: 'content-form-submit',
+    component: FormSubmit,
+    propertyComponent: FormSubmitProps,
+
+    // Identical structure to a CUT or COPY from edit mode.
+    data: {
+      type: "contentservice.io",
+      version: "1.0",
+      source: "toolbox",
+      layout: {
+        type: 'formsubmit',
+        label: 'submit',
         children: [ ]
       }
     }
