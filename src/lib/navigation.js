@@ -1,7 +1,7 @@
 
   // Convert a path (a.b[123].c) to an array [ {name:'a',index:-1}, {name:'b',index:123}, {name:'c',index:-1}]
 export function parseDataPath (path) {
-  console.log(`--- parseDataPath(${path})`);
+  // console.log(`--- parseDataPath(${path})`);
   path = path.trim()
   // if (!path.startsWith('!')) {
   //   console.error(`Invalid data path (${path}): must start with '!'.`);
@@ -59,12 +59,12 @@ export function parseDataPart (spec) {
   if (openBracketPos < 0) {
 
     // Default index of 0
-    console.log(`parseDataPart: default index: ${spec}`)
+    // console.log(`parseDataPart: default index: ${spec}`)
     return { name: spec, index: -1}
   } else {
 
     // Specify an index
-    console.log(`parseDataPart: with index: ${spec}`);
+    // console.log(`parseDataPart: with index: ${spec}`);
     let name = spec.substring(0, openBracketPos)
     let indexSpec = spec.substring(openBracketPos)
     console.log(`indexSpec=${indexSpec}`)
@@ -80,7 +80,7 @@ export function parseDataPart (spec) {
     }
     // Convert to a number
     indexSpec = indexSpec.substring(1, closeBracketPos).trim()
-    console.log(`indexSpec=${indexSpec}`)
+    // console.log(`indexSpec=${indexSpec}`)
     let index = parseInt(indexSpec)
     if (isNaN(index)) {
       console.error(`Invalid path component(${spec}), non-integer index.`)

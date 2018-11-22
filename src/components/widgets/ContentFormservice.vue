@@ -78,10 +78,10 @@ export default {
 
     newContext: {
       get () {
-        console.error(`******* newContext(): old=`, this.context);
+        // console.error(`******* newContext(): old=`, this.context);
 
         if (this.context && this.context.formservice) {
-          console.log(`- need to clone existing context`)
+          // console.log(`- need to clone existing context`)
 
           // This is a form inside a form
           // Dataset is inherited if not overridden
@@ -95,6 +95,8 @@ export default {
             // Override the inherited dataPath - use our own dataset
             dataPath = '!' + dataset
 
+          } else {
+
             // Use inherited dataPath
             dataPath = this.context.formservice.dataPath
 
@@ -105,12 +107,11 @@ export default {
             dataPath,
             parentFormservice
           }
-          console.log(`newContext(): clone=`, newContext);
           return newContext
         } else {
 
           // Not a form inside a form
-          console.log(`- need an initial context`)
+          // console.log(`- need an initial context`)
 
           // Create the context for the fields within this form.
           let newContext = { }
@@ -123,7 +124,7 @@ export default {
             dataPath,
             parentFormservice: null
           }
-          console.log(`newContext(): new=`, newContext);
+          // console.log(`newContext(): new=`, newContext);
           return newContext
         }
       } // - newContext.get

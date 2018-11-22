@@ -95,7 +95,6 @@ export default {
       return obj
     },
 
-
     label: {
       get () {
         return this.element['label'] ? this.element['label'] : 'Submit'
@@ -207,6 +206,5 @@ export default {
     background-color: $frame-color;
     color: $text-color;
   }
-
 
 </style>

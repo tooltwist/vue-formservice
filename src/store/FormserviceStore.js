@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 import { parseDataPath } from '../lib/navigation.js'
 
 
@@ -58,7 +60,7 @@ export const state = () => {
     },
 
     // Refresh for some components can be activated by incrementing this counter.
-    refreshCounter: 1,
+    // refreshCounter: 1,
 
     // Set to true while we are waiting for the server to scan a document
     // and generate derived documents.
@@ -76,29 +78,14 @@ export const state = () => {
  *
  ********************************************/
 export const getters = {
-  // replacementDocID: (state) => (docID, userID) => {
-  //   console.log(`GETTER replacementDocID(${docID}, ${userID})`);
-  //   let replacement = state.documentMap[docID]
-  //   if (replacement && state.refreshCounter > 1) {
-  //     console.log(`Found replacement document ${replacement.docID}`);
-  //     return replacement.docID
-  //   }
-  //   return docID
-  // }
 
   // Returns { data: Object, error: String }
-  getData: (state) => (recordPath, path) => {
+  getData: (state) => (recordPath, defaultValue) => {
     console.log(`/------------------------------------------`);
-    console.log(`GETTER getData(${recordPath}, ${path})`);
-    // let replacement = state.documentMap[docID]
-    // if (replacement && state.refreshCounter > 1) {
-    //   console.log(`Found replacement document ${replacement.docID}`);
-    //   return replacement.docID
-    // }
-    // let fullPath = path.startsWith('!') ? path : `${recordPath}.${path}`
-    let fullPath = `${recordPath}.${path}`
+    console.log(`GETTER getData(${recordPath}, defaultValue=${defaultValue})`);
+
+    let fullPath = `${recordPath}`
     let parts = parseDataPath(fullPath)
-    console.log(`parts=`, parts);
 
     // Hack test cases for path parsing. During development only.
     // console.log(`parts=`, parseDataPath('~harry'))
@@ -120,7 +107,6 @@ export const getters = {
       console.error(`Invalid data path (${fullPath}): no path specified!`);
     }
 
-console.log(`ok 7`);
     // Check the top level refers to a parcel
     if (!parts[0].name.startsWith('!')) {
       return { data: null, error: `Path must start with ! (${fullPath})`}
@@ -132,49 +118,65 @@ console.log(`ok 7`);
       return { data: '???', error: null }
     }
     let datasetIndex = parts[0].index
-    console.log(`ok 8 ${datasetName}[${datasetIndex}]`)
 
     let parcel = state.datasetIndex[datasetName]
-    console.log(`ok 9 parcel=`, parcel);
 
     // Check the package was found
     if (typeof(parcel) === 'undefined') {
       return { data: null, error: `Unknown dataset: !${datasetName}`}
     }
-    console.log(`parcel.data is `, parcel.data);
 
     // Are we looking for an array?
     let data = parcel.data
     if (datasetIndex >= 0) {
       if (Array.isArray(data)) {
         if (datasetIndex >= data.length) {
+          console.log(`result: Array overflow: !${datasetName}[${datasetIndex}]`)
           return { data: null, error: `Array overflow: !${datasetName}[${datasetIndex}]`}
         }
-        console.error(`$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$`, data[datasetIndex]);
-        return findData(data[datasetIndex], parts, 1)
+        // Have the record in the array
+        if (parts.length === 1) {
+          console.log(`result: found record in array (top of dataset)`)
+          return data[datasetIndex]
+        } else {
+          console.log(`found record in array. Now look for children`);
+          // console.error(`$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$`, data[datasetIndex]);
+          let result = findData(data[datasetIndex], parts, 1, defaultValue)
+          console.log(`result: Found ${fullPath}`, result)
+          return result
+        }
       } else {
+        console.log(`result: Not an array: !${datasetName}[${datasetIndex}]`)
         return { data: null, error: `Not an array: !${datasetName}[${datasetIndex}]`}
       }
     }
 
     // Expecting a record
     if (Array.isArray(data)) {
+      console.log(`result: Did not expect an array: !${datasetName}`)
       return { data: null, error: `Did not expect an array: !${datasetName}`}
     } else {
-      return findData(parcel.data, parts, 1)
+      // Have the record
+      if (parts.length === 1) {
+        console.log(`result: Found record (top of dataset)`)
+        return parcel.data
+      } else {
+        console.log(`Found record. Now look for children`)
+        let result = findData(parcel.data, parts, 1, defaultValue)
+        console.log(`result: found ${fullPath}`, result);
+        return result
+      }
     }
 
     // Cannot get here
-  }
+  },
 
 }
 
-// Returns { data: Object, error: String }
-function findData (parentObject, parts, level) {
-  // console.log(`||||| findData. parentObject=`, parentObject);
-  // console.log(`||||| findData. parts=`, parts);
-  // console.log(`||||| findData. level=`, level);
 
+
+// Returns { data: Object, error: String }
+function findData (parentObject, parts, level, defaultValue) {
   let name = parts[level].name
   let index = parts[level].index
   let isFinalPart = (level >= parts.length - 1)
@@ -182,7 +184,6 @@ function findData (parentObject, parts, level) {
 
 
   // See if this is the start of an absolute path
-  // let obj = null
   if (name.startsWith('!')) {
     return { data: null, error: `Invalid path: ${pathFromParts(parts, level)}`}
   }
@@ -192,14 +193,24 @@ function findData (parentObject, parts, level) {
 
 
   // Did we find anything?
-
-  // if (level === 0) {
-  //   obj = obj.data
-  // }
   if (typeof(obj) === 'undefined') {
 
+    // If this is actual value missing (not a record or array that contains it)
+    // then we might want to define it now, with a null value.
+    console.log(`cif=${defaultValue}, level=${level}, parts.length=${parts.length}`);
+    if (level === parts.length - 1) {
+      console.log(`Final part of path is missing`);
+      // This is the final attribute, and it's missing.
+      // Perhaps we need to define it now?
+      if (typeof(defaultValue) != 'undefined') {
+        console.log(`Defining ${name} with default value ${defaultValue}`);
+        Vue.set(parentObject, name, defaultValue)
+        return {data: defaultValue, error: null }
+      }
+      return {data: null, error: null }
+    }
+
     // Unknown field within the parent object
-    // console.error(`NOIT FOUDD ZAZWDDSD`, name);
     return {data: null, error: `Unknown data ${pathFromParts(parts, level)} ZZZZ` }
   }
 
@@ -235,7 +246,7 @@ function findData (parentObject, parts, level) {
         return { data: obj, error: null }
       } else {
         // Move on the the next part of the path
-        return findData(obj, parts, level + 1)
+        return findData(obj, parts, level + 1, defaultValue)
       }
   } else {
 
@@ -251,7 +262,7 @@ function findData (parentObject, parts, level) {
       return { data: obj, error: null }
     } else {
       // Move on the the next part of the path
-      return findData(obj, parts, level + 1)
+      return findData(obj, parts, level + 1, defaultValue)
     }
   }
   // Cannot get here
@@ -281,41 +292,45 @@ function pathFromParts(parts, level) {
  ********************************************/
 // see https://vuex.vuejs.org/guide/actions.html
 export const actions = {
-  scanDocument ({ commit, state }, { vm, docID }) {
-    console.log(`In Action docservice/scanDocument(docID=${docID})`)
+  // scanDocument ({ commit, state }, { vm, docID }) {
+  //   console.log(`In Action docservice/scanDocument(docID=${docID})`)
+  //
+  //   commit('scanState', { currentlyScanning: true, message: 'scanning...'})
+  //   vm.$docservice.scanDocument(vm, docID)
+  //     .then(result => {
+  //       commit('scanState', { currentlyScanning: true, message: 'updating...'})
+  //       console.log(`result of save:`, result)
+  //
+  //       // Wait a while, to give the Google permissions time to propagate
+  //       setTimeout(() => {
+  //         // console.log(`result of save:`, result.data)
+  //         result.forEach(obj => {
+  //           console.log(`obj is `, obj);
+  //           let originalDocumentID = obj.originalDocumentID
+  //           let replacementDocumentID = obj.replacementDocumentID
+  //           let userID = null
+  //           commit('mapDocument', { originalDocumentID, replacementDocumentID, userID })
+  //         })
+  //         commit('scanState', { currentlyScanning: false })
+  //         commit('refreshMutation', { })
+  //       }, 5000)
+  //     })
+  //     .catch(e => {
+  //       commit('scanState', { currentlyScanning: false, message: 'error' })
+  //       let desc = `Error scanning document`
+  //       console.log(desc, e)
+  //       //state.saveMsg = ERROR
+  //       // commit('setSaveMsg', { msg: ERROR })
+  //       /* handleError(this, desc, params, e) */
+  //       //this.selectError = true
+  //     })//- axios
+  //   // }, SAVE_INTERVAL)
+  // },//- scanDocument
 
-    commit('scanState', { currentlyScanning: true, message: 'scanning...'})
-    vm.$docservice.scanDocument(vm, docID)
-      .then(result => {
-        commit('scanState', { currentlyScanning: true, message: 'updating...'})
-        console.log(`result of save:`, result)
-
-        // Wait a while, to give the Google permissions time to propagate
-        setTimeout(() => {
-          // console.log(`result of save:`, result.data)
-          result.forEach(obj => {
-            console.log(`obj is `, obj);
-            let originalDocumentID = obj.originalDocumentID
-            let replacementDocumentID = obj.replacementDocumentID
-            let userID = null
-            commit('mapDocument', { originalDocumentID, replacementDocumentID, userID })
-          })
-          commit('scanState', { currentlyScanning: false })
-          commit('refreshMutation', { })
-        }, 5000)
-      })
-      .catch(e => {
-        commit('scanState', { currentlyScanning: false, message: 'error' })
-        let desc = `Error scanning document`
-        console.log(desc, e)
-        //state.saveMsg = ERROR
-        // commit('setSaveMsg', { msg: ERROR })
-        /* handleError(this, desc, params, e) */
-        //this.selectError = true
-      })//- axios
-    // }, SAVE_INTERVAL)
-  },//- scanDocument
-
+  setValue ({ commit, state }, { recordPath, path, value, type }) {
+    console.log(`ACTION FormserviceStore.setValue(${recordPath}, ${path}, ${value}, type)`);
+    commit('setValueMutation', { recordPath, path, value, type })
+  },
 
   /*
    *  Save a dataset
@@ -351,9 +366,11 @@ console.log(`Index is`, state.datasetIndex);
       return
     }
 
-    console.log(`Saving dataset ${datasetName}. Source=${dataset.source}. Data is `, dataset.data)
+    console.log(`Saving dataset ${datasetName}.`)
+    console.log(` Source=${dataset.source}`)
+    console.log(` Data is:`)
 
-
+    console.log(JSON.stringify(dataset.data, null, 2));
 
 
 
@@ -450,19 +467,39 @@ console.log(`ok 7`);
  ********************************************/
 export const mutations = {
 
-  // Calling this mutation will trigger redrawing of any components
-  // that monitor the value of 'refreshCounter'.
-  refreshMutation (state, { }) {
-    console.log('In Mutation refreshMutation()', state.refreshCounter)
-    state.refreshCounter++
+  // // Calling this mutation will trigger redrawing of any components
+  // // that monitor the value of 'refreshCounter'.
+  // refreshMutation (state, { }) {
+  //   console.log('In Mutation refreshMutation()', state.refreshCounter)
+  //   state.refreshCounter++
+  // },
+
+  setValueMutation (state, { recordPath, path, value, type }) {
+    console.log(`MUTATION setValueMutation(${recordPath}, ${path}, ${value}, type})`);
+    let attribute = path
+
+    // Let's find the record
+    let record = this.getters.getData(recordPath, false)
+    console.log(`record is `, record);
+
+    // Does the field already exist?
+    //findData (record, attribute, level)
+    let ovalue = record[attribute]
+    if (ovalue) {
+      console.log(`Attribute ${attribute} already exists:`, ovalue);
+    } else {
+      console.log(`New attribute ${attribute}`);
+    }
+
+    record[attribute] = value
+
+
   },
 
-
-  scanState(state, { currentlyScanning, message }) {
-    state.currentlyScanning = currentlyScanning
-    state.scanMessage = currentlyScanning ? message : ''
-  }
-
+  // scanState(state, { currentlyScanning, message }) {
+  //   state.currentlyScanning = currentlyScanning
+  //   state.scanMessage = currentlyScanning ? message : ''
+  // }
 
 }//- mutations
 

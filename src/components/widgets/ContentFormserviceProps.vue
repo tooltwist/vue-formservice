@@ -123,6 +123,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  // .tt-property-header-extra {
+  //   // color: #999 ;
+  //   font-weight: 200;
+  //   font-size: 10px;
+  // }
+
   .c-property-value {
     input.input {
       margin-top: 2px;

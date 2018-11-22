@@ -147,15 +147,12 @@ export default {
 
         // Display a nice message in design mode
         if (this.isDesignMode || this.isEditMode) {
-          let symbol = '!'
+          let str = (this.attribute) ? this.attribute : '?'
           if (placeholder) {
-            return `${symbol}${this.attribute} - ${placeholder}`
-          } else {
-            return `${symbol}${this.attribute}`
+            str += ` - ${placeholder}`
           }
+          return str
         }
-
-        // Live mode
         return placeholder
       },
       set (value) {
@@ -168,14 +165,13 @@ export default {
      */
     actualData: {
       get () {
-
         let recordPath = this.context.formservice.dataPath
-        // console.error(`actualDataZZ ajaja `, this.context.formservice.dataPath);
-        // console.error(`actualDataZZ ajaja `, this.context.formservice);
         let attribute = this.attribute
 
         if (attribute) {
-          let {data, error} = this.$formservice.getData(recordPath, attribute)
+          let path = `${recordPath}.${attribute}`
+          let defaultValue = '' //ZZZ This could come from a schema
+          let {data, error} = this.$formservice.getData(path, defaultValue)
 
           let value = data
           console.log(`value`, value);
@@ -186,7 +182,7 @@ export default {
             console.error(`FieldInput: ${error}`);
             return ''
           } else if (value) {
-            console.log(`value for field ${recordPath}.${attribute} is ${value}`);
+            console.log(`value for field ${path} is ${value}`);
             return value
           } else {
             return ''
@@ -198,13 +194,16 @@ export default {
         }
       },
       set (value) {
-        console.log(`datavalue.set(${this.element['fieldname']}, ${value}`);
-        // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
+        let recordPath = this.context.formservice.dataPath
+        let attribute = this.attribute
+
+        if (attribute) {
+          console.log(`datavalue.set(${attribute}, ${value}`);
+          this.$formservice.setValue(recordPath, attribute, value, String)
+          // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
+        }
       }
     },
-
-  },
-  methods: {
 
   },
   created: function () {
@@ -215,9 +214,6 @@ export default {
       this.sane = false
       return
     }
-
-    //ZZZZZ
-    // console.error(`FormInput.created(): this.context=`, this.context);
   }
 }
 </script>

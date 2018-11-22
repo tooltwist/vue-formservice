@@ -52,15 +52,21 @@ class Formservice {
     return endpoint
   }
 
+  getData (path, defaultValue) {
+    console.log(`FormserviceLib.getData(${path}, ${defaultValue})`);
+    // if (!path) {
+    //   return null
+    // }
+    return this.store.getters.getData(path, defaultValue)
+  }
 
-  getData (recordPath, path) {
-    console.log(`FormserviceLib.getData(${recordPath}, ${path})`);
+  setValue (recordPath, path, value, type) {
+    console.log(`FormserviceLib.setValue(${recordPath}, ${path}, '${value}', ${type})`);
     if (!path) {
       return null
     }
-    return this.store.getters.getData(recordPath, path)
+    return this.store.dispatch('setValue', { recordPath, path, value, type })
   }
-
 
   // Convenience function - ask the store to save a specific dataset
   // Same parameters as the store action
