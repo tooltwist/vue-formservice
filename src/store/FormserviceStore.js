@@ -9,37 +9,39 @@ export const state = () => {
 
     //
     datasetIndex : {
+      'test1' : {
+        name: 'test1',
+        source: 'testdata://test1',
+        data: { },
+        schema: { },
+        layout: { }
+      },
+
       /*
        *  Each parcel contains: name, schema, layout, and data
       */
-      'test1' : {
-        name: 'test1',
-        source: 'testdata://mytestdata',
-        data: [
-          {
-            firstname: 'Fred',
-            lastname: 'Bloggs'
-          },
-          {
-            firstname: 'Mary',
-            lastname: 'Jones',
-            //ZZZZZ
-            tTenantName: 'Madam Tenant',
-            tTenantAdd1: 'First House',
-            tTenantAdd2: 'Down the Road',
-            tTenantAdd3: 'And around the corner',
-            tTenantPCode: '1234',
-            x: 'x-value',
-          }
-        ],
+      'test2' : {
+        name: 'test2',
+        source: 'testdata://mytestdata-number-2',
+        data: {
+          firstname: 'Mary',
+          lastname: 'Jones',
+          //ZZZZZ
+          tTenantName: 'Madam Tenant',
+          tTenantAdd1: 'First House',
+          tTenantAdd2: 'Down the Road',
+          tTenantAdd3: 'And around the corner',
+          tTenantPCode: '1234',
+          x: 'x-value',
+        },
 
         schema: null,
 
         layout: null
       },
 
-      'test2' : {
-        name: 'test2',
+      'test3' : {
+        name: 'test3',
         source: 'testdata://mytestdata-set2',
         data: {
           firstname: 'William',
@@ -60,12 +62,12 @@ export const state = () => {
     },
 
     // Refresh for some components can be activated by incrementing this counter.
-    // refreshCounter: 1,
+    refreshCounter: 1,
 
     // Set to true while we are waiting for the server to scan a document
     // and generate derived documents.
-    currentlyScanning: false,
-    scanMessage: ''
+    // currentlyScanning: false,
+    // scanMessage: ''
 
   }
 }
@@ -469,13 +471,13 @@ export const mutations = {
 
   // // Calling this mutation will trigger redrawing of any components
   // // that monitor the value of 'refreshCounter'.
-  // refreshMutation (state, { }) {
-  //   console.log('In Mutation refreshMutation()', state.refreshCounter)
-  //   state.refreshCounter++
-  // },
+  refreshMutation (state, { }) {
+    console.log('In Mutation refreshMutation()', state.refreshCounter)
+    state.refreshCounter++
+  },
 
   setValueMutation (state, { recordPath, path, value, type }) {
-    console.log(`MUTATION setValueMutation(${recordPath}, ${path}, ${value}, type})`);
+    console.log(`MUTATION setValueMutation(${recordPath}, ${path}, ${value} (${typeof(value)}), type})`);
     let attribute = path
 
     // Let's find the record
@@ -485,15 +487,14 @@ export const mutations = {
     // Does the field already exist?
     //findData (record, attribute, level)
     let ovalue = record[attribute]
-    if (ovalue) {
-      console.log(`Attribute ${attribute} already exists:`, ovalue);
-    } else {
+    if (typeof(ovalue) === 'undefined') {
       console.log(`New attribute ${attribute}`);
+    } else {
+      console.log(`Attribute ${attribute} already exists: ${ovalue} (${typeof(ovalue)})`)
     }
-
     record[attribute] = value
-
-
+    console.log(`Now set to ${record[attribute]} (${typeof(record[attribute])})`);
+    state.refreshCounter++
   },
 
   // scanState(state, { currentlyScanning, message }) {

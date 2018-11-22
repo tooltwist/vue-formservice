@@ -6,19 +6,19 @@
       br
 
     // Debug mode
-    .my-design-mode(v-if="isDesignMode", @click.stop="selectThisElement2")
-      .c-layout-mode-heading
+    .my-design-mode(v-if="isDesignMode && false", @click.stop="selectThisElement2")
+      //.c-layout-mode-heading
         edit-bar-icons(:element="element")
         | label
-      .label(:style="style") {{label}}
+      .label(:style="myStyle", :class="myClass") {{label}}
 
     // Editing
-    .my-edit-mode(v-else-if="isEditMode", @click.stop="selectThisElement2")
-      .label(:style="style") {{label}}
+    .my-edit-mode(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement2")
+      .label(:style="myStyle", :class="myClass") {{label}}
 
     // Live mode
     template(v-else)
-      .my-live-mode.label(:style="style") {{label}}
+      .my-live-mode.label(:style="myStyle", :class="myClass") {{label}}
 </template>
 
 <script>
@@ -58,7 +58,54 @@ export default {
       // set (value) {
       //   this.$content.setProperty({ vm: this, element: this.element, name: 'style', value })
       // }
-    }
+    },
+
+    myClass: function () {
+      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
+        console.log(`inputClass()`, this.element);
+      }
+
+      var obj = { }
+      let classesForElement = this.element['class']
+      if (classesForElement) {
+        // console.log(`classesForElement=${classesForElement}`);
+        classesForElement.split(' ').forEach(clas => {
+          // console.log(`-- ${clas}`);
+          let classname = clas.trim()
+          if (classname) {
+            obj[classname] = true
+          }
+        })
+      } else {
+        obj['form-label-default'] = true
+      }
+      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
+        console.log(`element=`, this.element);
+        console.log(`obj=`, obj)
+      }
+      return obj
+    },
+
+    myStyle: function ( ) {
+      let style = this.element['style'] + ';'
+      // width
+      try {
+        let num = parseInt(this.element['width'])
+        if (num >= 20) {
+          style += `width:${num}px;`
+        }
+      } catch (e) { }
+
+      // height
+      try {
+        let num = parseInt(this.element['height'])
+        if (num >= 20) {
+          style += `height:${num}px;`
+        }
+      } catch (e) { }
+      // console.log(`inputStyle=`, style)
+      return style
+    },
 
   },
   methods: {
@@ -87,18 +134,10 @@ export default {
       }
     }
 
-  },
-  created: function () {
-
-    // Sanity check
-    if (!this.$content) {
-      console.error(`ContentFromservice.created(): this.$content not defined: has ContentService been initialised?`);
-      this.sane = false
-      return
-    }
   }
 }
 </script>
+
 
 <style lang="scss" scoped>
   @import '../../assets/css/content-variables.scss';
@@ -106,16 +145,16 @@ export default {
   $frame-color: lightblue;
   $text-color: darkblue;
 
-  .c-edit-mode-debug {
-    border-left: dashed 2px $frame-color;
-    border-bottom: dashed 2px $frame-color;
-    border-right: dashed 2px $frame-color;
-    margin: 1px;
-
-    .container {
-      width: 90% !important;
-    }
-  }
+  // .c-edit-mode-debug {
+  //   border-left: dashed 2px $frame-color;
+  //   border-bottom: dashed 2px $frame-color;
+  //   border-right: dashed 2px $frame-color;
+  //   margin: 1px;
+  //
+  //   .container {
+  //     width: 90% !important;
+  //   }
+  // }
 
   .c-layout-mode-heading {
     // This overrides the definition in content-editor.scss
@@ -123,61 +162,29 @@ export default {
     color: $text-color;
   }
 
-  .formservice-box {
-    position: relative;
-    overflow-x: visible;
-    overflow-y: visible;
-
-    border: solid 1px #ccc;
-    // text-align: center;
-    margin: 0 auto;
-    padding: 0px;
-
-    width: 400px;
-    height: 400px;
-    zbackground-color: yellow;
-  }
 
   .c-label {
     position: absolute;
     //background-color: pink;
   }
 
-  .c-field {
-    position: absolute;
-    background-color: pink;
-
-    input {
-      font-size: 11px;
-    }
+  .form-label-default {
+    //color: #000000;
+    color: #333;
+    font-family: Arial;
+    font-weight: normal;
+    font-size: 9px;
   }
 
-  .c-other {
-    position: absolute;
-    background-color: red;
-    color: pink;
+  .form-label-bold-default {
+    //color: #000000;
+    color: #333;
+    font-family: Arial;
+    font-weight: bold;
+    font-size: 9px;
   }
 
-  .happy {
-    //font-size: 25px;
-  }
-
-  .my-drag {
-    overflow-x: visible;
-    overflow-y: visible;
-    color: black;
-  }
-
-  .fixed-position {
-    position: absolute;
-    overflow-x: visible;
-    overflow-y: visible;
-    zwidth: 200px;
-    zheight: 200px;
-    background-color: blue;
-    zborder: solid 1px black;
-    color: black;
-  }
+//form-checkbox-bold-default
 
   .my-edit-mode {
     .my-label {

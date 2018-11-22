@@ -10,17 +10,17 @@
           .c-property-value
             input.input(v-model="attribute")
         .tt-property
-          .c-property-label Placeholder
+          .c-property-label Label
           .c-property-value
-            input.input(v-model="placeholder")
-        .tt-property
-          .c-property-label Class
-          .c-property-value
-            input.input(v-model="clas")
+            input.input(v-model="label")
         .tt-property
           .c-property-label Style
           .c-property-value
             input.input(v-model="style")
+        .tt-property
+          .c-property-label Class
+          .c-property-value
+            input.input(v-model="clas")
 </template>
 
 <script>
@@ -43,22 +43,13 @@ export default {
         this.$content.setProperty({ vm: this, element: this.element, name: 'attribute', value })
       }
     },
-    placeholder: {
+    label: {
       get () {
-        let value = this.element['placeholder']
+        let value = this.element['label']
         return value ? value : ''
       },
       set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
-      }
-    },
-    clas: {
-      get () {
-        let value = this.element['class']
-        return value ? value : ''
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'class', value })
+        this.$content.setProperty({ vm: this, element: this.element, name: 'label', value })
       }
     },
     style: {
@@ -68,6 +59,15 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'style', value })
+      }
+    },
+    clas: {
+      get () {
+        let value = this.element['class']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'class', value })
       }
     },
   },

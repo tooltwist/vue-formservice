@@ -17,6 +17,8 @@ import FormLabel from './widgets/FormLabel.vue'
 import FormLabelProps from './widgets/FormLabelProps.vue'
 import FormInput from './widgets/FormInput.vue'
 import FormInputProps from './widgets/FormInputProps.vue'
+import FormCheckbox from './widgets/FormCheckbox.vue'
+import FormCheckboxProps from './widgets/FormCheckboxProps.vue'
 import FormSubmit from './widgets/FormSubmit.vue'
 import FormSubmitProps from './widgets/FormSubmitProps.vue'
 
@@ -156,6 +158,32 @@ function install (Vue, options) {
       layout: {
         type: 'forminput',
         label: 'input',
+        children: [ ]
+      }
+    }
+  })
+
+  $content.registerWidget(Vue, {
+    name: 'formcheckbox',
+    label: 'Checkbox',
+    category: 'Forms',
+    iconClass: 'fa fa-vimeo',
+    iconClass5: 'fab fa-vimeo',
+    dragtype: 'component',
+
+    // Register native Vue templates
+    componentName: 'content-form-checkbox',
+    component: FormCheckbox,
+    propertyComponent: FormCheckboxProps,
+
+    // Identical structure to a CUT or COPY from edit mode.
+    data: {
+      type: "contentservice.io",
+      version: "1.0",
+      source: "toolbox",
+      layout: {
+        type: 'formcheckbox',
+        label: 'checkbox',
         children: [ ]
       }
     }

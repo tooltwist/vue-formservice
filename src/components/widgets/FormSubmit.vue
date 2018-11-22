@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .c-form-input(:class="editModeClass")
+  .c-form-submit(:class="editModeClass")
     span(v-if="extraDebug")
       | &lt;form-input&gt;
       br
@@ -122,89 +122,91 @@ export default {
 
   $bg-borderless: #ffff00;
   $border-color-borderless: #ccc;
-
-  .c-form-input {
-    .my-design-mode {
-      input.form-input-default {
-        border-color: $border-color-default;
-        zbackground-color: $bg-default;
-        background-color: red;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 9px;
-      }
-      input.form-input-borderless {
-        border-color: $border-color-borderless;
-        zborder: none;
-        box-shadow: none;
-        zbackground-color: $bg-borderless;
-        font-size: 9px;
-      }
-    }
-
-    .my-edit-mode {
-      input.form-input-default {
-        border-color: $border-color-default;
-        background-color: $bg-default;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 9px;
-      }
-      input.form-input-borderless {
-        //border-color: $border-color-borderless;
-        border: dashed 1px $border-color-borderless;
-        box-shadow: none;
-        background-color: $bg-borderless;
-        font-size: 9px;
-      }
-    }
-
-    // Live modes
-    input.my-live-mode.form-input-default {
-      border-color: $border-color-default;
-
-      font-family: Arial;
-      font-weight: bold;
-      font-size: 11px;
-      color: blue;
-      background-color: #ffffff;
-    }
-    input.my-live-mode.form-input-borderless {
-      border-color: #eee;
-      //border: none;
-      box-shadow: none;
-      font-family: Arial;
-      font-weight: bold;
-      font-size: 11px;
-      color: blue;
-      background-color: #ffffff;
-    }
-
-  }
+  //
+  // .c-form-input {
+  //   .my-design-mode {
+  //     input.form-input-default {
+  //       border-color: $border-color-default;
+  //       zbackground-color: $bg-default;
+  //       background-color: red;
+  //       font-family: Arial;
+  //       font-weight: bold;
+  //       font-size: 9px;
+  //     }
+  //     input.form-input-borderless {
+  //       border-color: $border-color-borderless;
+  //       zborder: none;
+  //       box-shadow: none;
+  //       zbackground-color: $bg-borderless;
+  //       font-size: 9px;
+  //     }
+  //   }
+  //
+  //   .my-edit-mode {
+  //     input.form-input-default {
+  //       border-color: $border-color-default;
+  //       background-color: $bg-default;
+  //       font-family: Arial;
+  //       font-weight: bold;
+  //       font-size: 9px;
+  //     }
+  //     input.form-input-borderless {
+  //       //border-color: $border-color-borderless;
+  //       border: dashed 1px $border-color-borderless;
+  //       box-shadow: none;
+  //       background-color: $bg-borderless;
+  //       font-size: 9px;
+  //     }
+  //   }
+  //
+  //   // Live modes
+  //   input.my-live-mode.form-input-default {
+  //     border-color: $border-color-default;
+  //
+  //     font-family: Arial;
+  //     font-weight: bold;
+  //     font-size: 11px;
+  //     color: blue;
+  //     background-color: #ffffff;
+  //   }
+  //   input.my-live-mode.form-input-borderless {
+  //     border-color: #eee;
+  //     //border: none;
+  //     box-shadow: none;
+  //     font-family: Arial;
+  //     font-weight: bold;
+  //     font-size: 11px;
+  //     color: blue;
+  //     background-color: #ffffff;
+  //   }
+  //
+  // }
 </style>
 
 
-<style lang="scss" scoped>
+<style lang="scss">
   @import '../../assets/css/content-variables.scss';
 
   $frame-color: pink;
   $text-color: #700;
 
-  .c-edit-mode-debug {
-    border-left: dashed 2px $frame-color;
-    border-bottom: dashed 2px $frame-color;
-    border-right: dashed 2px $frame-color;
-    margin: 1px;
+  .c-form-submit {
+    .c-edit-mode-debug {
+      border-left: dashed 2px $frame-color;
+      border-bottom: dashed 2px $frame-color;
+      border-right: dashed 2px $frame-color;
+      margin: 1px;
 
-    .container {
-      width: 90% !important;
+      .container {
+        width: 90% !important;
+      }
     }
-  }
 
-  .c-layout-mode-heading {
-    // This overrides the definition in content-editor.scss
-    background-color: $frame-color;
-    color: $text-color;
+    .c-layout-mode-heading {
+      // This overrides the definition in content-editor.scss
+      background-color: $frame-color;
+      color: $text-color;
+    }
   }
 
 </style>

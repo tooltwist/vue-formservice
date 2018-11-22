@@ -15,14 +15,14 @@
         br
 
       // Design mode
-      .my-design-mode(v-if="isDesignMode", @click.stop="selectThisElement")
+      .my-design-mode(v-if="isDesignMode && false", @click.stop="selectThisElement")
         .c-layout-mode-heading
           edit-bar-icons(:element="element")
           | input
         input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder", v-model="actualData")
 
       // Editing
-      .my-edit-mode(v-else-if="isEditMode", @click.stop="selectThisElement")
+      .my-edit-mode(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
         input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder")
 
       // Live mode
@@ -68,27 +68,6 @@ export default {
       return false
     },
 
-    inputStyle: function ( ) {
-      let style = this.element['style'] + ';'
-      // width
-      try {
-        let num = parseInt(this.element['width'])
-        if (num >= 20) {
-          style += `width:${num}px;`
-        }
-      } catch (e) { }
-
-      // height
-      try {
-        let num = parseInt(this.element['height'])
-        if (num >= 20) {
-          style += `height:${num}px;`
-        }
-      } catch (e) { }
-      // console.log(`inputStyle=`, style)
-      return style
-    },
-
     inputClass: function () {
       if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
         console.log(`inputClass()`, this.element);
@@ -113,6 +92,27 @@ export default {
         console.log(`obj=`, obj)
       }
       return obj
+    },
+
+    inputStyle: function ( ) {
+      let style = this.element['style'] + ';'
+      // width
+      try {
+        let num = parseInt(this.element['width'])
+        if (num >= 20) {
+          style += `width:${num}px;`
+        }
+      } catch (e) { }
+
+      // height
+      try {
+        let num = parseInt(this.element['height'])
+        if (num >= 20) {
+          style += `height:${num}px;`
+        }
+      } catch (e) { }
+      // console.log(`inputStyle=`, style)
+      return style
     },
 
     // inputStyle: function (field) {
@@ -203,16 +203,6 @@ export default {
           // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
         }
       }
-    },
-
-  },
-  created: function () {
-
-    // Sanity check
-    if (!this.$content) {
-      console.error(`ContentFromservice.created(): this.$content not defined: has ContentService been initialised?`);
-      this.sane = false
-      return
     }
   }
 }
@@ -293,39 +283,40 @@ export default {
   $frame-color: pink;
   $text-color: #700;
 
-  .c-edit-mode-debug {
-    border-left: dashed 2px $frame-color;
-    border-bottom: dashed 2px $frame-color;
-    border-right: dashed 2px $frame-color;
-    margin: 1px;
+  .c-form-input {
+    .c-edit-mode-debug {
+      border: solid 1px $frame-color;
+      //border-bottom: dashed 2px $frame-color;
+      //border-right: dashed 2px $frame-color;
+      margin: 1px;
 
-    .container {
-      width: 90% !important;
+      .container {
+        width: 90% !important;
+      }
     }
+
+    .c-layout-mode-heading {
+      // This overrides the definition in content-editor.scss
+      background-color: $frame-color;
+      color: $text-color;
+    }
+
+    // .my-edit-mode {
+    //   input {
+    //     font-size: 10px;
+    //   }
+    // }
+    //
+    // .my-design-mode {
+    //   input {
+    //     font-size: 10px;
+    //   }
+    // }
+    //
+    // .my-live-mode {
+    //   input {
+    //     font-size: 10px;
+    //   }
+    // }
   }
-
-  .c-layout-mode-heading {
-    // This overrides the definition in content-editor.scss
-    background-color: $frame-color;
-    color: $text-color;
-  }
-
-  // .my-edit-mode {
-  //   input {
-  //     font-size: 10px;
-  //   }
-  // }
-  //
-  // .my-design-mode {
-  //   input {
-  //     font-size: 10px;
-  //   }
-  // }
-  //
-  // .my-live-mode {
-  //   input {
-  //     font-size: 10px;
-  //   }
-  // }
-
 </style>

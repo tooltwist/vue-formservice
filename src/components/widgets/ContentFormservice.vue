@@ -396,95 +396,96 @@ export default {
   $frame-color: lightgreen;
   $text-color: darkgreen;
 
-  .c-edit-mode-debug {
-    border-left: dashed 2px $frame-color;
-    border-bottom: dashed 2px $frame-color;
-    border-right: dashed 2px $frame-color;
-    margin: 1px;
+  .c-content-form {
+    // & > .c-edit-mode-debug {
+    //   border-left: dashed 2px $frame-color;
+    //   border-bottom: dashed 2px $frame-color;
+    //   border-right: dashed 2px $frame-color;
+    //   margin: 1px;
+    //
+    //   .container {
+    //     width: 90% !important;
+    //   }
+    // }
 
-    .container {
-      width: 90% !important;
+    .c-layout-mode-heading {
+      // This overrides the definition in content-editor.scss
+      background-color: $frame-color;
+      color: $text-color;
+    }
+
+    .formservice-box {
+      position: relative;
+      overflow-x: visible;
+      overflow-y: visible;
+
+      zborder: solid 1px #ccc;
+      // text-align: center;
+      margin: 0 auto;
+      padding: 0px;
+
+      width: 1500px;
+      height: 1000px;
+      zbackground-color: yellow;
+    }
+
+    .c-label {
+      position: absolute;
+      //background-color: pink;
+    }
+
+    .c-field {
+      position: absolute;
+      background-color: pink;
+
+      input {
+        font-size: 11px;
+      }
+    }
+
+    .c-other {
+      position: absolute;
+      background-color: red;
+      color: pink;
+    }
+
+    .happy {
+      //font-size: 25px;
+    }
+
+    .my-drag {
+      overflow-x: visible;
+      overflow-y: visible;
+      color: black;
+    }
+
+    .fixed-position {
+      position: absolute;
+      overflow-x: visible;
+      overflow-y: visible;
+      zwidth: 200px;
+      zheight: 200px;
+      zbackground-color: blue;
+      zborder: solid 1px black;
+      zcolor: black;
+    }
+
+    .my-edit-mode {
+      //min-width: 400px;
+      background-color: #f9f9f9;
+
+      .my-component {
+        //min-width: 300px;
+      }
+    }
+
+    .my-design-mode {
+      //min-width: 400px;
+
+      .my-component {
+        min-width: 120px;
+        background-color: white;
+      }
     }
   }
-
-  .c-layout-mode-heading {
-    // This overrides the definition in content-editor.scss
-    background-color: $frame-color;
-    color: $text-color;
-  }
-
-  .formservice-box {
-    position: relative;
-    overflow-x: visible;
-    overflow-y: visible;
-
-    zborder: solid 1px #ccc;
-    // text-align: center;
-    margin: 0 auto;
-    padding: 0px;
-
-    width: 1500px;
-    height: 1000px;
-    zbackground-color: yellow;
-  }
-
-  .c-label {
-    position: absolute;
-    //background-color: pink;
-  }
-
-  .c-field {
-    position: absolute;
-    background-color: pink;
-
-    input {
-      font-size: 11px;
-    }
-  }
-
-  .c-other {
-    position: absolute;
-    background-color: red;
-    color: pink;
-  }
-
-  .happy {
-    //font-size: 25px;
-  }
-
-  .my-drag {
-    overflow-x: visible;
-    overflow-y: visible;
-    color: black;
-  }
-
-  .fixed-position {
-    position: absolute;
-    overflow-x: visible;
-    overflow-y: visible;
-    zwidth: 200px;
-    zheight: 200px;
-    zbackground-color: blue;
-    zborder: solid 1px black;
-    zcolor: black;
-  }
-
-  .my-edit-mode {
-    //min-width: 400px;
-    background-color: #f9f9f9;
-
-    .my-component {
-      //min-width: 300px;
-    }
-  }
-
-  .my-design-mode {
-    //min-width: 400px;
-
-    .my-component {
-      min-width: 120px;
-      background-color: white;
-    }
-  }
-
 </style>
