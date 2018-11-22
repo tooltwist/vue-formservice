@@ -7,12 +7,26 @@
 
 let fs = require('fs')
 let readline = require('readline')
-const filename = 'AUQLDREPMT12v6.8.2.txt'
+// const filename = 'AUQLDREPMT12v6.8.2.txt'
 
 // VB6 uses "twips" for screen positions, widths and heights.
 // A twip is device-dependant, at 1440 twips per inch.
 // However a website uses pixels, so we conversion for a typical screen.
 const TWIPS_PER_PIXEL = 15
+
+// Get the filename
+// console.log(`args=`, process.argv)
+// process.exit(1)
+if (process.argv.length != 3) {
+  console.error();
+  console.error(`usage: ${process.argv[0]} filename`);
+  console.error();
+  process.exit(1)
+}
+let filename = process.argv[2]
+// console.log(`Loading ${filename}`);
+// process.exit(1)
+
 
 let form = {
   filename: filename,
@@ -27,7 +41,8 @@ let elementType = null
 let nextId = 10000000000
 
 // Parse the file, line by line
-let input = fs.createReadStream(`Forms/${filename}`)
+//let input = fs.createReadStream(`Forms/${filename}`)
+let input = fs.createReadStream(filename)
 let rl = require('readline').createInterface({ input })
 let lineNo = 0
 
@@ -711,6 +726,11 @@ function convertSection (section) {
       case 'text':
         child = convertText(element)
         break
+      case 'checkbox':
+        child = convertCheckbox(element)
+        break
+      default:
+        console.log(`do not know how to convert ${element.type}`);
     }
 
     // Add the new child (if any) to the section
@@ -811,41 +831,77 @@ function convertFrame (element) {
 }
 
 function convertLabel (element) {
+  // console.log(`--------------------------------------------`);
   // console.log(`  label ${element.label}`);
   let x = Math.floor(parseInt(element.x) / TWIPS_PER_PIXEL)
   let y = Math.floor(parseInt(element.y) / TWIPS_PER_PIXEL)
 
+  // console.log(`${element.backColor}|${element.fontName}|${element.fontBold}|${element.fontItalic}|${element.fontSize}|${element.fontStrikethru}|${element.fontUnderline}|${element.foreColor}`)
+  // #ffffff|Arial|True|False|9|False|False|#000000
+  // #ffffff|Arial|False|False|9|False|False|#000000   - default bold
+
+
   let style = ''
-  if (element.backColor) {
-    style += `background-color:${element.backColor}; `
+  let clas = ''
+
+  if (
+    element.fontName === 'Arial'
+    &&
+    element.fontItalic === 'False'
+    &&
+    // element.fontSize === '9'
+    // &&
+    element.fontStrikethru === 'False'
+    &&
+    element.fontUnderline === 'False'
+  ) {
+    // Has default styles. We only need to worry about border or not
+    // console.log(`default label styles`);
+    clas += (element.fontBold === 'True') ? 'form-label-bold-default' : 'form-label-default'
+    if (element.fontSize !== '9') {
+      style += `font-size:${parseInt(element.fontSize)}px; `
+    }
+  } else {
+    // console.log(`#ffffff|Arial|True|False|9|False|False|#000000 - default`)
+    // console.log(`#ffffff|Arial|False|False|9|False|False|#000000  - bold`)
+    // console.log(`${element.backColor}|${element.fontName}|${element.fontBold}|${element.fontItalic}|${element.fontSize}|${element.fontStrikethru}|${element.fontUnderline}|${element.foreColor}`)
+
+    if (element.fontName) {
+      style += `font-family:${element.fontName}; `
+    }
+    if (element.fontBold === 'True') {
+      style += 'font-weight:bold; '
+    }
+    if (element.fontItalic === 'True') {
+      style += 'font-style:italic; '
+    }
+    if (element.fontSize) {
+      style += `font-size:${parseInt(element.fontSize)}px; `
+    }
+    if (element.fontStrikethru === 'True') {
+      style += 'text-decoration:line-through; '
+    }
+    if (element.fontUnderline === 'True') {
+      style += 'text-decoration:underline; '
+    }
   }
-  if (element.fontName) {
-    style += `font-family:${element.fontName}; `
-  }
-  if (element.fontBold === 'True') {
-    style += 'font-weight:bold; '
-  }
-  if (element.fontItalic === 'True') {
-    style += 'font-style:italic; '
-  }
-  if (element.fontSize) {
-    style += `font-size:${parseInt(element.fontSize)}px; `
-  }
-  if (element.fontStrikethru === 'True') {
-    style += 'text-decoration:line-through; '
-  }
-  if (element.fontUnderline === 'True') {
-    style += 'text-decoration:underline; '
-  }
-  if (element.foreColor === 'True') {
+
+  // Colors, if not default
+  if (element.foreColor !== '#000000') {
     style += `color:${element.foreColor}; `
   }
+  if (element.backColor !== '#ffffff') {
+    style += `background-color:${element.backColor}; `
+  }
+
+  // console.log(`clas=${clas}, style=${style}.`);
 
   return {
     "type": "formlabel",
     "label": `${element.label}`,
     "id": nextId++,
-    style: `${style}`,
+    style: style,
+    class: clas,
     "_fixed": true,
     "_fixed_x": x,
     "_fixed_y": y,
@@ -854,7 +910,7 @@ function convertLabel (element) {
 }
 
 function convertText (element) {
-  console.log(`  convertText`, element);
+  // console.log(`  convertText`, element);
   let x = Math.floor(parseInt(element.x) / TWIPS_PER_PIXEL)
   let y = Math.floor(parseInt(element.y) / TWIPS_PER_PIXEL)
   let w = Math.floor(parseInt(element.width) / TWIPS_PER_PIXEL)
@@ -874,15 +930,15 @@ function convertText (element) {
   */
   let style = ''
   let clas = ''
-  if (element.backColor && element.backColor !== '#ffffff') {
-    style += `background-color:${element.backColor}; `
-  }
+  // if (element.backColor && element.backColor !== '#ffffff') {
+  //   style += `background-color:${element.backColor}; `
+  // }
 
   // Do we need a border?
   let hasBorder = !(typeof(element.borderStyle) === 'number' && element.borderStyle < 1)
 
   // See if this is the default styles
-  console.log(`${element.fontName}|${element.fontBold}|${element.fontItalic}|${element.fontSize}|${element.foreColor}|${element.backColor}|`);
+  // console.log(`${element.fontName}|${element.fontBold}|${element.fontItalic}|${element.fontSize}|${element.foreColor}|${element.backColor}|`);
   if (
     element.fontName === 'Arial'
     &&
@@ -910,20 +966,58 @@ function convertText (element) {
   }
 
   // Colors, if not default
-  if (element.foreColor !== '#000000') {
+  if (element.foreColor && element.foreColor !== '#000000') {
     style += `color:${element.foreColor}; `
   }
-  if (element.backColor !== '#ffffff') {
+  if (element.backColor && element.backColor !== '#ffffff') {
     style += `background-color:${element.backColor}; `
   }
 
   return {
     "type": "forminput",
     "label": `${element.label}`,
-    "field": `${element.name}`,
+    "attribute": `${element.name}`,
     "id": nextId++,
     style: style,
     class: clas,
+    width: w,
+    height: h,
+    "_fixed": true,
+    "_fixed_x": x,
+    "_fixed_y": y,
+    "placeholder": '',
+    "children": []
+  }
+}
+
+function convertCheckbox (element) {
+  // console.log(`  convertCheckbox`, element);
+  // console.log(`  convertCheckbox()`)
+  let x = Math.floor(parseInt(element.x) / TWIPS_PER_PIXEL)
+  let y = Math.floor(parseInt(element.y) / TWIPS_PER_PIXEL)
+  let w = Math.floor(parseInt(element.width) / TWIPS_PER_PIXEL)
+  let h = Math.floor(parseInt(element.height) / TWIPS_PER_PIXEL)
+
+  /*
+  { type: 'checkbox',
+    name: 'oInspectNotMove',
+    container: '3',
+    height: '300',
+    x: '25',
+    tabIndex: '21',
+    y: '0',
+    width: '300',
+    groupName: 'Entry Reason',
+    groupNumber: '1',
+    label: 'Routine Inspection' }
+  */
+  return {
+    "type": "formcheckbox",
+    "label": "",
+    "tooltip": `${element.label}`,
+    "attribute": `${element.name}`,
+    "tabIndex": `${element.tabIndex}`,
+    "id": nextId++,
     width: w,
     height: h,
     "_fixed": true,
