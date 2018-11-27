@@ -70,8 +70,8 @@ class Formservice {
 
   // Convenience function - ask the store to save a specific dataset
   // Same parameters as the store action
-  saveDataset(path) {
-    this.store.dispatch('saveDatasetAction', { vm: this, path })
+  saveDataset({ path, url }) {
+    this.store.dispatch('saveDatasetAction', { vm: this, path, url })
   }
 
 

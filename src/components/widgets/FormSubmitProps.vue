@@ -9,6 +9,11 @@
           .c-property-label Label
           .c-property-value
             input.input(v-model="label")
+        // URL is a temporary Hack
+        .tt-property
+          .c-property-label URL
+          .c-property-value
+            input.input(v-model="url")
         .tt-property
           .c-property-label Style
           .c-property-value
@@ -37,6 +42,15 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'label', value })
+      }
+    },
+    url: {
+      get () {
+        let value = this.element['url']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'url', value })
       }
     },
     style: {

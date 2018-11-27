@@ -105,7 +105,8 @@ export default {
     onClick: function ( ) {
       console.log(`onClick (context, dataset=${this.context.formservice.dataset})`, this.context)
 
-      this.$formservice.saveDataset(this.context.formservice.dataPath)
+      let url = this.element['url']
+      this.$formservice.saveDataset({ path: this.context.formservice.dataPath, url })
       //ZZZZ This should be a promise
       //.then(...)
       //.error(...)

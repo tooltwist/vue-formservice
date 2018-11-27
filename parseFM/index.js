@@ -109,6 +109,10 @@ function parseSection (line) {
   }
   else if (line.startsWith('HeaderFooterAllowed')) {
   }
+  else if (line.startsWith('Footer')) {
+  }
+  else if (line.startsWith('Grid')) {
+  }
 
   // Handle element types
   else if (line.startsWith('Frame')) {

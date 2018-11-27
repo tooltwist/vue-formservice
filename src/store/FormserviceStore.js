@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import axios from 'axios'
+import axiosError from '../lib/axiosError.js'
 
 import { parseDataPath } from '../lib/navigation.js'
 
@@ -337,8 +339,8 @@ export const actions = {
   /*
    *  Save a dataset
    */
-  saveDatasetAction ({ commit, state }, { vm, path }) {
-    console.log(`ACTION FormserviceStore.saveDatasetAction(${path})`)
+  saveDatasetAction ({ commit, state }, { vm, path, url }) {
+    console.log(`ACTION FormserviceStore.saveDatasetAction(${path}, ${url})`)
 
     // We might have been passed a path - that's okay - strip off any prefix
     while (path.startsWith('!')) {
@@ -360,6 +362,8 @@ export const actions = {
       return
     }
 
+    // let
+
     // Find the dataset
     let dataset = state.datasetIndex[datasetName]
     if (!dataset) {
@@ -371,12 +375,32 @@ console.log(`Index is`, state.datasetIndex);
     console.log(`Saving dataset ${datasetName}.`)
     console.log(` Source=${dataset.source}`)
     console.log(` Data is:`)
+    let json = JSON.stringify(dataset.data, null, 2)
+    console.log(json);
 
-    console.log(JSON.stringify(dataset.data, null, 2));
-
-
-
-
+    if (url) {
+      console.log(`Will save to ${url}`);
+      axios({
+        method: 'post',
+        url,
+        headers: {
+          // 'Authorization': 'Bearer ' + this.$contentservice.jwt,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        data: json
+      })
+        .then(response => {
+          // JSON responses are automatically parsed.
+          console.log(`RESPONSE IS`, response.data)
+          // let reply = response.data
+          // return resolve('ok');
+        })
+        .catch(e => {
+          axiosError(vm, url, element, e)
+          reject(e)
+        })
+    }
 
 
 
