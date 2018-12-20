@@ -19,3 +19,50 @@ $c-property-value-color: #88a;
 $c-embed-margin-top: 20px;
 $c-embed-margin-bottom: 20px;
 $c-embed-border-color: #d0d0d0;
+
+// Borders around widgets in design mode
+$f-widget-top-left-color: #ccc;
+$f-widget-bottom-right-color: #999;
+
+
+.formservice-toolbox-button {
+  width: 32px;
+  height: 32px;
+  background-image: url('../../assets/images/toolbox/button.png');
+}
+
+.formservice-toolbox-form {
+  width: 32px;
+  height: 32px;
+  background-image: url('../../assets/images/toolbox/form.png');
+}
+
+.formservice-toolbox-label {
+  width: 32px;
+  height: 32px;
+  background-image: url('../../assets/images/toolbox/label.png');
+}
+
+.formservice-toolbox-numberedList {
+  width: 32px;
+  height: 32px;
+  background-image: url('../../assets/images/toolbox/numberedList.png');
+}
+
+.formservice-toolbox-select {
+  width: 32px;
+  height: 32px;
+  background-image: url('../../assets/images/toolbox/select.png');
+}
+
+.formservice-toolbox-text {
+  width: 32px;
+  height: 32px;
+  background-image: url('../../assets/images/toolbox/text.png');
+}
+
+.formservice-toolbox-textarea {
+  width: 32px;
+  height: 32px;
+  background-image: url('../../assets/images/toolbox/textarea.png');
+}

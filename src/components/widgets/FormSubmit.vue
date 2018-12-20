@@ -1,20 +1,16 @@
 <template lang="pug">
 
   .c-form-submit(:class="editModeClass")
-    span(v-if="extraDebug")
-      | &lt;form-input&gt;
-      br
-
     // Design mode
-    .my-design-mode(v-if="isDesignMode", @click.stop="selectThisElement")
+    div(v-if="isDesignMode", @click.stop="selectThisElement")
       .c-layout-mode-heading
         edit-bar-icons(:element="element")
-        | input
+        | submit
       button.button(readonly, :style="inputStyle", :class="inputClass")
         | {{label}}
 
     // Editing
-    .my-edit-mode(v-else-if="isEditMode", @click.stop="selectThisElement")
+    div(v-else-if="isEditMode", @click.stop="selectThisElement")
       button.button(readonly, :style="inputStyle", :class="inputClass")
         | {{label}}
 
@@ -192,11 +188,17 @@ export default {
   $text-color: #700;
 
   .c-form-submit {
-    .c-edit-mode-debug {
-      border-left: dashed 2px $frame-color;
-      border-bottom: dashed 2px $frame-color;
-      border-right: dashed 2px $frame-color;
+    &.c-edit-mode-debug {
+      // border-left: dashed 2px $frame-color;
+      // border-bottom: dashed 2px $frame-color;
+      // border-right: dashed 2px $frame-color;
+      border-top: solid 1px #ccc;
+      border-left: solid 1px #ccc;
+      background-color: $frame-color;
+      border-bottom: solid 1px #999;
+      border-right: solid 1px #999;
       margin: 1px;
+      padding: 3px;
 
       .container {
         width: 90% !important;
@@ -205,6 +207,7 @@ export default {
 
     .c-layout-mode-heading {
       // This overrides the definition in content-editor.scss
+      // border-left: solid 1px #ffc0c0;
       background-color: $frame-color;
       color: $text-color;
     }

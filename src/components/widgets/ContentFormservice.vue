@@ -41,11 +41,23 @@ import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
 export default {
   name: 'content-formservice',
   props: {
+
+    // This element describes the layouts
+    // (not the record being edited)
     element: {
       type: Object,
       required: true
     },
 
+    // The context provides a means for a container to pass information down to
+    // the elements it's contains, to provide elements context within the
+    // hierarchy of elements. Why?
+    // During editing there can only be one currently-being-edited layout,
+    // and the store provides context about the single element being editing.
+    // During normal rendering there may be multiple layouts on a page, but
+    // the store only saves a single state, so the store cannot be used.
+    // In cases where a container and it's children need to know a bit about
+    // each other, this context can contain that non-editing-related context.
     context: {
       type: Object,
       required: false
@@ -73,9 +85,12 @@ export default {
         style: 'chicken-style'
       }
     }
-  },
+  },// - data
+
   computed: {
 
+    //  Our form will need it's own context object cloned
+    //  from the context we received, but with extra information.
     newContext: {
       get () {
         // console.error(`******* newContext(): old=`, this.context);
@@ -164,8 +179,8 @@ export default {
       // console.log(`boxStyle=`, style)
       return style
     },
+  },//- computed
 
-  },
   methods: {
 
     cloneContextZZZ (context) {
@@ -374,7 +389,8 @@ export default {
       this.$content.deleteElement({ vm: this, element: element })
     }
 
-  },
+  },//- methods
+
   created: function () {
 
     // Sanity check

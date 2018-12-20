@@ -1,7 +1,7 @@
 <template lang="pug">
   .c-property-element(:class="propertyClass")
     .tt-property-header(@click="setExpandedElement")
-      | Form
+      | Fixed Position Form
       span.tt-property-header-extra {{header}}
 
     transition(name="c-property-list-transition")
@@ -55,15 +55,6 @@ export default {
     // We cannot update the element directly - it is stored
     // in this.$store and must be updated with a 'commit'.
     // See https://vuex.vuejs.org/en/forms.html
-    dataset: {
-      get () {
-        let value = this.element['dataset']
-        return value ? value : ''
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'dataset', value })
-      }
-    },
     name: {
       get () {
         let value = this.element['name']
@@ -71,6 +62,15 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'name', value })
+      }
+    },
+    dataset: {
+      get () {
+        let value = this.element['dataset']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'dataset', value })
       }
     },
     view: {

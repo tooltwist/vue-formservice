@@ -27,7 +27,7 @@
 import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
 
 export default {
-  name: 'content-formservice-props',
+  name: 'form-checkbox-props',
   mixins: [ PropertyMixins ],
   computed: {
 

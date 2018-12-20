@@ -30,7 +30,7 @@
         //label(:for="`c-formservice-checkbox-${element.id}`", :style="inputStyle", :class="inputClass") &nbsp;{{ label }}
         label.checkbox(disabled, :style="inputStyle", :class="inputClass")
           input(disabled type="checkbox", :style="inputStyle", :class="inputClass")
-          | {{ label }} and stuff
+          | {{ label }}
 
       // Live mode
       template(v-else)
@@ -145,7 +145,7 @@ export default {
      */
     checked: {
       get () {
-        console.error(`CHECKBOX getting value`);
+        // console.error(`CHECKBOX getting value`);
         let recordPath = this.context.formservice.dataPath
         let attribute = this.attribute
 
@@ -155,9 +155,9 @@ export default {
           let {data, error} = this.$formservice.getData(path, defaultValue)
 
           let value = data
-          console.log(`value`, value);
-          console.log(`type=`, typeof(value));
-          console.log(`error`, error);
+          // console.log(`value`, value);
+          // console.log(`type=`, typeof(value));
+          // console.log(`error`, error);
 
 
           if (error) {

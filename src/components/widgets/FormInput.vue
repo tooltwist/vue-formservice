@@ -4,30 +4,43 @@
 
     // Sanity checks
     .sanity-error(v-if="!sane_$content")
-      | Missing this.$content
+      | Contentservice has not been installed/initialized.
+      br
+      | (missing this.$content)
     .sanity-error(v-else-if="!sane_context_formservice")
-      | Missing this.context.formservice
+      | Please place this field inside a form.
+      br
+      | (missing this.context.formservice)
     template(v-else)
 
       // Normal operation below here
-      span(v-if="extraDebug")
-        | &lt;form-input&gt;
-        br
+      //span(v-if="extraDebug")
+      //  | &lt;form-input&gt;
+      //  br
 
       // Design mode
-      .my-design-mode(v-if="isDesignMode && false", @click.stop="selectThisElement")
-        .c-layout-mode-heading
-          edit-bar-icons(:element="element")
-          | input
-        input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder", v-model="actualData")
+      div(v-if="isDesignMode", @click.stop="selectThisElement")
+        .field-body.has-text-left
+          .field
+            label.label(v-show="label") {{label}}
+            .control
+              input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder")
 
       // Editing
-      .my-edit-mode(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
-        input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder")
+      div(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
+        .field-body.has-text-left
+          .field
+            label.label(v-show="label") {{label}}
+            .control
+              input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder")
 
       // Live mode
       template(v-else)
-        input.input.my-live-mode(:style="inputStyle", :class="inputClass", :placeholder="placeholder", v-model="actualData")
+        .field-body.has-text-left
+          .field
+            label.label(v-show="label") {{label}}
+            .control
+              input.input(:style="inputStyle", :class="inputClass", :placeholder="placeholder", v-model="actualData")
 </template>
 
 <script>
@@ -137,6 +150,13 @@ export default {
       }
     },
 
+    label: {
+      get () {
+        let label = this.element['label'] ? this.element['label'] : ''
+        return label
+      }
+    },
+
     placeholder: {
       get () {
         // Temporary - display a symbol if data is not found
@@ -147,7 +167,7 @@ export default {
 
         // Display a nice message in design mode
         if (this.isDesignMode || this.isEditMode) {
-          let str = (this.attribute) ? this.attribute : '?'
+          let str = (this.attribute) ? `[${this.attribute}]` : '?'
           if (placeholder) {
             str += ` - ${placeholder}`
           }
@@ -174,8 +194,8 @@ export default {
           let {data, error} = this.$formservice.getData(path, defaultValue)
 
           let value = data
-          console.log(`value`, value);
-          console.log(`error`, error);
+          // console.log(`value`, value);
+          // console.log(`error`, error);
 
 
           if (error) {
@@ -194,16 +214,19 @@ export default {
         }
       },
       set (value) {
-        let recordPath = this.context.formservice.dataPath
-        let attribute = this.attribute
+        if (this.isLive) {
+          let recordPath = this.context.formservice.dataPath
+          console.error(`WARP FormInput.actualData.set: recordPath=${recordPath}`);
+          let attribute = this.attribute
 
-        if (attribute) {
-          console.log(`datavalue.set(${attribute}, ${value}`);
-          this.$formservice.setValue(recordPath, attribute, value, String)
-          // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
+          if (attribute) {
+            console.log(`FormInput: datavalue.set(${attribute}, ${value}`);
+            this.$formservice.setValue(recordPath, attribute, value, String)
+            // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
+          }
         }
       }
-    }
+    }//- actualData
   }
 }
 </script>
@@ -216,12 +239,48 @@ export default {
   $bg-borderless: #ffff00;
   $border-color-borderless: #ccc;
 
+  $frame-color: goldenrod;
+  $text-color: #700;
+
+
   .c-form-input {
-    .my-design-mode {
+
+    // Used if not in a valid form
+    .sanity-error {
+      color: red;
+      font-family: courier;
+      font-size: 11px;
+    }
+
+    // Design mode
+    &.c-edit-mode-debug {
+      // border-top: dashed 2px $frame-color;
+      // border-left: dashed 2px $frame-color;
+      // border-bottom: dashed 2px $frame-color;
+      // border-right: dashed 2px $frame-color;
+
+      // border-top: solid 1px yellow;
+      // border-left: solid 1px yellow;
+      // background-color: goldenrod;
+      // border-bottom: solid 1px brown;
+      // border-right: solid 1px brown;
+      border-top: solid 1px #ccc;
+      border-left: solid 2px #ccc;
+      background-color: $frame-color;
+      border-bottom: solid 1px #999;
+      border-right: solid 1px #999;
+      padding-left: 2px;
+      padding-right: 2px;
+      margin: 1px;
+
+      .container {
+        width: 90% !important;
+      }
+
       input.form-input-default {
         border-color: $border-color-default;
-        zbackground-color: $bg-default;
-        background-color: red;
+        background-color: $bg-default;
+        //background-color: red;
         font-family: Arial;
         font-weight: bold;
         font-size: 9px;
@@ -235,7 +294,9 @@ export default {
       }
     }
 
-    .my-edit-mode {
+    // Edit mode
+    &.c-edit-mode-edit {
+    //.my-edit-mode {
       input.form-input-default {
         border-color: $border-color-default;
         background-color: $bg-default;
@@ -253,70 +314,26 @@ export default {
     }
 
     // Live modes
-    input.my-live-mode.form-input-default {
-      border-color: $border-color-default;
+    &.c-edit-mode-view {
+      input.my-live-mode.form-input-default {
+        border-color: $border-color-default;
 
-      font-family: Arial;
-      font-weight: bold;
-      font-size: 11px;
-      color: blue;
-      background-color: #ffffff;
-    }
-    input.my-live-mode.form-input-borderless {
-      border-color: #eee;
-      //border: none;
-      box-shadow: none;
-      font-family: Arial;
-      font-weight: bold;
-      font-size: 11px;
-      color: blue;
-      background-color: #ffffff;
-    }
-
-  }
-</style>
-
-
-<style lang="scss" scoped>
-  @import '../../assets/css/content-variables.scss';
-
-  $frame-color: pink;
-  $text-color: #700;
-
-  .c-form-input {
-    .c-edit-mode-debug {
-      border: solid 1px $frame-color;
-      //border-bottom: dashed 2px $frame-color;
-      //border-right: dashed 2px $frame-color;
-      margin: 1px;
-
-      .container {
-        width: 90% !important;
+        font-family: Arial;
+        font-weight: bold;
+        font-size: 11px;
+        color: blue;
+        background-color: #ffffff;
+      }
+      input.my-live-mode.form-input-borderless {
+        border-color: #eee;
+        //border: none;
+        box-shadow: none;
+        font-family: Arial;
+        font-weight: bold;
+        font-size: 11px;
+        color: blue;
+        background-color: #ffffff;
       }
     }
-
-    .c-layout-mode-heading {
-      // This overrides the definition in content-editor.scss
-      background-color: $frame-color;
-      color: $text-color;
-    }
-
-    // .my-edit-mode {
-    //   input {
-    //     font-size: 10px;
-    //   }
-    // }
-    //
-    // .my-design-mode {
-    //   input {
-    //     font-size: 10px;
-    //   }
-    // }
-    //
-    // .my-live-mode {
-    //   input {
-    //     font-size: 10px;
-    //   }
-    // }
   }
 </style>

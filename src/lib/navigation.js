@@ -88,3 +88,64 @@ export function parseDataPart (spec) {
     return { name, index }
   }
 }
+
+
+export function pathFromParts(parts, level, skipFinalIndex) {
+  // console.log(`pathFromParts(parts, ${level}, ${skipFinalIndex})`, parts);
+  if (typeof(level) !== 'number' || level < 0) {
+    level = parts.length - 1
+  }
+  let path = ''
+  for (let i = 0; (level >= 0 && i <= level) && level < parts.length; i++) {
+    let part = parts[i]
+    if (i > 0) {
+      path += '.'
+    }
+    path += part.name
+    if (part.index >= 0) {
+      if (skipFinalIndex && i >= level) {
+        // Don't display the final [x]
+      } else {
+        path += `[${part.index}]`
+      }
+    }
+  }
+  // console.log(`--- ${path}`);
+  return path
+}
+
+export function pathSpaces(parts, level, skipFinalIndex) {
+  let len = pathFromParts(parts, level, skipFinalIndex).length
+  // if (parts[level].index < 0 && !skipFinalIndex) {
+  //   len++
+  // }
+  let s = ''
+  while (len-- > 0) {
+    s += ' '
+  }
+  return s
+}
+
+export function describe(obj) {
+  if (obj === null) {
+    return 'null'
+  } else if (obj === undefined) {
+    return 'undefined'
+  } else if (Array.isArray(obj)) {
+    return 'list'
+  } else if (typeof(obj) === 'object') {
+    return 'record'
+  } else {
+    return typeof(obj)
+  }
+}
+
+// export function whatWeNeed = (parts, level) => {
+//   // See what we need
+//   let need
+//   if (index < 0) {
+//     need = isFinalPart ? WHATEVER : RECORD
+//   } else {
+//     need = ELEMENT_IN_ARRAY
+//   }
+// }

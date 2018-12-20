@@ -36,15 +36,6 @@ export default {
 
 
 <style lang="scss" scoped>
-$border-color: #eee;
-
-// Positioning of the footer
-$above-triple-pane-size: 130;
-$below-triple-pane-size: 80;
-
-// Positioning of the footer
-$above-triple-pane-size: 100;
-$below-triple-pane-size: 80;
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

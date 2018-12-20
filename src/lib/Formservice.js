@@ -5,6 +5,8 @@
 import axios from 'axios'
 import axiosError from './axiosError.js'
 import { assert, inBrowser } from '../components/misc'
+import { describe } from '../lib/navigation.js'
+
 
 // IF_WE_CALL_AN_API
 const DEFAULT_ENDPOINT = 'api.mysite.com'
@@ -52,8 +54,61 @@ class Formservice {
     return endpoint
   }
 
+  //
+  //  Operation (String):
+  //    find - just look for the value
+  //    find-or-create - if not found, create it
+  //    save - create or overwrite the value
+  //    delete - remove the value
+  //
+  //  Path must be absolute (starting with a !)
+
+  //  updatePath - create all nodes down to, but excluding the final
+  //  node in the path (operation says what to do with the final node).
+  //
+  //  value:
+  //    "array" - Same as [].
+  //    "record" or "object" - Same as {}.
+  //     null - the field is created as null
+  //  If this parameter is not specified or 'undefined' then null is used.
+  //
+  //  Debug - print out messages along the way
+  //
+  find({ vm, path, debug }) {
+    if (debug) {
+      console.error(`Formservice.find(${path})`);
+    }
+    return this.store.getters.seek({vm, operation: 'find', path, debug})
+  }
+  findOrCreate({vm, path, updatePath, value, debug }) {
+    if (debug) {
+      console.error(`Formservice.findOrCreate(${path}, updatePath=${updatePath}, value=${describe(value)}):`, value);
+    }
+    return this.store.getters.seek({vm, operation: 'find-or-create', path, updatePath, value, debug })
+  }
+  save({vm, path, updatePath, value, debug }) {
+    if (debug) {
+      console.error(`Formservice.save(${path}, updatePath=${updatePath}, value=${describe(value)}):`, value);
+    }
+    return this.store.getters.seek({vm, operation: 'save', path, updatePath, value, debug })
+  }
+  delete({vm, path, debug}) {
+    if (debug) {
+      console.error(`Formservice.delete(${path}`)
+    }
+    return this.store.getters.seek({vm, operation: 'delete', path, debug})
+  }
+  // seek(params) {
+  //   alert(`Formservice.seek is deprecated`)
+  //   return null
+  // }
+
+  // Obsolete?
   getData (path, defaultValue) {
-    console.log(`FormserviceLib.getData(${path}, ${defaultValue})`);
+    if (path.includes('harry')) {
+      console.log(`FormserviceLib.getData(${path}, ${defaultValue})`);
+      console.log(`typeof(defaultValue)=${typeof(defaultValue)}`);
+    }
     // if (!path) {
     //   return null
     // }
@@ -61,7 +116,7 @@ class Formservice {
   }
 
   setValue (recordPath, path, value, type) {
-    console.log(`FormserviceLib.setValue(${recordPath}, ${path}, '${value}', ${type})`);
+    console.error(`Formservice.setValue(${recordPath}, ${path}, '${value}', ${type})`);
     if (!path) {
       return null
     }

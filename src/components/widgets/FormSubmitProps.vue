@@ -1,6 +1,7 @@
 <template lang="pug">
   .c-property-element(:class="propertyClass")
     .tt-property-header(@click="setExpandedElement")
+      property-bar-icons(v-if="isExpandedElement", :element="element")
       | Submit button
 
     transition(name="c-property-list-transition")
@@ -26,10 +27,11 @@
 
 <script>
 import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
+import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
 
 export default {
-  name: 'content-formservice-props',
-  mixins: [ PropertyMixins ],
+  name: 'form-submit-props',
+  mixins: [ PropertyMixins, CutAndPasteMixins ],
   computed: {
 
     // We cannot update the element directly - it is stored
@@ -81,5 +83,20 @@ export default {
       margin-top: 2px;
       font-size: 9px;
     }
+  }
+
+  .my-button {
+    margin-top: 2px;
+    position: absolute;
+    right: 3px;
+    cursor: pointer;
+    font-size: 10px;
+  }
+
+  .my-restore {
+    display: block;
+    min-height: 15px;
+    //height:
+    font-size: 10px;
   }
 </style>

@@ -45,31 +45,6 @@ export default {
       return !(this.isEditMode || this.isDesignMode)
     },
 
-    editModeClass: function () {
-      if (this.$content && this.$content.store.state.mode) {
-
-        // Add a class for the current editing mode
-        let mode = this.$content.store.state.mode
-        let cls = `c-edit-mode-${mode}`
-
-        // Add property-editing-related classes, for the currently selected
-        // element, and the element expanded in the properties editor.
-        if (this.element) {
-          if (this.element === this.$content.store.getters.propertyElement) {
-            // console.log(`HEY THATS ME!!! ${this.element.id} (${this.element.type})`)
-            cls += ` c-selected`
-          }
-          if (this.element === this.$content.store.state.expandedElement) {
-            cls += ` c-expanded`
-          }
-        }
-
-        // console.log(`  class: ${cls}`)
-        return cls
-      }
-      return 'c-edit-mode-view'
-    },
-
     debugClass () {
       return (this.pageEditMode === 'debug') ? 'tt-debug' : ''
     },

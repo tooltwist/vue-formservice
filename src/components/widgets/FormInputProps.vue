@@ -1,6 +1,7 @@
 <template lang="pug">
   .c-property-element(:class="propertyClass")
     .tt-property-header(@click="setExpandedElement")
+      property-bar-icons(v-if="isExpandedElement", :element="element")
       | Input
 
     transition(name="c-property-list-transition")
@@ -9,6 +10,10 @@
           .c-property-label Attribute
           .c-property-value
             input.input(v-model="attribute")
+        .tt-property
+          .c-property-label Label
+          .c-property-value
+            input.input(v-model="label")
         .tt-property
           .c-property-label Placeholder
           .c-property-value
@@ -27,7 +32,7 @@
 import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
 
 export default {
-  name: 'content-formservice-props',
+  name: 'form-input-props',
   mixins: [ PropertyMixins ],
   computed: {
 
@@ -41,6 +46,15 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'attribute', value })
+      }
+    },
+    label: {
+      get () {
+        let value = this.element['label']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'label', value })
       }
     },
     placeholder: {
