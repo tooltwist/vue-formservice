@@ -25,6 +25,25 @@ export default {
       return false
     },
 
+    // Return the correct value for the autocomplete attribute
+    // for the current browser.
+    // See https://stackoverflow.com/questions/50405068/disable-autocomplete-in-chrome-66
+    mAutocompleteDisabled: {
+      get ( ) {
+        console.error(`mAutocompleteDisabled()`);
+        return 'disabled'
+        let isChrome = false
+        if (navigator) {
+          console.error(`NAVIGAOTR IS`, navigator);
+          isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+        }
+  else {
+    console.error(`No Navigator`) }
+    console.error(`IS CHROME =${isChrome}`)
+        return isChrome ? 'disabled' :  'off'
+      }
+    },
+
     /*
      *  Actual data edited by this input field
      */
@@ -32,7 +51,7 @@ export default {
 
       get () {
         let recordPath = this.context.formservice.dataPath
-        let attribute = this.attribute
+        let attribute = this.element['attribute']
 
         if (attribute) {
           let path = `${recordPath}.${attribute}`
@@ -62,7 +81,7 @@ export default {
       set (value) {
         if (this.isLive) {
           let recordPath = this.context.formservice.dataPath
-          let attribute = this.attribute
+          let attribute = this.element['attribute']
 
           if (attribute) {
             // console.log(`FormInput: datavalue.set(${attribute}, ${value}`);

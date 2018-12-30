@@ -28,7 +28,7 @@ export default {
       return 'c-edit-mode-view'
     },
 
-    inputStyle: function ( ) {
+    mInputStyle: function ( ) {
       let style = this.element['style'] + ';'
       // width
       try {
@@ -49,7 +49,7 @@ export default {
       return style
     },
 
-    inputClass: function () {
+    mInputClass: function () {
       if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
         console.log(`inputClass()`, this.element);
       }

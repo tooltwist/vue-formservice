@@ -18,32 +18,26 @@
 
       // Design mode
       .my-design-mode(v-if="isDesignMode && false", @click.stop="selectThisElement")
-        //.c-layout-mode-heading
-        //  edit-bar-icons(:element="element")
-        //  | checkbox
-        input(readonly, type="checkbox", :id="`c-formservice-checkbox-${element.id}`", v-model="checked", :style="inputStyle", :class="inputClass")
-        label(:for="`c-formservice-checkbox-${element.id}`", :style="inputStyle", :class="inputClass") &nbsp;{{ label }}
+        input(readonly, type="checkbox", :id="`c-formservice-checkbox-${element.id}`", v-model="checked", :style="mInputStyle", :class="mInputClass")
+        label(:for="`c-formservice-checkbox-${element.id}`", :style="mInputStyle", :class="mInputClass") &nbsp;{{ label }}
 
       // Editing
       .my-edit-mode(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
-        //input(readonly, type="checkbox", :id="`c-formservice-checkbox-${element.id}`", v-model="checked", :style="inputStyle", :class="inputClass")
-        //label(:for="`c-formservice-checkbox-${element.id}`", :style="inputStyle", :class="inputClass") &nbsp;{{ label }}
-        label.checkbox(disabled, :style="inputStyle", :class="inputClass")
-          input(disabled type="checkbox", :style="inputStyle", :class="inputClass")
+        label.checkbox(disabled, :style="mInputStyle", :class="mInputClass")
+          input(disabled type="checkbox", :style="mInputStyle", :class="mInputClass")
           | {{ label }}
 
       // Live mode
       template(v-else)
-        //input.my-live-mode(type="checkbox", :id="`c-formservice-checkbox-${element.id}`", v-model="checked", :style="inputStyle", :class="inputClass")
-        //label.my-live-mode(:for="`c-formservice-checkbox-${element.id}`", :style="inputStyle", :class="inputClass") &nbsp;{{ label }}
-        label.checkbox(:style="inputStyle", :class="inputClass")
-          input(type="checkbox", v-model="checked", :style="inputStyle", :class="inputClass")
+        label.checkbox(:style="mInputStyle", :class="mInputClass")
+          input(type="checkbox", v-model="checked", :style="mInputStyle", :class="mInputClass")
           | {{ label }}
 </template>
 
 <script>
 import ContentMixins from 'vue-contentservice/src/mixins/ContentMixins'
 import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
+import WidgetMixins from '../../mixins/WidgetMixins'
 
 export default {
   name: 'content-form-checkbox',
@@ -58,7 +52,7 @@ export default {
       required: true
     }
   },
-  mixins: [ ContentMixins, CutAndPasteMixins ],
+  mixins: [ ContentMixins, CutAndPasteMixins, WidgetMixins ],
   data: function () {
     return {
     }
@@ -79,44 +73,44 @@ export default {
       return false
     },
 
-    inputStyle: function ( ) {
-      let style = this.element['style'] + ';'
-      // width
-      try {
-        let num = parseInt(this.element['width'])
-        if (num >= 20) {
-          style += `width:${num}px;`
-        }
-      } catch (e) { }
-
-      // height
-      try {
-        let num = parseInt(this.element['height'])
-        if (num >= 20) {
-          style += `height:${num}px;`
-        }
-      } catch (e) { }
-      return style
-    },
-
-    inputClass: function () {
-
-      var obj = { }
-      let classesForElement = this.element['class']
-      if (classesForElement) {
-        // console.log(`classesForElement=${classesForElement}`);
-        classesForElement.split(' ').forEach(clas => {
-          // console.log(`-- ${clas}`);
-          let classname = clas.trim()
-          if (classname) {
-            obj[classname] = true
-          }
-        })
-      } else {
-        obj['form-checkbox-default'] = true
-      }
-      return obj
-    },
+    // inputStyle: function ( ) {
+    //   let style = this.element['style'] + ';'
+    //   // width
+    //   try {
+    //     let num = parseInt(this.element['width'])
+    //     if (num >= 20) {
+    //       style += `width:${num}px;`
+    //     }
+    //   } catch (e) { }
+    //
+    //   // height
+    //   try {
+    //     let num = parseInt(this.element['height'])
+    //     if (num >= 20) {
+    //       style += `height:${num}px;`
+    //     }
+    //   } catch (e) { }
+    //   return style
+    // },
+    //
+    // inputClass: function () {
+    //
+    //   var obj = { }
+    //   let classesForElement = this.element['class']
+    //   if (classesForElement) {
+    //     // console.log(`classesForElement=${classesForElement}`);
+    //     classesForElement.split(' ').forEach(clas => {
+    //       // console.log(`-- ${clas}`);
+    //       let classname = clas.trim()
+    //       if (classname) {
+    //         obj[classname] = true
+    //       }
+    //     })
+    //   } else {
+    //     obj['form-checkbox-default'] = true
+    //   }
+    //   return obj
+    // },
 
     attribute: {
       get () {
@@ -147,7 +141,7 @@ export default {
       get () {
         // console.error(`CHECKBOX getting value`);
         let recordPath = this.context.formservice.dataPath
-        let attribute = this.attribute
+        let attribute = this.element['attribute']
 
         if (attribute) {
           let path = `${recordPath}.${attribute}`
@@ -192,7 +186,7 @@ export default {
       set (value) {
         console.error(`CHECKBOX SET TO ${value} (${typeof(value)})`);
         let recordPath = this.context.formservice.dataPath
-        let attribute = this.attribute
+        let attribute = this.element['attribute']
 
         if (attribute) {
           console.log(`datavalue.set(${attribute}, ${value}`);
@@ -207,7 +201,7 @@ export default {
 
     checkboxStatus () {
       let recordPath = this.context.formservice.dataPath
-      let attribute = this.attribute
+      let attribute = this.element['attribute']
 
       if (attribute) {
         let path = `${recordPath}.${attribute}`

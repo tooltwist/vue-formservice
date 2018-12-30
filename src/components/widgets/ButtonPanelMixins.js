@@ -122,7 +122,7 @@ export default {
             return ''
           }
         } else {
-          console.log(`Warning: input is missing 'attribute' property`, this.element);
+          console.log(`Warning: ButtonPanel is missing 'attribute' property`, this.element);
           //ZZZZZ Do something about this...
           return ''
         }
@@ -132,7 +132,7 @@ export default {
         if (this.isLive) {
           let attribute = this.element['attribute']
           if (attribute) {
-            // console.log(`FormInput: datavalue.set(${attribute}, ${value}`);
+            // console.log(`ButtonPanel: datavalue.set(${attribute}, ${value}`);
             let path = this.mAbsolutePath(attribute)
             this.$formservice.save({vm: this, path, updatePath:true, value, debug:true})
           }

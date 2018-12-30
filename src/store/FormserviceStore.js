@@ -129,7 +129,115 @@ export const state = () => {
         layout: { }
       },
 
-    },
+      'states' : {
+        name: 'states',
+        source: 'testdata://test4',
+        data: {
+          list: [
+            {
+              "value": 'NSW',
+              "description": 'New South Wales'
+            },
+            {
+              "value": 'NT',
+              "description": 'Northern Territory'
+            },
+            {
+              "value": 'QLD',
+              "description": 'Queensland'
+            },
+            {
+              "value": 'SA',
+              "description": 'South Australia'
+            },
+            {
+              "value": 'TAS',
+              "description": 'Tasmania'
+            },
+            {
+              "value": 'VIC',
+              "description": 'Victoria'
+            },
+            {
+              "value": 'WA',
+              "description": 'Western Australia'
+            },
+          ]//- list
+        },//- data
+        schema: { },
+        layout: { }
+      },//- states
+
+      inspectionTypes: {
+        name: 'inspectionTypes',
+        source: 'testdata://inspectionTypes',
+        data: {
+          list: [
+            {
+              "value": 'A',
+              "description": 'Type A inspection'
+            },
+            {
+              "value": 'B',
+              "description": 'Type B inspection'
+            },
+          ]
+        },
+        schema: { },
+        layout: { }
+      },//- inspectionTypes
+
+      inspectionReportForms: {
+        name: 'inspectionTypes',
+        source: 'testdata://inspectionTypes',
+        data: {
+          list: [
+            {
+              "value": 'X',
+              "description": 'Report X'
+            },
+            {
+              "value": 'Y',
+              "description": 'Report Y'
+            },
+            {
+              "value": 'Z',
+              "description": 'Report Z'
+            },
+          ]
+        },
+        schema: { },
+        layout: { }
+      },//- inspectionReportForms
+
+      rentalPeriods: {
+        name: 'leasePeriod',
+        source: 'testdata://inspectionTypes',
+        data: {
+          list: [
+            {
+              "value": 'week',
+              "description": 'Week'
+            },
+            {
+              "value": 'fortnight',
+              "description": 'Fortnight'
+            },
+            {
+              "value": 'month',
+              "description": 'Month'
+            },
+            {
+              "value": 'year',
+              "description": 'Year'
+            },
+          ]
+        },
+        schema: { },
+        layout: { }
+      },//- rentPeriod
+
+    }, //- datasetIndex
 
     // Refresh for some components can be activated by incrementing this counter.
     refreshCounter: 1,
@@ -295,7 +403,7 @@ export const getters = {
       }
     }
     if (operation === 'find-or-create' || operation === 'save') {
-      if (!value) {
+      if (!value && value != '') {
         let err = `No value provided when operation is ${operation}`
         console.error(`Error: ${err}`);
         return {
@@ -2375,20 +2483,20 @@ export const mutations = {
       console.log(`setValueFromSeekMutation(name=${name}, index=${index}, value=${describe(value)}`, value)
     }
 
-console.log(`KOOOKOOO 1`);
+    // console.log(`KOOOKOOO 1`);
     if (index < 0) {
       // Set the property in the record
       if (debug) {
         console.log(`Set property ${name} to ${describe(value)}`, value);
       }
       // parent[name] = value
-      console.log(`KOOOKOOO 2`);
+      // console.log(`KOOOKOOO 2`);
       Vue.set(parent, name, value)
     } else {
-      console.log(`KOOOKOOO 3`);
+      // console.log(`KOOOKOOO 3`);
       // Set a value in an array
       if (!Array.isArray(parent[name])) {
-        console.log(`KOOOKOOO 4`);
+        // console.log(`KOOOKOOO 4`);
         // Need to create a new array.
         // Note that this will clobber any non-array property with the same name.
         if (debug) {
@@ -2396,27 +2504,27 @@ console.log(`KOOOKOOO 1`);
         }
         // parent[name] = [ ]
         Vue.set(parent, name, [ ])
-        console.log(`KOOOKOOO 5`);
+        // console.log(`KOOOKOOO 5`);
       }
-      console.log(`KOOOKOOO 6`);
+      // console.log(`KOOOKOOO 6`);
 
       // Check the array is long enough
       let arr = parent[name]
-      console.log(`KOOOKOOO 7`);
+      // console.log(`KOOOKOOO 7`);
       while (arr.length < index) {
-        console.log(`KOOOKOOO 8`);
+        // console.log(`KOOOKOOO 8`);
         console.log(`- add empty record to ${name}[${arr.length}]`);
         arr.push({ })
         //arr.$set(arr.length, { })
       }
-      console.log(`KOOOKOOO 9 ${typeof(arr)}`, arr);
+      // console.log(`KOOOKOOO 9 ${typeof(arr)}`, arr);
       if (debug) {
         console.log(`Set property ${name}[${index}] to ${describe(value)}`, value);
       }
       //arr[index] = value
       // arr.$set(index, value)
       Vue.set(arr, index, value)
-      console.log(`KOOOKOOO 10`);
+      // console.log(`KOOOKOOO 10`);
     }
 
     // Update the refresh counter

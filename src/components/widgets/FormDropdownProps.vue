@@ -7,13 +7,17 @@
     transition(name="c-property-list-transition")
       .c-element-properties(v-show="isExpandedElement")
         .tt-property
+          .c-property-label Label
+          .c-property-value
+            input.input(v-model="label")
+        .tt-property
           .c-property-label Attribute
           .c-property-value
             input.input(v-model="attribute")
         .tt-property
-          .c-property-label Label
+          .c-property-label Dataset
           .c-property-value
-            input.input(v-model="label")
+            input.input(v-model="dataset")
         .tt-property
           .c-property-label Placeholder
           .c-property-value
@@ -30,6 +34,7 @@
 
 <script>
 import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
+import EditMixins from '../../mixins/EditMixins'
 
 export default {
   name: 'form-dropdown-props',
@@ -39,33 +44,39 @@ export default {
     // We cannot update the element directly - it is stored
     // in this.$store and must be updated with a 'commit'.
     // See https://vuex.vuejs.org/en/forms.html
-    attribute: {
-      get () {
-        let value = this.element['attribute'] ? this.element['attribute'] : this.element['field']
-        return value ? value : ''
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'attribute', value })
-      }
-    },
-    label: {
-      get () {
-        let value = this.element['label']
-        return value ? value : ''
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'label', value })
-      }
-    },
-    placeholder: {
-      get () {
-        let value = this.element['placeholder']
-        return value ? value : ''
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
-      }
-    },
+    // attribute: {
+    //   get () {
+    //     let value = this.element['attribute'] ? this.element['attribute'] : this.element['field']
+    //     return value ? value : ''
+    //   },
+    //   set (value) {
+    //     this.$content.setProperty({ vm: this, element: this.element, name: 'attribute', value })
+    //   }
+    // },
+    // label: {
+    //   get () {
+    //     let value = this.element['label']
+    //     return value ? value : ''
+    //   },
+    //   set (value) {
+    //     this.$content.setProperty({ vm: this, element: this.element, name: 'label', value })
+    //   }
+    // },
+
+    label: EditMixins.twoWayComputedProperty('label', ''),
+    attribute: EditMixins.twoWayComputedProperty('attribute', ''),
+    dataset: EditMixins.twoWayComputedProperty('dataset', ''),
+    placeholder: EditMixins.twoWayComputedProperty('placeholder', ''),
+
+    // placeholder: {
+    //   get () {
+    //     let value = this.element['placeholder']
+    //     return value ? value : ''
+    //   },
+    //   set (value) {
+    //     this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
+    //   }
+    // },
     clas: {
       get () {
         let value = this.element['class']

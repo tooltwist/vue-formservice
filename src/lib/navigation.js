@@ -134,6 +134,9 @@ export function describe(obj) {
   } else if (Array.isArray(obj)) {
     return 'list'
   } else if (typeof(obj) === 'object') {
+    if (obj instanceof Date) {
+      return 'date'
+    }
     return 'record'
   } else {
     return typeof(obj)

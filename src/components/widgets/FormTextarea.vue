@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .c-form-input(:class="editModeClass")
+  .c-form-textarea(:class="cClass", :style="cStyle")
 
     // Sanity checks
     .sanity-error(v-if="!sane_$content")
@@ -13,26 +13,21 @@
       | (missing this.context.formservice)
     template(v-else)
 
-      // Normal operation below here
-      //span(v-if="extraDebug")
-      //  | &lt;form-input&gt;
-      //  br
-
       // Design mode
       div(v-if="isDesignMode", @click.stop="selectThisElement")
         .field-body.has-text-left
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder")
+              textarea.textarea(readonly, :placeholder="cPlaceholder", rows="10")
 
       // Editing
-      div(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
+      div(v-else-if="isEditMode", @click.stop="selectThisElement")
         .field-body.has-text-left
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder")
+              textarea.textarea(readonly, :placeholder="cPlaceholder", rows="10")
 
       // Live mode
       template(v-else)
@@ -40,7 +35,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(:style="inputStyle", :class="inputClass", :placeholder="placeholder", v-model="actualData")
+              textarea.textarea(:placeholder="cPlaceholder", rows="10", v-model="actualData")
 </template>
 
 <script>
@@ -81,52 +76,44 @@ export default {
       return false
     },
 
-    inputClass: function () {
-      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
-        console.log(`inputClass()`, this.element);
-      }
-
-      var obj = { }
-      let classesForElement = this.element['class']
-      if (classesForElement) {
-        // console.log(`classesForElement=${classesForElement}`);
-        classesForElement.split(' ').forEach(clas => {
-          // console.log(`-- ${clas}`);
-          let classname = clas.trim()
-          if (classname) {
-            obj[classname] = true
-          }
-        })
-      } else {
-        obj['form-input-default'] = true
-      }
-      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
-        console.log(`element=`, this.element);
-        console.log(`obj=`, obj)
-      }
-      return obj
-    },
-
-    inputStyle: function ( ) {
-      let style = this.element['style'] + ';'
-      // width
-      try {
-        let num = parseInt(this.element['width'])
-        if (num >= 20) {
-          style += `width:${num}px;`
-        }
-      } catch (e) { }
-
-      // height
-      try {
-        let num = parseInt(this.element['height'])
-        if (num >= 20) {
-          style += `height:${num}px;`
-        }
-      } catch (e) { }
-      // console.log(`inputStyle=`, style)
-      return style
-    },
+    // inputClass: function () {
+    //   var obj = { }
+    //   let classesForElement = this.element['class']
+    //   if (classesForElement) {
+    //     // console.log(`classesForElement=${classesForElement}`);
+    //     classesForElement.split(' ').forEach(clas => {
+    //       // console.log(`-- ${clas}`);
+    //       let classname = clas.trim()
+    //       if (classname) {
+    //         obj[classname] = true
+    //       }
+    //     })
+    //   } else {
+    //     obj['form-input-default'] = true
+    //   }
+    //   return obj
+    // },
+    //
+    // inputStyle: function ( ) {
+    //   let style = this.element['style'] + ';'
+    //   // width
+    //   try {
+    //     let num = parseInt(this.element['width'])
+    //     if (num >= 20) {
+    //       style += `width:${num}px;`
+    //     }
+    //   } catch (e) { }
+    //
+    //   // height
+    //   try {
+    //     let num = parseInt(this.element['height'])
+    //     if (num >= 20) {
+    //       style += `height:${num}px;`
+    //     }
+    //   } catch (e) { }
+    //   // console.log(`inputStyle=`, style)
+    //   return style
+    // },
 
     // inputStyle: function (field) {
     //   console.log(`inputStyle()`, field);
@@ -143,7 +130,7 @@ export default {
       get () {
 
         //ZZZZZ
-        // console.error(`FormInput.attribute.get(): this.context=`, this.context);
+        // console.error(`FormTextarea.attribute.get(): this.context=`, this.context);
 
         let attribute = this.element['attribute'] ? this.element['attribute'] : this.element['field']
         return attribute
@@ -157,7 +144,7 @@ export default {
       }
     },
 
-    placeholder: {
+    cPlaceholder: {
       get () {
         // Temporary - display a symbol if data is not found
         let placeholder = this.element['placeholder']
@@ -169,15 +156,15 @@ export default {
         if (this.isDesignMode || this.isEditMode) {
           let str = (this.attribute) ? `[${this.attribute}]` : '?'
           if (placeholder) {
-            str += ` - ${placeholder}`
+            str += `\n${placeholder}`
           }
           return str
         }
         return placeholder
       },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
-      }
+      // set (value) {
+      //   this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
+      // }
     },
 
     /*
@@ -186,7 +173,7 @@ export default {
     actualData: {
       get () {
         let recordPath = this.context.formservice.dataPath
-        let attribute = this.attribute
+        let attribute = this.element['attribute']
 
         if (attribute) {
           let path = `${recordPath}.${attribute}`
@@ -208,7 +195,7 @@ export default {
             return ''
           }
         } else {
-          console.log(`Warning: input is missing 'attribute' property`, this.element);
+          console.log(`Warning: TextArea is missing 'attribute' property`, this.element);
           //ZZZZZ Do something about this...
           return ''
         }
@@ -217,22 +204,45 @@ export default {
         if (this.isLive) {
           let recordPath = this.context.formservice.dataPath
           console.error(`WARP FormTextarea.actualData.set: recordPath=${recordPath}`);
-          let attribute = this.attribute
+          let attribute = this.element['attribute']
 
           if (attribute) {
-            console.log(`FormInput: datavalue.set(${attribute}, ${value}`);
+            console.log(`FormTextarea: datavalue.set(${attribute}, ${value}`);
             this.$formservice.setValue(recordPath, attribute, value, String)
             // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
           }
         }
       }
-    }
+    },//- actualData
+
+
+    cClass: function () {
+      // Get the class for design/edit/live mode
+      let cls = this.editModeClass + ' '
+
+      // Add classes defined by the user
+      let classesForElement = this.element['class']
+      if (classesForElement) {
+        cls +=  classesForElement
+      } else {
+        cls += ' form-input-default'
+      }
+      return cls
+    },
+
+    cStyle: function ( ) {
+      let style = this.element['style'] + ';'
+      return style ? `${style};` : ``
+    },
+
   }
 }
 </script>
 
 
 <style lang="scss">
+  @import '../../assets/css/content-variables.scss';
+
   $bg-default: #ffffe0;
   $border-color-default: #ccc;
 
@@ -243,7 +253,7 @@ export default {
   $text-color: #700;
 
 
-  .c-form-input {
+  .c-form-textarea {
 
     // Used if not in a valid form
     .sanity-error {
@@ -252,65 +262,84 @@ export default {
       font-size: 11px;
     }
 
-    // Design mode
+    /*
+     *  Design mode
+     */
     &.c-edit-mode-debug {
-      // border-top: dashed 2px $frame-color;
-      // border-left: dashed 2px $frame-color;
-      // border-bottom: dashed 2px $frame-color;
-      // border-right: dashed 2px $frame-color;
+      border-top: $c-input-layout-border-color-1;
+      border-left: $c-input-layout-border-color-1;
+      background-color: $c-input-layout-frame-color;
+      border-bottom: $c-input-layout-border-color-2;
+      border-right: $c-input-layout-border-color-2;
 
-      // border-top: solid 1px yellow;
-      // border-left: solid 1px yellow;
-      // background-color: goldenrod;
-      // border-bottom: solid 1px brown;
-      // border-right: solid 1px brown;
-      border-top: solid 1px #ccc;
-      border-left: solid 2px #ccc;
-      background-color: $frame-color;
-      border-bottom: solid 1px #999;
-      border-right: solid 1px #999;
       padding-left: 2px;
       padding-right: 2px;
-      margin: 1px;
+      //margin: 1px;
 
-      .container {
-        width: 90% !important;
-      }
+      // .container {
+      //   width: 90% !important;
+      // }
 
-      input.form-input-default {
-        border-color: $border-color-default;
-        background-color: $bg-default;
-        //background-color: red;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 9px;
+      label {
+        min-height: 50px;
       }
-      input.form-input-borderless {
-        border-color: $border-color-borderless;
-        zborder: none;
-        box-shadow: none;
-        zbackground-color: $bg-borderless;
-        font-size: 9px;
+      textarea {
+        border: solid 1px $c-input-layout-border-color-1;
+        font-family: $c-input-default-font-family;
+        font-weight: normal;
+        font-size: $c-input-layout-font-size;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        color: $c-input-default-color;
+        background-color: $c-input-default-background-color;
+        margin-bottom: 4px;
       }
-    }
+      &.form-input-borderless {
+        input {
+          border: dashed 1px $border-color-borderless;
+          box-shadow: none;
+          font-weight: normal;
+          background-color: none;
+        }
+      }
+    }//- design mode
 
-    // Edit mode
+    /*
+     *  Edit mode
+     */
     &.c-edit-mode-edit {
-    //.my-edit-mode {
-      input.form-input-default {
+      textarea {
         border-color: $border-color-default;
-        background-color: $bg-default;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 9px;
+        font-family: $c-input-default-font-family;
+        //font-weight: $c-input-default-font-weight;
+        font-weight: normal;
+        font-size: $c-input-default-font-size;
+        color: $c-input-default-color;
+        background-color: $c-input-default-background-color;
       }
-      input.form-input-borderless {
+      &.form-input-borderless {
         //border-color: $border-color-borderless;
         border: dashed 1px $border-color-borderless;
         box-shadow: none;
-        background-color: $bg-borderless;
-        font-size: 9px;
+        font-weight: normal;
+        background-color: none;
       }
+
+    // //.my-edit-mode {
+    //   input.form-input-default {
+    //     border-color: $border-color-default;
+    //     background-color: $bg-default;
+    //     font-family: Arial;
+    //     font-weight: bold;
+    //     font-size: 9px;
+    //   }
+    //   input.form-input-borderless {
+    //     //border-color: $border-color-borderless;
+    //     border: dashed 1px $border-color-borderless;
+    //     box-shadow: none;
+    //     background-color: $bg-borderless;
+    //     font-size: 9px;
+    //   }
     }
 
     // Live modes

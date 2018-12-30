@@ -3,9 +3,9 @@
   .c-form-submit(:class="editModeClass")
     // Design mode
     div(v-if="isDesignMode", @click.stop="selectThisElement")
-      .c-layout-mode-heading
-        edit-bar-icons(:element="element")
-        | submit
+      //.c-layout-mode-heading
+      //  edit-bar-icons(:element="element")
+      //  | submit
       button.button(readonly, :style="inputStyle", :class="inputClass")
         | {{label}}
 
@@ -16,7 +16,7 @@
 
     // Live mode
     template(v-else)
-      button.button.my-live-mode(:style="inputStyle", :class="inputClass", @click.stop="onClick")
+      button.button.my-live-mode.is-pulled-right.is-info(:style="inputStyle", :class="inputClass", @click.stop.prevent="onClick")
         | {{label}}
 </template>
 
@@ -106,6 +106,7 @@ export default {
       //ZZZZ This should be a promise
       //.then(...)
       //.error(...)
+      return false
     }
 
   },
@@ -114,13 +115,15 @@ export default {
 
 
 <style lang="scss">
+  @import '../../assets/css/content-variables.scss';
+
   $bg-default: #ffffe0;
   $border-color-default: #ccc;
 
   $bg-borderless: #ffff00;
   $border-color-borderless: #ccc;
   //
-  // .c-form-input {
+  // .c-form-submit {
   //   .my-design-mode {
   //     input.form-input-default {
   //       border-color: $border-color-default;
@@ -189,14 +192,12 @@ export default {
 
   .c-form-submit {
     &.c-edit-mode-debug {
-      // border-left: dashed 2px $frame-color;
-      // border-bottom: dashed 2px $frame-color;
-      // border-right: dashed 2px $frame-color;
-      border-top: solid 1px #ccc;
-      border-left: solid 1px #ccc;
-      background-color: $frame-color;
-      border-bottom: solid 1px #999;
-      border-right: solid 1px #999;
+      border-top: $c-input-layout-border-color-1;
+      border-left: $c-input-layout-border-color-1;
+      background-color: $c-input-layout-frame-color;
+      border-bottom: $c-input-layout-border-color-2;
+      border-right: $c-input-layout-border-color-2;
+
       margin: 1px;
       padding: 3px;
 

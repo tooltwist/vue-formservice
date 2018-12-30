@@ -4,7 +4,7 @@
 
 <template lang="pug">
 
-  .c-responsive-form(:class="editModeClass")
+  .c-form-grid(:class="editModeClass")
     .my-refreshCounter {{$formservice.store.state.refreshCounter}}
     //.content-section(v-bind:class="[(pageEditMode=='debug') ? 'my-outline' : '']")
 
@@ -16,7 +16,7 @@
       table.table.is-fullwidth
         thead
           tr
-            th.my-column-label(v-for="(child, index) in columnsFromChildren", @click="editColumnNo = index", :class="selectedClass(index)")
+            th.my-column-label(v-for="(child, index) in columnsFromChildren", @click.stop.prevent="editColumnNo = index", :class="selectedClass(index)")
               | {{labelForColumn(index)}}
 
         tbody
@@ -28,16 +28,16 @@
         //    th Foot 1
         //    th Feet
         //    th Feets
-      button.button.is-small.is-primary.is-outlined(@click.stop="addColumn") Add column
+      button.button.is-small.is-primary.is-outlined(@click.stop.prevent="addColumn") Add column
       br
       br
 
     // Edit mode
-    .my-edit-mode(v-else-if="isEditMode", @click.stop="mSelectMe")
+    .my-edit-mode(v-else-if="isEditMode", @click.stop.prevent="mSelectMe")
       table.table.is-fullwidth
         thead
           tr
-            th.my-column-label(v-for="(child, index) in columnsFromChildren", @click="editColumnNo = index", :class="selectedClass(index)")
+            th.my-column-label(v-for="(child, index) in columnsFromChildren", @click.stop.prevent="editColumnNo = index", :class="selectedClass(index)")
               | {{labelForColumn(index)}}
 
         tbody
@@ -61,16 +61,15 @@
             td(v-for="(child, colNo) in columnsFromChildren")
               panel-without-properties(:element="child", :context="recordContext(recNo)")
             td
-              //button.button.is-small.is-danger(@click.stop="deleteRecord(recNo)") x
-              a.button.is-danger.is-outlined.is-small(@click.stop="deleteRecord(recNo)")
+              //button.button.is-small.is-danger(@click.stop.prevent="deleteRecord(recNo)") x
+              a.button.is-danger.is-outlined.is-small(@click.stop.prevent="deleteRecord(recNo)")
                 span Delete
                 span.icon.is-small
                   i.fa.fas.fa-times
-        tfoot
+        //tfoot
 
       .has-text-left(v-if="addButtonLabel")
-        button.button.is-info.is-outlined.is-small(@click.stop="addRecord") {{addButtonLabel}}
-        br
+        button.button.is-info.is-outlined.is-small(@click.stop.prevent="addRecord") {{addButtonLabel}}
         br
       // This dummy does a select that creates this grid's array
       | {{dummyActualValue}}
@@ -422,42 +421,49 @@ export default {
   $frame-color: lightblue;
   $text-color: blue;
 
-  .c-layout-mode-heading {
-    // This overrides the definition in content-editor.scss
-    background-color: $frame-color;
-    color: $text-color;
-  }
+  .c-form-grid {
 
-  .c-edit-mode-debug {
-    border-left: dashed 2px $frame-color;
-    border-bottom: dashed 2px $frame-color;
-    border-right: dashed 2px $frame-color;
-    margin: 1px;
+    .my-column-label {
+      cursor: pointer;
 
-    background-color: #f0f0f7;
-
-    &.c-selected {
-      //border-color: $c-editbar-color;
-      border-color: $c-editbar-color;
+      &.is-selecteZd {
+        color: red;
+      }
     }
-  }
-
-  .my-content {
-    background-color: white;
-  }
-
-  .my-column-label {
-    cursor: pointer;
-
-    &.is-selecteZd {
-      color: red;
+    .my-refreshCounter {
+      display: none;
     }
-  }
-  .my-refreshCounter {
-    display: none;
-  }
 
-  .my-grid-table {
-    bottom-border: solid 1px red;
-  }
+    /*
+     *  Design mode
+     */
+    &.c-edit-mode-debug {
+      border-left: dashed 2px $frame-color;
+      border-bottom: dashed 2px $frame-color;
+      border-right: dashed 2px $frame-color;
+      margin: 1px;
+
+      background-color: #f0f0f7;
+
+      .c-layout-mode-heading {
+        // This overrides the definition in content-editor.scss
+        background-color: $frame-color;
+        color: $text-color;
+      }
+
+      &.c-selected {
+        //border-color: $c-editbar-color;
+        border-color: $c-editbar-color;
+      }
+    }//- design mode
+
+    /*
+     *  Live mode
+     */
+    &.c-edit-mode-view {
+      table {
+        margin-bottom: 8px;
+      }
+    }
+  }//- .c-form-grid
 </style>

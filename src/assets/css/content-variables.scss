@@ -24,6 +24,20 @@ $c-embed-border-color: #d0d0d0;
 $f-widget-top-left-color: #ccc;
 $f-widget-bottom-right-color: #999;
 
+// Default input styles
+$c-input-default-color: blue;
+$c-input-default-font-size: 15px;
+$c-input-default-font-family: Arial;
+$c-input-default-font-weight: bold;
+$c-input-default-background-color: #ffffcc;
+// $c-input-default-background-color: #FFF7AE;
+
+// Defaults while editing
+$c-input-layout-font-size: 13px;
+$c-input-layout-border-color-1: solid 1px #d1b9a3;
+$c-input-layout-frame-color: #ffe9d5;
+$c-input-layout-border-color-2: solid 1px #8c7b6c;
+
 
 .formservice-toolbox-button {
   width: 32px;

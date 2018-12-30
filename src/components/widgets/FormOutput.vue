@@ -170,7 +170,7 @@ export default {
     actualData: {
       get () {
         let recordPath = this.context.formservice.dataPath
-        let attribute = this.attribute
+        let attribute = this.element['attribute']
 
         if (attribute) {
           let path = `${recordPath}.${attribute}`
@@ -199,7 +199,7 @@ export default {
       },
       set (value) {
         let recordPath = this.context.formservice.dataPath
-        let attribute = this.attribute
+        let attribute = this.element['attribute']
 
         if (attribute) {
           console.log(`FormOutput: datavalue.set(${attribute}, ${value}`);
@@ -306,7 +306,7 @@ export default {
   $frame-color: pink;
   $text-color: #700;
 
-  .c-form-inputZ {
+  .c-form-output {
     &.c-edit-mode-debug {
       border-top: solid 4px $frame-color;
       border-left: dashed 2px $frame-color;

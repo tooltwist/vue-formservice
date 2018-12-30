@@ -40,12 +40,13 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(:style="inputStyle", :class="inputClass", :placeholder="placeholder", v-model="actualData")
+              input.input(:style="inputStyle", :class="inputClass", :placeholder="placeholder", autocomplete="mAutocompleteDisabled", v-model="actualData")
 </template>
 
 <script>
 import ContentMixins from 'vue-contentservice/src/mixins/ContentMixins'
 import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
+import FormserviceMixins from '../../mixins/FormserviceMixins'
 
 export default {
   name: 'content-forminput',
@@ -60,7 +61,7 @@ export default {
       required: true
     }
   },
-  mixins: [ ContentMixins, CutAndPasteMixins ],
+  mixins: [ ContentMixins, CutAndPasteMixins, FormserviceMixins ],
   data: function () {
     return {
     }
@@ -186,7 +187,7 @@ export default {
     actualData: {
       get () {
         let recordPath = this.context.formservice.dataPath
-        let attribute = this.attribute
+        let attribute = this.element['attribute']
 
         if (attribute) {
           let path = `${recordPath}.${attribute}`
@@ -208,7 +209,7 @@ export default {
             return ''
           }
         } else {
-          console.log(`Warning: input is missing 'attribute' property`, this.element);
+          console.log(`Warning: FormInput is missing 'attribute' property`, this.element);
           //ZZZZZ Do something about this...
           return ''
         }
@@ -217,7 +218,7 @@ export default {
         if (this.isLive) {
           let recordPath = this.context.formservice.dataPath
           console.error(`WARP FormInput.actualData.set: recordPath=${recordPath}`);
-          let attribute = this.attribute
+          let attribute = this.element['attribute']
 
           if (attribute) {
             console.log(`FormInput: datavalue.set(${attribute}, ${value}`);
@@ -233,15 +234,10 @@ export default {
 
 
 <style lang="scss">
-  $bg-default: #ffffe0;
+  @import '../../assets/css/content-variables.scss';
+
   $border-color-default: #ccc;
-
-  $bg-borderless: #ffff00;
   $border-color-borderless: #ccc;
-
-  $frame-color: goldenrod;
-  $text-color: #700;
-
 
   .c-form-input {
 
@@ -252,88 +248,87 @@ export default {
       font-size: 11px;
     }
 
-    // Design mode
+    /*
+     *  Design mode
+     */
     &.c-edit-mode-debug {
-      // border-top: dashed 2px $frame-color;
-      // border-left: dashed 2px $frame-color;
-      // border-bottom: dashed 2px $frame-color;
-      // border-right: dashed 2px $frame-color;
+      border-top: $c-input-layout-border-color-1;
+      border-left: $c-input-layout-border-color-1;
+      background-color: $c-input-layout-frame-color;
+      border-bottom: $c-input-layout-border-color-2;
+      border-right: $c-input-layout-border-color-2;
 
-      // border-top: solid 1px yellow;
-      // border-left: solid 1px yellow;
-      // background-color: goldenrod;
-      // border-bottom: solid 1px brown;
-      // border-right: solid 1px brown;
-      border-top: solid 1px #ccc;
-      border-left: solid 2px #ccc;
-      background-color: $frame-color;
-      border-bottom: solid 1px #999;
-      border-right: solid 1px #999;
       padding-left: 2px;
       padding-right: 2px;
       margin: 1px;
 
-      .container {
-        width: 90% !important;
-      }
+      // .container {
+      //   width: 90% !important;
+      // }
 
-      input.form-input-default {
-        border-color: $border-color-default;
-        background-color: $bg-default;
-        //background-color: red;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 9px;
+      input {
+        border: solid 1px $c-input-layout-border-color-1;
+        font-family: $c-input-default-font-family;
+        font-weight: normal;
+        font-size: $c-input-layout-font-size;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        color: $c-input-default-color;
+        background-color: $c-input-default-background-color;
+        margin-bottom: 4px;
       }
-      input.form-input-borderless {
-        border-color: $border-color-borderless;
-        zborder: none;
-        box-shadow: none;
-        zbackground-color: $bg-borderless;
-        font-size: 9px;
+      &.form-input-borderless {
+        input {
+          border: dashed 1px $border-color-borderless;
+          font-weight: normal;
+        }
       }
     }
 
-    // Edit mode
+    /*
+     *  Edit mode
+     */
     &.c-edit-mode-edit {
     //.my-edit-mode {
       input.form-input-default {
         border-color: $border-color-default;
-        background-color: $bg-default;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 9px;
+        font-family: $c-input-default-font-family;
+        font-weight: $c-input-default-font-weight;
+        font-size: $c-input-default-font-size;
+        color: $c-input-default-color;
+        background-color: $c-input-default-background-color;
       }
-      input.form-input-borderless {
-        //border-color: $border-color-borderless;
-        border: dashed 1px $border-color-borderless;
-        box-shadow: none;
-        background-color: $bg-borderless;
-        font-size: 9px;
+      &.form-input-borderless {
+        input {
+          border: dashed 1px $border-color-borderless;
+          box-shadow: none;
+        }
       }
     }
 
-    // Live modes
+    /*
+     *  Live mode
+     */
     &.c-edit-mode-view {
-      input.my-live-mode.form-input-default {
+      margin-top: 2px;
+      margin-bottom: 8px;
+      label {
+        margin-bottom: 1px;
+      }
+      input {
         border-color: $border-color-default;
-
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 11px;
-        color: blue;
-        background-color: #ffffff;
+        font-family: $c-input-default-font-family;
+        font-weight: $c-input-default-font-weight;
+        font-size: $c-input-default-font-size;
+        color: $c-input-default-color;
+        background-color: $c-input-default-background-color;
       }
-      input.my-live-mode.form-input-borderless {
-        border-color: #eee;
-        //border: none;
-        box-shadow: none;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 11px;
-        color: blue;
-        background-color: #ffffff;
+      &.form-input-borderless {
+        input {
+          border: none;
+          box-shadow: none;
+        }
       }
-    }
+    }//- live mode
   }
 </style>

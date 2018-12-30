@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import Buefy from 'buefy'
+import 'buefy/dist/buefy.css'
 
 import ContentService from 'vue-contentservice';
 import Formservice from './components/index.js';
@@ -32,6 +34,7 @@ import InspectionReport from './testapp/InspectionReport.vue'
 require('font-awesome/css/font-awesome.min.css')
 require('bulma/css/bulma.min.css')
 require('vue-contentservice/dist/vue-contentservice.css')
+// require('../../assets/css/content-variables.scss')
 
 
 import FroalaKey from './protected-config/froalaKey.js'
@@ -53,6 +56,8 @@ const options = {
 Vue.use(ContentService, options);
 Vue.use(Formservice, { })
 
+// Install Buefy
+Vue.use(Buefy)
 
 // Now run the site
 new Vue({

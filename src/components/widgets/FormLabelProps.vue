@@ -17,10 +17,6 @@
           .c-property-label Style
           .c-property-value
             input.input(v-model="style")
-        .tt-property
-          .c-property-label Shoe size
-          .c-property-value
-            input.input(v-model="shoeSize")
 </template>
 
 <script>
@@ -59,15 +55,6 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'style', value })
-      }
-    },
-    shoeSize: {
-      get () {
-        let value = this.element['shoeSize']
-        return value ? value : ''
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'shoeSize', value })
       }
     },
   },

@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .c-form-input(:class="editModeClass")
+  .c-form-dropdown(:class="cClass", :style="cStyle")
 
     // Sanity checks
     .sanity-error(v-if="!sane_$content")
@@ -24,7 +24,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder")
+              input.input(readonly, :style="mInputStyle", :class="mInputClass", :placeholder="placeholder")
 
       // Editing
       div(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
@@ -32,7 +32,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder")
+              input.input(readonly, :style="mInputStyle", :class="mInputClass", :placeholder="placeholder")
 
       // Live mode
       template(v-else)
@@ -40,12 +40,16 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(:style="inputStyle", :class="inputClass", :placeholder="placeholder", v-model="actualData")
+              // input.input(:style="mInputStyle", :class="mInputClass", :placeholder="placeholder", v-model="actualData")
+              .select.has-text-left
+                select(v-model="actualData")
+                  option(v-for="record in cOptions", :value="record.value") {{record.description}}
 </template>
 
 <script>
 import ContentMixins from 'vue-contentservice/src/mixins/ContentMixins'
 import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
+import WidgetMixins from '../../mixins/WidgetMixins'
 
 export default {
   name: 'form-dropdown',
@@ -60,7 +64,7 @@ export default {
       required: true
     }
   },
-  mixins: [ ContentMixins, CutAndPasteMixins ],
+  mixins: [ ContentMixins, CutAndPasteMixins, WidgetMixins ],
   data: function () {
     return {
     }
@@ -81,69 +85,11 @@ export default {
       return false
     },
 
-    inputClass: function () {
-      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
-        console.log(`inputClass()`, this.element);
-      }
-
-      var obj = { }
-      let classesForElement = this.element['class']
-      if (classesForElement) {
-        // console.log(`classesForElement=${classesForElement}`);
-        classesForElement.split(' ').forEach(clas => {
-          // console.log(`-- ${clas}`);
-          let classname = clas.trim()
-          if (classname) {
-            obj[classname] = true
-          }
-        })
-      } else {
-        obj['form-input-default'] = true
-      }
-      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
-        console.log(`element=`, this.element);
-        console.log(`obj=`, obj)
-      }
-      return obj
-    },
-
-    inputStyle: function ( ) {
-      let style = this.element['style'] + ';'
-      // width
-      try {
-        let num = parseInt(this.element['width'])
-        if (num >= 20) {
-          style += `width:${num}px;`
-        }
-      } catch (e) { }
-
-      // height
-      try {
-        let num = parseInt(this.element['height'])
-        if (num >= 20) {
-          style += `height:${num}px;`
-        }
-      } catch (e) { }
-      // console.log(`inputStyle=`, style)
-      return style
-    },
-
-    // inputStyle: function (field) {
-    //   console.log(`inputStyle()`, field);
-    //   // return { }
-    //   return {
-    //     //'background-color': 'red',
-    //     //color: 'white',
-    //     left: `${field.x}px`,
-    //     top: `${field.y}px`,
-    //   }
-    // },
-
     attribute: {
       get () {
 
         //ZZZZZ
-        // console.error(`FormInput.attribute.get(): this.context=`, this.context);
+        // console.error(`FormDropdown.attribute.get(): this.context=`, this.context);
 
         let attribute = this.element['attribute'] ? this.element['attribute'] : this.element['field']
         return attribute
@@ -186,7 +132,7 @@ export default {
     actualData: {
       get () {
         let recordPath = this.context.formservice.dataPath
-        let attribute = this.attribute
+        let attribute = this.element['attribute']
 
         if (attribute) {
           let path = `${recordPath}.${attribute}`
@@ -208,7 +154,7 @@ export default {
             return ''
           }
         } else {
-          console.log(`Warning: input is missing 'attribute' property`, this.element);
+          console.log(`Warning: FormDropdown is missing 'attribute' property`, this.element);
           //ZZZZZ Do something about this...
           return ''
         }
@@ -217,33 +163,75 @@ export default {
         if (this.isLive) {
           let recordPath = this.context.formservice.dataPath
           console.error(`WARP FormDropdown.actualData.set: recordPath=${recordPath}`);
-          let attribute = this.attribute
+          let attribute = this.element['attribute']
 
           if (attribute) {
-            console.log(`FormInput: datavalue.set(${attribute}, ${value}`);
+            console.log(`FormDropdown: datavalue.set(${attribute}, ${value}`);
             this.$formservice.setValue(recordPath, attribute, value, String)
             // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
           }
         }
       }
-    }
-  }
+    },//- actualData
+
+    cOptions: function ( ) {
+
+      let attribute = this.element['attribute']
+      let dataset = this.element.dataset
+      // console.log(`dataset is ${dataset}`, this);
+      if (dataset) {
+        let { data, error } = this.$formservice.find({vm: this, path: dataset})
+        // console.error(`${dataset}=`, data)
+        // console.error(`error=`, error)
+        if (error) {
+          console.error(`Dropdown for '${attribute}' (dataset=${dataset}): `, error)
+          return [ ]
+        }
+        return data
+      }
+      console.error(`Property 'dataset' not set for Dropdown '${attribute}'`);
+      return [ ]
+    },//- options
+
+    cClass: function () {
+      // Get the class for design/edit/live mode
+      let cls = this.editModeClass + ' '
+
+      // Add classes defined by the user
+      let classesForElement = this.element['class']
+      if (classesForElement) {
+        cls +=  classesForElement
+      } else {
+        cls += ' form-input-default'
+      }
+      return cls
+    },
+
+    cStyle: function ( ) {
+      let style = this.element['style'] + ';'
+      return style ? `${style};` : ``
+    },
+
+  },//- computed
+
 }
 </script>
 
 
 <style lang="scss">
+  @import '../../assets/css/content-variables.scss';
+
   $bg-default: #ffffe0;
   $border-color-default: #ccc;
 
   $bg-borderless: #ffff00;
   $border-color-borderless: #ccc;
 
-  $frame-color: goldenrod;
+  $frame-color: #ffe9d5;
   $text-color: #700;
 
 
-  .c-form-input {
+  .c-form-dropdown {
 
     // Used if not in a valid form
     .sanity-error {
@@ -252,23 +240,16 @@ export default {
       font-size: 11px;
     }
 
-    // Design mode
+    /*
+     *  Design mode
+     */
     &.c-edit-mode-debug {
-      // border-top: dashed 2px $frame-color;
-      // border-left: dashed 2px $frame-color;
-      // border-bottom: dashed 2px $frame-color;
-      // border-right: dashed 2px $frame-color;
+      border-top: $c-input-layout-border-color-1;
+      border-left: $c-input-layout-border-color-1;
+      background-color: $c-input-layout-frame-color;
+      border-bottom: $c-input-layout-border-color-2;
+      border-right: $c-input-layout-border-color-2;
 
-      // border-top: solid 1px yellow;
-      // border-left: solid 1px yellow;
-      // background-color: goldenrod;
-      // border-bottom: solid 1px brown;
-      // border-right: solid 1px brown;
-      border-top: solid 1px #ccc;
-      border-left: solid 2px #ccc;
-      background-color: $frame-color;
-      border-bottom: solid 1px #999;
-      border-right: solid 1px #999;
       padding-left: 2px;
       padding-right: 2px;
       margin: 1px;
@@ -277,62 +258,80 @@ export default {
         width: 90% !important;
       }
 
-      input.form-input-default {
-        border-color: $border-color-default;
-        background-color: $bg-default;
-        //background-color: red;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 9px;
+      input {
+        border: solid 1px $c-input-layout-border-color-1;
+        font-family: $c-input-default-font-family;
+        font-weight: normal;
+        font-size: $c-input-layout-font-size;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        color: $c-input-default-color;
+        background-color: $c-input-default-background-color;
+        margin-bottom: 4px;
       }
-      input.form-input-borderless {
-        border-color: $border-color-borderless;
-        zborder: none;
-        box-shadow: none;
-        zbackground-color: $bg-borderless;
-        font-size: 9px;
+
+      &.form-input-borderless {
+        input {
+          border: dashed 1px $border-color-borderless;
+          box-shadow: none;
+          font-weight: normal;
+          background-color: none;
+        }
       }
     }
 
-    // Edit mode
+    /*
+     *  Edit mode
+     */
     &.c-edit-mode-edit {
-    //.my-edit-mode {
-      input.form-input-default {
+      input {
         border-color: $border-color-default;
-        background-color: $bg-default;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 9px;
+        font-family: $c-input-default-font-family;
+        //font-weight: $c-input-default-font-weight;
+        font-weight: normal;
+        font-size: $c-input-default-font-size;
+        color: $c-input-default-color;
+        background-color: $c-input-default-background-color;
       }
-      input.form-input-borderless {
+    //.my-edit-mode {
+      // Zinput.form-input-default {
+      //   border-color: $border-color-default;
+      //   background-color: $bg-default;
+      //   font-family: Arial;
+      //   font-weight: bold;
+      //   font-size: 9px;
+      // }
+      &.form-input-borderless {
         //border-color: $border-color-borderless;
         border: dashed 1px $border-color-borderless;
         box-shadow: none;
-        background-color: $bg-borderless;
-        font-size: 9px;
+        font-weight: normal;
+        background-color: none;
       }
     }
 
-    // Live modes
+    /*
+     *  Live mode
+     */
     &.c-edit-mode-view {
-      input.my-live-mode.form-input-default {
-        border-color: $border-color-default;
-
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 11px;
-        color: blue;
-        background-color: #ffffff;
+      margin-top: 2px;
+      margin-bottom: 8px;
+      label {
+        margin-bottom: 1px;
       }
-      input.my-live-mode.form-input-borderless {
-        border-color: #eee;
-        //border: none;
-        box-shadow: none;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 11px;
-        color: blue;
-        background-color: #ffffff;
+      select {
+        border-color: $border-color-default;
+        font-family: $c-input-default-font-family;
+        font-weight: $c-input-default-font-weight;
+        font-size: $c-input-default-font-size;
+        color: $c-input-default-color;
+        background-color: $c-input-default-background-color;
+      }
+      &.form-input-borderless {
+        input {
+          border: none;
+          box-shadow: none;
+        }
       }
     }
   }

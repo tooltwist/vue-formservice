@@ -18,8 +18,10 @@
 
     // Live
     template(v-else)
-      content-children(:element="element", :context="newContext")
-      | {{dummyActualValue}}
+      form(autocomplete="false")
+        input(type="hidden" autocomplete="false")
+        content-children(:element="element", :context="newContext")
+        | {{dummyActualValue}}
 </template>
 
 <script>

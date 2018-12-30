@@ -13,6 +13,12 @@ import PropertyBarIcons from './PropertyBarIcons'
 import StandardStyleProperties from './StandardStyleProperties'
 import FormserviceSanityError from './FormserviceSanityError'
 
+// ADL components
+import AdlAddress from './widgets/AdlAddress.vue'
+import AdlAddressProps from './widgets/AdlAddressProps.vue'
+import AdlInspectAreas from './widgets/AdlInspectAreas.vue'
+import AdlInspectAreasProps from './widgets/AdlInspectAreasProps.vue'
+
 // Our components
 import FormElementPosition from './widgets/FormElementPosition.vue'
 import FormElementPositionProps from './widgets/FormElementPositionProps.vue'
@@ -28,8 +34,6 @@ import FormCheckbox from './widgets/FormCheckbox.vue'
 import FormCheckboxProps from './widgets/FormCheckboxProps.vue'
 import FormSubmit from './widgets/FormSubmit.vue'
 import FormSubmitProps from './widgets/FormSubmitProps.vue'
-import AdlAddress from './widgets/AdlAddress.vue'
-import AdlAddressProps from './widgets/AdlAddressProps.vue'
 import FormGrid from './widgets/FormGrid.vue'
 import FormGridProps from './widgets/FormGridProps.vue'
 import ButtonPanel from './widgets/ButtonPanel.vue'
@@ -296,6 +300,31 @@ function install (Vue, options) {
       source: "toolbox",
       layout: {
         type: 'adlAddress',
+        children: [ ]
+      }
+    }
+  })
+
+  $content.registerWidget(Vue, {
+    name: 'adlInspectAreas',
+    label: 'Areas',
+    category: 'ADL Forms',
+    iconClass: 'fa fa-address-card-o',
+    iconClass5: 'fab fa-vimeo',
+    dragtype: 'component',
+
+    // Register native Vue templates
+    componentName: 'adl-inspect-areas',
+    component: AdlInspectAreas,
+    propertyComponent: AdlInspectAreasProps,
+
+    // Identical structure to a CUT or COPY from edit mode.
+    data: {
+      type: "contentservice.io",
+      version: "1.0",
+      source: "toolbox",
+      layout: {
+        type: 'adlInspectAreas',
         children: [ ]
       }
     }

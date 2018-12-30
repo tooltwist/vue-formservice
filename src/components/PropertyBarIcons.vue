@@ -40,6 +40,7 @@ export default {
   .property-bar-icons {
     margin-top: 2px;
     position: absolute;
+    // float: right;
     right: 3px;
     cursor: pointer;
     font-size: 10px;

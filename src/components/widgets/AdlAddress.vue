@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .c-content-formlabel(:class="editModeClass")
+  .c-adl-address(:class="editModeClass")
     span(v-if="extraDebug")
       | &lt;form-label&gt;
       br
@@ -49,68 +49,75 @@
 
 
     // Live mode
-    .has-text-left(v-else)
+    .box.has-text-left(v-else)
 
-      .field.has-addons.my-indent
+      .field.has-addons
         .control
           .button(@click="setManualAddress(false)", :class="manualAddress ? '' : 'is-primary'")
-            | Search for address
+            | Find address
         .control
           .button(@click="setManualAddress(true)", :class="manualAddress ? 'is-primary' : ''")
-            | Enter manually
+            | Enter address
 
-      // See https://github.com/olefirenko/vue-google-autocomplete
-      //vue-google-autocomplete.input(id="map", classname="Zform-control", placeholder="Start typing", v-on:placechanged="getAddressData")
-
-      // See https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete-addressform
-      .field.has-addons.my-indent(v-show="!manualAddress")
-        .control.is-expanded
-          input.input(ref="autocomplete", placeholder="Search for address")
-        .control
-          a.button.is-static Match against verified addresses
-
-      div.my-indent(v-if="manualAddress")
+      .my-manual-address(v-show="manualAddress")
+        // Manual address entry
         .field-body
           .field(style="flex-shrink: 0.1; flex-grow: 0.1;")
             label.label Unit No.
             .control
-              input.input(type="text" placeholder="12", v-model="a_unitNo")
+              input.input(type="text" placeholder="", v-model="a_unitNo")
           .field(style="flex-shrink: 0.1; flex-grow: 0.1;")
             label.label Street No.
             .control
-              input.input(type="text", placeholder="34", v-model="a_streetNo")
+              input.input(type="text", placeholder="", v-model="a_streetNo")
           .field(style="flex-shrink: 4; flex-grow: 4;")
             label.label Street Name
             .control.is-expanded
-              input.input(type="text", placeholder="e.g. Victoria Road", v-model="a_streetName")
+              input.input(type="text", placeholder="", v-model="a_streetName")
 
         .field-body
           .field.is-expanded
             label.label Suburb / Locality
             .control.is-expanded
-              input.input(type="text" placeholder="Wunderton", v-model="a_suburb")
+              input.input(type="text" placeholder="", v-model="a_suburb")
           .field(style="flex-shrink: 0.3; flex-grow: 0.3;")
             label.label State
             .control
-              input.input(type="text" placeholder="State", v-model="a_state")
-              //.select
-              //  select
-              //    option Select a state
-              //    option NSW
-              //    option NT
-              //    option QLD
-              //    option SA
-              //    option TAS
-              //    option VIC
-              //    option WA
+              //input.input(type="text" placeholder="", v-model="a_state")
+              .select
+                select(v-model="a_state")
+                  option Select a state
+                  option NSW
+                  option NT
+                  option QLD
+                  option SA
+                  option TAS
+                  option VIC
+                  option WA
           .field(style="flex-shrink: 0.1; flex-grow: 0.1;")
             label.label Post code
             .control
               input.input(type="number" placeholder="", v-model="a_postcode")
 
-      .box.my-indent.has-background-white-ter(v-else)
+      //.box.has-background-white-ter(v-else)
+      .my-autocomplete-address(v-show="!manualAddress")
+
+        // See https://github.com/olefirenko/vue-google-autocomplete
+        //vue-google-autocomplete.input(id="map", classname="Zform-control", placeholder="Start typing", v-on:placechanged="getAddressData")
+
+        // See https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete-addressform
+        .my-address-search(v-show="!manualAddress")
+          // Search field
+          .field.has-addons
+            .control.is-expanded
+              // In Chrome 71, having "address" in the placeholder causes chrome's
+              // autofill to cover the dropdown list.
+              input.input(ref="autocomplete", placeholder="e.g.   12A / 345 Higgins Road Burkshire", :autocomplete="mAutocompleteDisabled", :junk="mAutocompleteDisabled")
+            .control
+              a.button.is-static.is-hidden-touch Search against known addresses
+
         .field-body
-          .field(style="flex-shrink: 0.1; flex-grow: 0.1;")
+          .field(v-show="a_unitNo", style="flex-shrink: 0.1; flex-grow: 0.1;")
             label.label Unit No.
             .control
               input.input(type="text", disabled, v-model="a_unitNo")
@@ -139,7 +146,7 @@
 
 
 
-      .my-live-mode.label(:style="inputStyle", :class="inputClass") {{label}}
+      .my-live-mode.label(:style="mInputStyle", :class="mInputClass") {{label}}
 </template>
 
 <script>
@@ -571,6 +578,16 @@ function twoWayComputedAddressData(attribute) {
 <style lang="scss" scoped>
   @import '../../assets/css/content-variables.scss';
 
+  $border-color-default: #ccc;
+  $border-color-borderless: #ccc;
+
+
+
+
+  // Used?
+  $frame-color: #ffe9d5;
+  $text-color: #700;
+
   $frame-color: lightblue;
   $text-color: darkblue;
   $dummy-color: lightblue;
@@ -591,20 +608,6 @@ function twoWayComputedAddressData(attribute) {
     // This overrides the definition in content-editor.scss
     background-color: $frame-color;
     color: $text-color;
-  }
-
-  .c-edit-mode-debug {
-    border-left: dashed 2px $frame-color;
-    border-bottom: dashed 2px $frame-color;
-    border-right: dashed 2px $frame-color;
-    padding-bottom: 30px;
-
-    background-color: #f0f0f7;
-
-    &.c-selected {
-      //border-color: $c-editbar-color;
-      border-color: $c-editbar-color;
-    }
   }
 
 
@@ -664,37 +667,6 @@ function twoWayComputedAddressData(attribute) {
     }
   }
 
-  .my-dummy-addressZ {
-    border: solid 1px #ccc;
-    background-color: #f0f0f0;
-    height: 120px;
-    padding: 0px;
-    //font-size: 30px;
-    //font-family: Arial;
-
-    .valign {
-      position: relative;
-      text-align: left;
-      margin-top: 25px;
-      //margin-left: 25px;
-      // top: 120px;
-      font-size: 1.5em;
-      font-family: Arial;
-      font-weight: lighter;
-      color: #a0a0a0;
-
-      .modeDescription {
-        font-size: 16px;
-      }
-      .modeError {
-        font-size: 20px;
-        color: $c-editbar-color;
-        font-weight: bold;
-        font-style: italic;
-      }
-    }
-  }
-
   .my-design-mode {
     .my-label {
     }
@@ -708,8 +680,72 @@ function twoWayComputedAddressData(attribute) {
     }
   }
 
-  .my-indent {
-    margin-left: 36px;
+
+  //--------------------------------------------------------------------
+  // New stuff
+  .c-adl-address {
+    //margin-top: 6px;
+    margin-bottom: 10px;
+
+
+    /*
+     *  Design mode
+     */
+    &.c-edit-mode-debug {
+      border-left: dashed 2px $frame-color;
+      border-bottom: dashed 2px $frame-color;
+      border-right: dashed 2px $frame-color;
+      padding-bottom: 30px;
+
+      background-color: #f0f0f7;
+
+      &.c-selected {
+        //border-color: $c-editbar-color;
+        border-color: $c-editbar-color;
+      }
+    }
+
+    /*
+     *  Live mode
+     */
+    &.c-edit-mode-view {
+      margin-top: 8px;
+      margin-bottom: 8px;
+
+      label {
+        margin-bottom: 1px;
+      }
+
+      .my-autocomplete-address {
+        .my-address-search {
+          .field {
+            max-width: 900px;
+          }
+          input {
+            border-color: $border-color-default;
+            font-family: $c-input-default-font-family;
+            font-weight: $c-input-default-font-weight;
+            //font-size: $c-input-default-font-size;
+            color: $c-input-default-color;
+            background-color: $c-input-default-background-color;
+            margin-bottom: 15px;
+          }
+        }
+      }
+
+      .my-manual-address {
+        input, select {
+          border-color: $border-color-default;
+          font-family: $c-input-default-font-family;
+          font-weight: $c-input-default-font-weight;
+          font-size: $c-input-default-font-size;
+          color: $c-input-default-color;
+          background-color: $c-input-default-background-color;
+          margin-bottom: 15px;
+        }
+      }
+    }//- live mode
+
   }
 
 </style>

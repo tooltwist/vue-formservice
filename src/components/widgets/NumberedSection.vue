@@ -1,25 +1,36 @@
 <template lang="pug">
 
-  .c-content-formlabel(:class="editModeClass")
+  .c-numbered-section(:class="editModeClass")
     span(v-if="extraDebug")
       | &lt;form-label&gt;
       br
 
     // Debug mode
-    .my-design-mode(v-if="isDesignMode && false", @click.stop="selectThisElement2")
-      //.c-layout-mode-heading
+    .my-design-mode(v-if="isDesignMode", @click.stop="selectThisElement2")
+      .c-layout-mode-heading
         edit-bar-icons(:element="element")
-        | label
-      .label(:style="myStyle", :class="myClass") {{label}}
+        | numbered section
+      br
+      .label2(:data-number="sectionNo")
+        .my-label {{label}}
+      //.label(:style="myStyle", :class="myClass") {{label}}
+      .my-indented
+        content-children.my-content(:element="element", :context="context")
 
     // Editing
-    .my-edit-mode(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement2")
-      .label2(:data-number="sectionNo") {{label}}
+    .my-edit-mode(v-else-if="isEditMode", @click.stop="selectThisElement2")
+      .label2(:data-number="sectionNo")
+        .my-label {{label}}
+      .my-indented
+        content-children.my-content(:element="element", :context="context")
+
 
     // Live mode
     template(v-else)
-      //.my-live-mode.label(:style="myStyle", :class="myClass") {{label}}
-      .label2(:data-number="sectionNo") {{label}}
+      .label2(:data-number="sectionNo")
+        .my-label {{label}}
+      .my-indented
+        content-children.my-content(:element="element", :context="context")
 </template>
 
 <script>
@@ -32,7 +43,11 @@ export default {
     element: {
       type: Object,
       required: true
-    }
+    },
+    context: {
+      type: Object,
+      required: true
+    },
   },
   mixins: [ ContentMixins, CutAndPasteMixins ],
   data: function () {
@@ -153,13 +168,14 @@ export default {
 <style lang="scss" scoped>
   @import '../../assets/css/content-variables.scss';
 
-  $frame-color: lightblue;
-  $text-color: darkblue;
+  $design-frame-color: #7697c2;
+  $design-text-color: white;
+  $design-background-color: #e0ebfa;
 
   // .c-edit-mode-debug {
-  //   border-left: dashed 2px $frame-color;
-  //   border-bottom: dashed 2px $frame-color;
-  //   border-right: dashed 2px $frame-color;
+  //   border-left: dashed 2px $design-frame-color;
+  //   border-bottom: dashed 2px $design-frame-color;
+  //   border-right: dashed 2px $design-frame-color;
   //   margin: 1px;
   //
   //   .container {
@@ -167,71 +183,79 @@ export default {
   //   }
   // }
 
-  .c-layout-mode-heading {
-    // This overrides the definition in content-editor.scss
-    background-color: $frame-color;
-    color: $text-color;
-  }
+  .c-numbered-section {
 
+    .label2 {
+      margin-top: 1.5rem;
+      font-weight: 600;
+      color: #363636;
+      display: block;
+      font-size: 1.8rem;
+      box-sizing: inherit;
+      text-align: left;
+      margin-bottom: 0.2rem;
 
-  .c-label {
-    position: absolute;
-    //background-color: pink;
-  }
-
-  .form-label-default {
-    //color: #000000;
-    color: #333;
-    font-family: Arial;
-    font-weight: normal;
-    font-size: 9px;
-  }
-
-  .form-label-bold-default {
-    //color: #000000;
-    color: #333;
-    font-family: Arial;
-    font-weight: bold;
-    font-size: 9px;
-  }
-
-//form-checkbox-bold-default
-
-  .my-edit-mode {
-    .my-label {
+      .my-label {
+        display: inline-block;
+        position: relative;
+        top: 4px;
+      }
     }
-  }
-
-  .my-design-mode {
-    .my-label {
+    .label2:before {
+      position: relative;
+      content: attr(data-number);
+      display: inline-block;
+      padding: 2px;
+      background: #209cee;
+      text-align: center;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 1rem;
+      width: 25px;
+      height: 25px;
+      margin-right: 10px;
+      // top: 5px;
+      // margin-bottom: 10px;
+      // margin-top: 50px;
     }
-  }
 
-  .my-live-mode {
-    .my-label {
+    .my-indented {
+      margin-left: 35px;
     }
-  }
-  .label2 {
-    margin-top: 1.5rem;
-    font-weight: 600;
-    color: #363636;
-    display: block;
-    font-size: 1rem;
-    box-sizing: inherit;
-    text-align: left;
-  }
-  .label2:before {
-    content: attr(data-number);
-    display: inline-block;
-    padding: 2px;
-    background: #209cee;
-    text-align: center;
-    color: #fff;
-    border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    margin-top: 15px;
+
+    /*
+     *  Design mode
+     */
+    .my-design-mode {
+      background-color: $design-background-color;
+      border-left: dashed 2px $design-frame-color;
+      border-bottom: dashed 2px $design-frame-color;
+      border-right: dashed 2px $design-frame-color;
+      padding-bottom: 4px;
+
+      .c-layout-mode-heading {
+        // This overrides the definition in content-editor.scss
+        background-color: $design-frame-color;
+        color: $design-text-color;
+      }
+
+      .label2 {
+        margin-top: 0px;
+      }
+    }
+
+    /*
+     *  Edit mode
+     */
+    .my-edit-mode {
+    }
+
+    /*
+     *  Live mode
+     */
+    .my-live-mode {
+      .my-label {
+      }
+    }
   }
 </style>

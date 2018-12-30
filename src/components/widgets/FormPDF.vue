@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .c-form-input(:class="editModeClass")
+  .c-form-pdf(:class="editModeClass")
 
     // Sanity checks
     .sanity-error(v-if="!sane_$content")
@@ -143,7 +143,7 @@ export default {
       get () {
 
         //ZZZZZ
-        // console.error(`FormInput.attribute.get(): this.context=`, this.context);
+        // console.error(`FormPDF.attribute.get(): this.context=`, this.context);
 
         let attribute = this.element['attribute'] ? this.element['attribute'] : this.element['field']
         return attribute
@@ -167,7 +167,8 @@ export default {
 
         // Display a nice message in design mode
         if (this.isDesignMode || this.isEditMode) {
-          let str = (this.attribute) ? `[${this.attribute}]` : '?'
+          let attribute = this.element['attribute']
+          let str = (attribute) ? `[${attribute}]` : '?'
           if (placeholder) {
             str += ` - ${placeholder}`
           }
@@ -186,7 +187,7 @@ export default {
     actualData: {
       get () {
         let recordPath = this.context.formservice.dataPath
-        let attribute = this.attribute
+        let attribute = this.element['attribute']
 
         if (attribute) {
           let path = `${recordPath}.${attribute}`
@@ -208,7 +209,7 @@ export default {
             return ''
           }
         } else {
-          console.log(`Warning: input is missing 'attribute' property`, this.element);
+          console.log(`Warning: FormPDF is missing 'attribute' property`, this.element);
           //ZZZZZ Do something about this...
           return ''
         }
@@ -217,10 +218,10 @@ export default {
         if (this.isLive) {
           let recordPath = this.context.formservice.dataPath
           console.error(`WARP FormPDF.actualData.set: recordPath=${recordPath}`);
-          let attribute = this.attribute
+          let attribute = this.element['attribute']
 
           if (attribute) {
-            console.log(`FormInput: datavalue.set(${attribute}, ${value}`);
+            console.log(`FormPDF: datavalue.set(${attribute}, ${value}`);
             this.$formservice.setValue(recordPath, attribute, value, String)
             // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
           }
@@ -243,7 +244,7 @@ export default {
   $text-color: #700;
 
 
-  .c-form-input {
+  .c-form-pdf {
 
     // Used if not in a valid form
     .sanity-error {
