@@ -255,7 +255,7 @@ export default {
     //  Our form will need it's own context object cloned
     //  from the context we received, but with extra information.
     recordContext: function (index) {
-      console.error(`******* recordContext(${index}): old=`, this.context);
+      // console.error(`******* recordContext(${index}): old=`, this.context);
 
       // let recordPath = this.context.formservice.dataPath
       // let attribute = this.attribute
@@ -272,7 +272,7 @@ export default {
         // console.log(`listPath=${listPath}`);
 
         let newDataPath = `${listPath}[${index}]`
-        console.log(`new datapath is ${newDataPath}`);
+        // console.log(`new datapath is ${newDataPath}`);
 
 
         // Dataset is inherited if not overridden
@@ -286,7 +286,7 @@ export default {
           dataPath: newDataPath,
           parentFormservice
         }
-        console.log(`new context for ${index} is:`, newContext);
+        // console.log(`new context for ${index} is:`, newContext);
         return newContext
       }
       return context

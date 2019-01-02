@@ -1,26 +1,35 @@
 <template lang="pug">
   div#app
-    img.is-pulled-left(src="../assets/logo.png")
-    br
-    h1.title.is-3.has-text-left
-      | ADL Forms - Inspection Report
+    .above-my-content
+      adl-header
+    //br
+    //hr
+    //.my-header
+      //img.is-pulled-left(src="../assets/logo.png")
+      img.is-pulled-left(src="../assets/adlforms/logo.png")
       br
-      adl-menu
+      h1.title.is-3.has-text-left
+        | ADL Forms - Inspection Report
+        br
+        adl-menu
 
     // Page content
-    content-layout-editor.my-triple-pane(:editable="editable", :contentId="contentId")
+    content-layout-editor.my-content(:editable="editable", :contentId="contentId")
 
     // Footer
-    | Page Footer
+    .below-my-content
+      | Page Footer
 </template>
 
 <script>
 import ADLMenu from './ADLMenu.vue'
+import ADLHeader from './ADLHeader.vue'
 
 export default {
   name: 'app',
   components: {
-    'adl-menu': ADLMenu
+    'adl-menu': ADLMenu,
+    'adl-header': ADLHeader,
   },
   data () {
     return {
@@ -38,14 +47,15 @@ $border-color: #eee;
 
 
 // Positioning of the footer
-$above-triple-pane-size: 130;
-$below-triple-pane-size: 80;
+$above-content-size: 78;
+$below-content-size: 10;
 
 
 // Positioning of the footer
-$above-triple-pane-size: 100;
-$below-triple-pane-size: 80;
+//$above-content-size: 100;
+//$below-content-size: 80;
 
+$header-height: 70;
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -53,29 +63,18 @@ $below-triple-pane-size: 80;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
 
-  img {
-    margin: 10px;
-    height: 80px;
-    float: left;
-  }
 }
-.above-my-triple-pane {
+.above-my-content {
   // display: block;
   // top: 0px;
-  height: #{$above-triple-pane-size}px;
+  height: #{$above-content-size}px;
   padding: 0px;
 }
-.my-triple-pane {
+.my-content {
   //height: $a3-footer-size;
-  //min-height: calc(100vh - #{$above-triple-pane-size}px);
-  height: calc(100vh - #{$above-triple-pane-size + $below-triple-pane-size}px);
-}
-
-
-
-
-.my-triple-pane {
-  border: solid 1px $border-color;
+  //min-height: calc(100vh - #{$above-content-size}px);
+  height: calc(100vh - #{$above-content-size + $below-content-size}px);
+  //border: solid 1px $border-color;
   //height: 400px;
   // border-top: solid 1px #666;
   // border-bottom: solid 1px #666;

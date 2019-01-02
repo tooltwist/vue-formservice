@@ -112,7 +112,7 @@
             .control.is-expanded
               // In Chrome 71, having "address" in the placeholder causes chrome's
               // autofill to cover the dropdown list.
-              input.input(ref="autocomplete", placeholder="e.g.   12A / 345 Higgins Road Burkshire", :autocomplete="mAutocompleteDisabled", :junk="mAutocompleteDisabled")
+              input.input(ref="autocomplete", placeholder="e.g.   12A / 345 Higgins Road Berkville", :autocomplete="mAutocompleteDisabled", :junk="mAutocompleteDisabled")
             .control
               a.button.is-static.is-hidden-touch Search against known addresses
 

@@ -21,7 +21,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(readonly, :placeholder="placeholder")
+              input.input(readonly, :placeholder="YYYY/MM/DD")
 
       // Editing
       div(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
@@ -29,12 +29,16 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(readonly, :placeholder="placeholder")
+              input.input(readonly, :placeholder="YYYY/MM/DD")
 
       // Live mode
       template(v-else)
-        b-field.has-text-left(:label="label")
-          b-datepicker(:placeholder="placeholder", icon="calendar-today", v-model="actualData")
+        .has-text-left
+          .part1
+            b-field(:label="label")
+              b-datepicker(icon-pack="fa", icon="fa-calendar", v-model="actualData", :min-date="minDate", :date-formatter="dateFormatter", :date-parser="dateParser")
+          .part2
+            | &nbsp; {{weekday}}
 </template>
 
 <script>
@@ -113,27 +117,25 @@ export default {
       }
     },
 
-    placeholder: {
-      get () {
-        // Temporary - display a symbol if data is not found
-        let placeholder = this.element['placeholder']
-        if (!placeholder) {
-          placeholder = ''
-        }
-
-        // Display a nice message in design mode
-        if (this.isDesignMode || this.isEditMode) {
-          let str = (this.cAttribute) ? `[${this.cAttribute}]` : '?'
-          if (placeholder) {
-            str += ` - ${placeholder}`
-          }
-          return str
-        }
-        return placeholder
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
+    weekday: function ( ) {
+      let date = this.actualData
+      console.error(`weekday(): ${date}`);
+      if (date.getTime() == 0) {
+        return ''
       }
+      let day = date.getDay()
+      console.error(`day is ${day}`);
+      // let locale =
+      // return date.toLocaleDateString(locale, { weekday: 'long' });
+      var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      return days[day]
+    },
+
+    minDate: function ( ) {
+      let now = new Date()
+      let pastDays = 10;
+      let min = now.getTime() - (1000 * 60 * 60 * 24 * pastDays)
+      return new Date(min)
     },
 
     /*
@@ -151,7 +153,7 @@ export default {
         if (attribute) {
           // console.error(`@@@ GET START`)
           let path = `${recordPath}.${attribute}`
-          let defaultValue = new Date()
+          let defaultValue = new Date(0)
           // let {data, error} = this.$formservice.getData(path, defaultValue)
           let {data, error} = this.$formservice.findOrCreate({vm: this, path, updatePath: true, value: defaultValue, debug: false })
           // let {data, error} = this.$formservice.find({vm: this, path, debug: true })
@@ -165,8 +167,17 @@ export default {
             // console.error(`FieldInput: ${error}`);
             // return ''
             // console.error(`@@@ GET END 1`)
-            return new Date()
+            return new Date(0)
           } else if (value) {
+
+            // See if the date has been set yet
+            // if (value === null || value.getTime() === 0) {
+            //   return null
+            // }
+            console.error(`value is ${typeof(value)}, ${value instanceof Date}, ${value}`);
+
+
+
             // console.log(`value for field ${path} is ${value}`);
             // (date) => date.toLocaleDateString()
             // console.error(`@@@ GET END 2`, new Date(Date.parse(value)))
@@ -175,14 +186,14 @@ export default {
           } else {
             // return ''
             // console.error(`@@@ GET END 3`)
-            return new Date()
+            return new Date(0)
           }
         } else {
           console.log(`Warning: FormDate is missing 'attribute' property`, this.element);
           //ZZZZZ Do something about this...
           // return ''
           // console.error(`@@@ GET END 4`)
-          return new Date()
+          return new Date(0)
         }
       },//- get
       set (value) {
@@ -227,7 +238,25 @@ export default {
         }
       }
     }
-  }
+  },//- computed
+
+  methods: {
+    dateFormatter: function (date) {
+      console.error(`dateFormatter(${date})`);
+      if (date == null) {
+        console.error(`NULL DATE (null)`);
+        return ''
+      }
+      if (date.getTime() === 0) {
+        console.error(`NULL DATE`);
+        return ''
+      }
+      return date.toLocaleDateString()
+    },
+    dateParser: function (date) {
+      return new Date(Date.parse(date))
+    },
+  },//- methods
 }
 </script>
 
@@ -333,7 +362,17 @@ export default {
 
     // Live mode
     &.c-edit-mode-view {
+      .part1 {
+        display: inline-block;
+      }
+      .part2 {
+        display: inline-block;
+        position: relative;
+        top: 6px;
+        font-size: 0.8rem;
+      }
       input {
+        display: inline-block;
         border-color: $border-color-default;
         font-family: $c-input-default-font-family;
         font-weight: $c-input-default-font-weight;
