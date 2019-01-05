@@ -25,13 +25,13 @@
       .my-edit-mode(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
         label.checkbox(disabled, :style="mInputStyle", :class="mInputClass")
           input(disabled type="checkbox", :style="mInputStyle", :class="mInputClass")
-          | {{ label }}
+          | &nbsp; {{ label }}
 
       // Live mode
       template(v-else)
         label.checkbox(:style="mInputStyle", :class="mInputClass")
           input(type="checkbox", v-model="checked", :style="mInputStyle", :class="mInputClass")
-          | {{ label }}
+          | &nbsp; {{ label }}
 </template>
 
 <script>

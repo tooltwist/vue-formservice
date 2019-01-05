@@ -21,7 +21,7 @@ time<template lang="pug">
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(readonly, :placeholder="placeholder")
+              input.input(readonly, placeholder="HH:MM")
 
       // Editing
       div(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
@@ -29,21 +29,19 @@ time<template lang="pug">
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(readonly, :placeholder="placeholder")
+              input.input(readonly, placeholder="HH:MM")
 
       // Live mode
       template(v-else)
         b-field.has-text-left(:label="label")
-          b-datepicker(icon-pack="fa", icon="fa-calendar", v-model="actualData")
-          b-timepicker(readonly="false", icon="calendar-today", v-model="actualData")
+          //b-datepicker(icon-pack="fa", icon="fa-calendar", v-model="actualData")
+          b-timepicker(icon="calendar-today", v-model="actualData", :readonly="false")
 </template>
 
 <script>
 import ContentMixins from 'vue-contentservice/src/mixins/ContentMixins'
 import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
 import EditMixins from '../../mixins/EditMixins'
-
-let nullTime = new Date("January 1, 1970 00:00:00")
 
 export default {
   name: 'form-time',
@@ -116,29 +114,6 @@ export default {
       }
     },
 
-    placeholder: {
-      get () {
-        // Temporary - display a symbol if data is not found
-        let placeholder = this.element['placeholder']
-        if (!placeholder) {
-          placeholder = ''
-        }
-
-        // Display a nice message in design mode
-        if (this.isDesignMode || this.isEditMode) {
-          let str = (this.cAttribute) ? `[${this.cAttribute}]` : '?'
-          if (placeholder) {
-            str += ` - ${placeholder}`
-          }
-          return str
-        }
-        return placeholder
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
-      }
-    },
-
     /*
      *  Actual data edited by this input field
      */
@@ -154,7 +129,7 @@ export default {
         if (attribute) {
           // console.error(`@@@ GET START`)
           let path = `${recordPath}.${attribute}`
-          let defaultValue = nullTime
+          let defaultValue = null
           // let {data, error} = this.$formservice.getData(path, defaultValue)
           let {data, error} = this.$formservice.findOrCreate({vm: this, path, updatePath: true, value: defaultValue, debug: false })
           // let {data, error} = this.$formservice.find({vm: this, path, debug: true })
@@ -168,7 +143,7 @@ export default {
             // console.error(`FieldInput: ${error}`);
             // return ''
             // console.error(`@@@ GET END 1`)
-            return nullTime
+            return null
           } else if (value) {
             // console.log(`value for field ${path} is ${value}`);
             // (date) => date.toLocaleDateString()
@@ -178,21 +153,18 @@ export default {
           } else {
             // return ''
             // console.error(`@@@ GET END 3`)
-            return nullTime
+            return null
           }
         } else {
           console.log(`Warning: FormDate is missing 'attribute' property`, this.element);
           //ZZZZZ Do something about this...
           // return ''
           // console.error(`@@@ GET END 4`)
-          return nullTime
+          return null
         }
       },//- get
-      set (value) {
-        // value.setFullYear(0)
-        // value.setMonth(0)
-        value.setDate(0)
-        // console.log(`actualData.set(${value}), ${typeof(value)}`);
+      set (newValue) {
+        // console.log(`actualData.set(${newValue}), ${typeof(newValue)}`);
         if (this.isLive) {
           // console.error(`@@@ SET START`)
           let recordPath = this.context.formservice.dataPath
@@ -201,32 +173,43 @@ export default {
 
           if (attribute) {
             let path = `${recordPath}.${attribute}`
-            // console.log(`FormDate: actualData.set(${attribute}, ${value}`);
+            // console.log(`FormDate: actualData.set(${attribute}, ${newValue}`);
 
             // See if the value has changed
             let {data, error} = this.$formservice.find({vm: this, path, debug: false })
-            console.log(`Current time: ${data}`, error)
-            console.log(`    new time: ${typeof(value)}, ${value instanceof Date}, ${value}`);
-            // console.log(`Existing : ${typeof(data)}, ${data instanceof Date}, ${data}`);
+            let oldValue = data
+            console.log(`Old time: ${oldValue}`, error)
+            console.log(`New time: ${typeof(newValue)}, ${newValue instanceof Date}, ${newValue}`);
 
-            // if (data.getFullYear() !== value.getFullYear()) {
-            //   alert(`different year`)
-            // } else if (data.getMonth() !== value.getMonth()) {
-            //   alert(`different month`)
-            // } else if (data.getDate() !== value.getDate()) {
-            //   alert(`different date`)
-            // } else {
-            //   console.log(`No CHANGE`);
-            // }
+            if (newValue === null) {
 
-            if (
-              data.getHours() !== value.getHours()
-              || data.getMinutes() !== value.getMinutes()
-              // || data.getSeconds() !== value.getSeconds()
-            ) {
-              this.$formservice.save({vm: this, path, updatePath: true, value, debug: false })
-              // console.error(`@@@ SET END`)
+              // Value is being set to null
+              if (oldValue) {
+                // Set to null
+                console.error(`TIME BEING SET TO NULL`);
+                newValue = ''
+              } else {
+                // Is already null
+                console.error(`BOTH TIMES NULL - not changed`);
+                return
+              }
+            } else {
+              // Format new value to yyyy-mm-dd
+              let hour = '' + (newValue.getHours() + 1)
+              let minute = '' + newValue.getMinutes()
+              if (hour.length < 2) hour = '0' + hour;
+              if (minute.length < 2) minute = '0' + minute;
+              newValue = `${hour}:${minute}`
+
+              if (oldValue === newValue) {
+                // Value has not been changed
+                console.error(`VALUE NOT CHANGED`);
+                return
+              }
+              console.error(`VALUE CHANGED TO ${newValue}`);
             }
+
+            this.$formservice.save({vm: this, path, updatePath: true, value: newValue, debug: false })
           }
         }
       }
@@ -246,7 +229,7 @@ export default {
   $border-color-borderless: #ccc;
 
 
-  .c-form-date {
+  .c-form-time {
 
     // Used if not in a valid form
     .sanity-error {
@@ -256,7 +239,7 @@ export default {
     }
 
     input {
-      max-width: 140px;
+      max-width: 120px;
     }
 
     /*

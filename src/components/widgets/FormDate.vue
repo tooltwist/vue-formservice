@@ -21,7 +21,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(readonly, :placeholder="YYYY/MM/DD")
+              input.input(readonly, placeholder="YYYY/MM/DD")
 
       // Editing
       div(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
@@ -29,14 +29,14 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(readonly, :placeholder="YYYY/MM/DD")
+              input.input(readonly, placeholder="YYYY/MM/DD")
 
       // Live mode
       template(v-else)
         .has-text-left
           .part1
             b-field(:label="label")
-              b-datepicker(icon-pack="fa", icon="fa-calendar", v-model="actualData", :min-date="minDate", :date-formatter="dateFormatter", :date-parser="dateParser")
+              b-datepicker(icon-pack="fa", icon="fa-calendar", v-model="actualData", :min-date="minDate", :date-formatter="dateFormatter", :date-parser="dateParser", :readonly="false")
           .part2
             | &nbsp; {{weekday}}
 </template>
@@ -120,7 +120,10 @@ export default {
     weekday: function ( ) {
       let date = this.actualData
       console.error(`weekday(): ${date}`);
-      if (date.getTime() == 0) {
+      if (date === null) {
+        return ''
+      }
+      if (date.getTime() === 0) {
         return ''
       }
       let day = date.getDay()
@@ -153,21 +156,21 @@ export default {
         if (attribute) {
           // console.error(`@@@ GET START`)
           let path = `${recordPath}.${attribute}`
-          let defaultValue = new Date(0)
+          let defaultValue = ''
           // let {data, error} = this.$formservice.getData(path, defaultValue)
           let {data, error} = this.$formservice.findOrCreate({vm: this, path, updatePath: true, value: defaultValue, debug: false })
           // let {data, error} = this.$formservice.find({vm: this, path, debug: true })
 
           let value = data
-          // console.log(`value`, value);
-          // console.log(`error`, error);
+          console.error(`value`, value);
+          console.error(`error`, error);
 
 
           if (error) {
             // console.error(`FieldInput: ${error}`);
             // return ''
             // console.error(`@@@ GET END 1`)
-            return new Date(0)
+            return null
           } else if (value) {
 
             // See if the date has been set yet
@@ -186,18 +189,17 @@ export default {
           } else {
             // return ''
             // console.error(`@@@ GET END 3`)
-            return new Date(0)
+            return null
           }
         } else {
           console.log(`Warning: FormDate is missing 'attribute' property`, this.element);
           //ZZZZZ Do something about this...
           // return ''
           // console.error(`@@@ GET END 4`)
-          return new Date(0)
+          return null
         }
       },//- get
-      set (value) {
-        value.setHours(0, 0, 0, 0)
+      set (newValue) {
         // console.log(`actualData.set(${value}), ${typeof(value)}`);
         if (this.isLive) {
           // console.error(`@@@ SET START`)
@@ -211,29 +213,44 @@ export default {
 
             // See if the value has changed
             let {data, error} = this.$formservice.find({vm: this, path, debug: false })
-            // console.log(`Current value: ${data}`, error)
+            let oldValue = data
 
-            // console.log(`New value: ${typeof(value)}, ${value instanceof Date}, ${value}`);
-            // console.log(`Existing : ${typeof(data)}, ${data instanceof Date}, ${data}`);
+            console.log(`Old value: ${oldValue}`, error)
+            console.log(`New value: ${newValue}`)
 
-            // if (data.getFullYear() !== value.getFullYear()) {
-            //   alert(`different year`)
-            // } else if (data.getMonth() !== value.getMonth()) {
-            //   alert(`different month`)
-            // } else if (data.getDate() !== value.getDate()) {
-            //   alert(`different date`)
-            // } else {
-            //   console.log(`No CHANGE`);
-            // }
+            if (newValue === null) {
 
-            if (
-              data.getFullYear() !== value.getFullYear()
-              || data.getMonth() !== value.getMonth()
-              || data.getDate() !== value.getDate()
-            ) {
-              this.$formservice.save({vm: this, path, updatePath: true, value, debug: false })
-              // console.error(`@@@ SET END`)
+              // Value is being set to null
+              if (oldValue) {
+                // Set to null
+                console.error(`BEING SET TO NULL`);
+                newValue = ''
+              } else {
+                // Is already null
+                console.error(`BOTH NULL - not changed`);
+                return
+              }
+            } else {
+
+              // Format new value to yyyy-mm-dd
+              let month = '' + (newValue.getMonth() + 1)
+              let day = '' + newValue.getDate()
+              let year = newValue.getFullYear()
+              if (month.length < 2) month = '0' + month;
+              if (day.length < 2) day = '0' + day;
+              newValue = [year, month, day].join('-');
+
+              if (oldValue === newValue) {
+                // Value has not been changed
+                console.error(`VALUE NOT CHANGED`);
+                return
+              }
+              console.error(`VALUE CHANGED TO ${newValue}`);
             }
+
+            // Save the new value
+            this.$formservice.save({vm: this, path, updatePath: true, value: newValue, debug: false })
+            // console.error(`@@@ SET END`)
           }
         }
       }
@@ -245,10 +262,6 @@ export default {
       console.error(`dateFormatter(${date})`);
       if (date == null) {
         console.error(`NULL DATE (null)`);
-        return ''
-      }
-      if (date.getTime() === 0) {
-        console.error(`NULL DATE`);
         return ''
       }
       return date.toLocaleDateString()
