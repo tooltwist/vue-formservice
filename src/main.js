@@ -34,7 +34,8 @@ import InspectionReport from './testapp/InspectionReport.vue'
 require('font-awesome/css/font-awesome.min.css')
 require('bulma/css/bulma.min.css')
 require('vue-contentservice/dist/vue-contentservice.css')
-// require('../../assets/css/content-variables.scss')
+require('@/assets/css/content-editor.scss')
+// require('vue-contentservice/dist/vue-contentservice.css')
 
 
 import FroalaKey from './protected-config/froalaKey.js'

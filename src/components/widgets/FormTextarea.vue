@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .c-form-textarea(:class="cClass", :style="cStyle")
+  .c-form-textarea(:class="editModeClass")
 
     // Sanity checks
     .sanity-error(v-if="!sane_$content")
@@ -19,7 +19,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              textarea.textarea(readonly, :placeholder="cPlaceholder", rows="10")
+              textarea.textarea(readonly, :placeholder="cPlaceholder", :rows="rows")
 
       // Editing
       div(v-else-if="isEditMode", @click.stop="selectThisElement")
@@ -27,7 +27,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              textarea.textarea(readonly, :placeholder="cPlaceholder", rows="10")
+              textarea.textarea(readonly, :placeholder="cPlaceholder", :rows="rows")
 
       // Live mode
       template(v-else)
@@ -35,7 +35,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              textarea.textarea(:placeholder="cPlaceholder", rows="10", v-model="actualData")
+              textarea.textarea(:placeholder="cPlaceholder", :rows="rows", v-model="actualData")
 </template>
 
 <script>
@@ -144,6 +144,10 @@ export default {
       }
     },
 
+    rows: function ( ) {
+      return 15
+    },
+
     cPlaceholder: {
       get () {
         // Temporary - display a symbol if data is not found
@@ -243,15 +247,8 @@ export default {
 <style lang="scss">
   @import '../../assets/css/content-variables.scss';
 
-  $bg-default: #ffffe0;
   $border-color-default: #ccc;
-
-  $bg-borderless: #ffff00;
   $border-color-borderless: #ccc;
-
-  $frame-color: goldenrod;
-  $text-color: #700;
-
 
   .c-form-textarea {
 
@@ -295,7 +292,7 @@ export default {
         margin-bottom: 4px;
       }
       &.form-input-borderless {
-        input {
+        textarea {
           border: dashed 1px $border-color-borderless;
           box-shadow: none;
           font-weight: normal;
@@ -318,11 +315,15 @@ export default {
         background-color: $c-input-default-background-color;
       }
       &.form-input-borderless {
-        //border-color: $border-color-borderless;
-        border: dashed 1px $border-color-borderless;
-        box-shadow: none;
-        font-weight: normal;
-        background-color: none;
+        textarea {
+          border: dashed 1px $border-color-borderless;
+          box-shadow: none;
+        }
+        // //border-color: $border-color-borderless;
+        // border: dashed 1px $border-color-borderless;
+        // box-shadow: none;
+        // font-weight: normal;
+        // background-color: none;
       }
 
     // //.my-edit-mode {
@@ -342,26 +343,45 @@ export default {
     //   }
     }
 
-    // Live modes
+    /*
+     *  Live mode
+     */
     &.c-edit-mode-view {
-      input.my-live-mode.form-input-default {
-        border-color: $border-color-default;
-
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 11px;
-        color: blue;
-        background-color: #ffffff;
+      margin-top: 2px;
+      margin-bottom: 8px;
+      label {
+        margin-bottom: 1px;
       }
-      input.my-live-mode.form-input-borderless {
-        border-color: #eee;
-        //border: none;
-        box-shadow: none;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 11px;
-        color: blue;
-        background-color: #ffffff;
+      textarea {
+        border-color: $border-color-default;
+        font-family: $c-input-default-font-family;
+        font-weight: $c-input-default-font-weight;
+        font-size: $c-input-default-font-size;
+        color: $c-input-default-color;
+        background-color: $c-input-default-background-color;
+      }
+      // textarea.my-live-mode.form-input-default {
+      //   border-color: $border-color-default;
+      //
+      //   font-family: Arial;
+      //   font-weight: bold;
+      //   font-size: 11px;
+      //   color: blue;
+      //   background-color: #ffffff;
+      // }
+      &.form-input-borderless {
+        textarea {
+          border: none;
+          box-shadow: none;
+        }
+        // border-color: #eee;
+        // //border: none;
+        // box-shadow: none;
+        // font-family: Arial;
+        // font-weight: bold;
+        // font-size: 11px;
+        // color: blue;
+        // background-color: #ffffff;
       }
     }
   }

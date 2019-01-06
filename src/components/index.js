@@ -128,10 +128,9 @@ function install (Vue, options) {
   // 'formservice' Widget
   $content.registerWidget(Vue, {
     name: 'formservice',
-    label: 'Fixed Position Form',
-    category: 'Forms',
-    iconClass: 'formservice-toolbox-form',
-    iconClass5: 'far fa-newspaper',
+    label: 'Fixed form',
+    category: '',
+    iconClass: 'c-toolbox-icon-fixed-form',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -154,9 +153,8 @@ function install (Vue, options) {
   $content.registerWidget(Vue, {
     name: 'formlabel',
     label: 'Label',
-    category: 'Forms',
-    iconClass: 'formservice-toolbox-label',
-    iconClass5: 'fab fa-vimeo',
+    category: '',
+    iconClass: 'c-toolbox-icon-label',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -180,9 +178,8 @@ function install (Vue, options) {
   $content.registerWidget(Vue, {
     name: 'forminput',
     label: 'Input',
-    category: 'Forms',
-    iconClass: 'formservice-toolbox-text',
-    iconClass5: 'fab fa-vimeo',
+    category: '',
+    iconClass: 'c-toolbox-icon-input',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -204,10 +201,9 @@ function install (Vue, options) {
 
   $content.registerWidget(Vue, {
     name: 'formoutput',
-    label: 'Output',
-    category: 'Forms',
-    iconClass: 'fa fa-vimeo',
-    iconClass5: 'fab fa-vimeo',
+    label: 'PDF Field',
+    category: 'Application',
+    iconClass: 'c-toolbox-icon-pdf-output',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -231,9 +227,8 @@ function install (Vue, options) {
   $content.registerWidget(Vue, {
     name: 'formcheckbox',
     label: 'Checkbox',
-    category: 'Forms',
-    iconClass: 'fa fa-check-square-o',
-    iconClass5: 'fab fa-vimeo',
+    category: '',
+    iconClass: 'c-toolbox-icon-checkbox',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -257,9 +252,8 @@ function install (Vue, options) {
   $content.registerWidget(Vue, {
     name: 'formsubmit',
     label: 'Submit',
-    category: 'Forms',
-    iconClass: 'fa fa-vimeo',
-    iconClass5: 'fab fa-vimeo',
+    category: 'Application',
+    iconClass: 'c-toolbox-icon-submit',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -283,9 +277,8 @@ function install (Vue, options) {
   $content.registerWidget(Vue, {
     name: 'adlAddress',
     label: 'Address',
-    category: 'ADL Forms',
-    iconClass: 'fa fa-address-card-o',
-    iconClass5: 'fab fa-vimeo',
+    category: 'Application',
+    iconClass: 'c-toolbox-icon-address',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -308,9 +301,8 @@ function install (Vue, options) {
   $content.registerWidget(Vue, {
     name: 'adlInspectAreas',
     label: 'Areas',
-    category: 'ADL Forms',
-    iconClass: 'fa fa-address-card-o',
-    iconClass5: 'fab fa-vimeo',
+    category: 'Application',
+    iconClass: 'c-toolbox-icon-areas',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -333,9 +325,8 @@ function install (Vue, options) {
   $content.registerWidget(Vue, {
     name: 'formgrid',
     label: 'Grid',
-    category: 'ADL Forms',
-    iconClass: 'fa fa-table',
-    iconClass5: 'fas fa-table',
+    category: '',
+    iconClass: 'c-toolbox-icon-grid',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -359,8 +350,7 @@ function install (Vue, options) {
     name: 'buttonPanel',
     label: 'Button Panel',
     category: '',
-    iconClass: 'fa fa-vimeo',
-    iconClass5: 'fab fa-vimeo',
+    iconClass: 'c-toolbox-icon-button-panel',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -382,10 +372,9 @@ function install (Vue, options) {
 
   $content.registerWidget(Vue, {
     name: 'numberedSection',
-    label: 'Numbered Section',
-    category: 'ADL Data Entry',
-    iconClass: 'fa fa-list-ol',
-    iconClass5: 'fas fa-list-ol',
+    label: 'Number section',
+    category: 'Application',
+    iconClass: 'c-toolbox-icon-numbered-section',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -410,9 +399,8 @@ function install (Vue, options) {
   $content.registerWidget(Vue, {
     name: 'responsiveForm',
     label: 'Responsive Form',
-    category: 'ADL Data Entry',
-    iconClass: 'formservice-toolbox-form',
-    iconClass5: 'far fa-newspaper',
+    category: '',
+    iconClass: 'c-toolbox-icon-responsive-form',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -432,45 +420,44 @@ function install (Vue, options) {
     }
   })
 
-  $content.registerWidget(Vue, {
-    name: 'exampleWidget',
-    label: 'Example Widget',
-    category: 'Tutorial',
-    iconClass: 'fa fa-vimeo',
-    iconClass5: 'fab fa-vimeo',
-    dragtype: 'component',
+  if (options.examples) {
+    $content.registerWidget(Vue, {
+      name: 'exampleWidget',
+      label: 'Example Widget',
+      category: 'Tutorial',
+      iconClass: 'fa fa-vimeo',
+      iconClass5: 'fab fa-vimeo',
+      dragtype: 'component',
 
-    // Register native Vue templates
-    componentName: 'example-widget',
-    component: ExampleWidget,
-    propertyComponent: ExampleWidgetProps,
+      // Register native Vue templates
+      componentName: 'example-widget',
+      component: ExampleWidget,
+      propertyComponent: ExampleWidgetProps,
 
-    // Identical structure to a CUT or COPY from edit mode.
-    data: {
-      type: "contentservice.io",
-      version: "1.0",
-      source: "toolbox",
-      layout: {
-        type: 'exampleWidget',
-        text: 'This is a splendid example widget',
-        label: 'This is a label',
-        placeholder: 'This is an input field',
-        'class': 'has-text-info has-text-left',
-        style: 'font-style: italic;',
-        children: [ ]
+      // Identical structure to a CUT or COPY from edit mode.
+      data: {
+        type: "contentservice.io",
+        version: "1.0",
+        source: "toolbox",
+        layout: {
+          type: 'exampleWidget',
+          text: 'This is a splendid example widget',
+          label: 'This is a label',
+          placeholder: 'This is an input field',
+          'class': 'has-text-info has-text-left',
+          style: 'font-style: italic;',
+          children: [ ]
+        }
       }
-    }
-  })
-
-
-
+    })
+  }
 
   $content.registerWidget(Vue, {
     name: 'date',
     label: 'Date',
     // category: 'ADL Data Entry',
-    iconClass: 'formservice-toolbox-date',
-    iconClass5: 'fab fa-vimeo',
+    iconClass: 'c-toolbox-icon-date',
+    // iconClass5: 'fab fa-vimeo',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -494,8 +481,7 @@ function install (Vue, options) {
     name: 'dropdown',
     label: 'Dropdown',
     // category: 'ADL Data Entry',
-    iconClass: 'formservice-toolbox-dropdown',
-    iconClass5: 'fab fa-vimeo',
+    iconClass: 'c-toolbox-icon-dropdown',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -519,9 +505,8 @@ function install (Vue, options) {
   $content.registerWidget(Vue, {
     name: 'pdf',
     label: 'Display PDF',
-    // category: 'ADL Data Entry',
-    iconClass: 'formservice-toolbox-pdf',
-    iconClass5: 'fab fa-vimeo',
+    category: 'Application',
+    iconClass: 'c-toolbox-icon-display-pdf',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -543,10 +528,9 @@ function install (Vue, options) {
 
   $content.registerWidget(Vue, {
     name: 'signature',
-    label: 'Signature image',
-    category: 'ADL Data Entry',
-    iconClass: 'formservice-toolbox-signature',
-    iconClass5: 'fab fa-vimeo',
+    label: 'Signature',
+    category: 'Application',
+    iconClass: 'c-toolbox-icon-signature',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -569,9 +553,8 @@ function install (Vue, options) {
   $content.registerWidget(Vue, {
     name: 'textarea',
     label: 'Text area',
-    // category: 'ADL Data Entry',
-    iconClass: 'formservice-toolbox-textarea',
-    iconClass5: 'fab fa-vimeo',
+    category: '',
+    iconClass: 'c-toolbox-icon-textarea',
     dragtype: 'component',
 
     // Register native Vue templates
@@ -594,9 +577,9 @@ function install (Vue, options) {
   $content.registerWidget(Vue, {
     name: 'time',
     label: 'Time',
-    // category: 'ADL Data Entry',
-    iconClass: 'formservice-toolbox-time',
-    iconClass5: 'fab fa-vimeo',
+    category: '',
+    iconClass: 'c-toolbox-icon-time',
+    // iconClass5: 'fab fa-vimeo',
     dragtype: 'component',
 
     // Register native Vue templates

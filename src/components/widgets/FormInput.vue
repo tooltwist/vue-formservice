@@ -280,7 +280,9 @@ export default {
       &.form-input-borderless {
         input {
           border: dashed 1px $border-color-borderless;
+          box-shadow: none;
           font-weight: normal;
+          background-color: none;
         }
       }
     }
@@ -290,7 +292,7 @@ export default {
      */
     &.c-edit-mode-edit {
     //.my-edit-mode {
-      input.form-input-default {
+      input {
         border-color: $border-color-default;
         font-family: $c-input-default-font-family;
         font-weight: $c-input-default-font-weight;
