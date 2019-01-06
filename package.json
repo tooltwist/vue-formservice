@@ -1,6 +1,6 @@
 {
   "name": "vue-formservice",
-  "version": "0.1.76",
+  "version": "0.1.77",
   "private": false,
   "scripts": {
     "dev": "vue-cli-service serve --open",
