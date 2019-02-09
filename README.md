@@ -45,8 +45,8 @@ Open the project in your edit and...
 1. Globally substitute 'Formservice' with your project name with the first character _in upper case_.
 1. git mv src/lib/Formservice.js src/lib/**Projectname**.js
 1. git mv src/store/FormserviceStore.js src/store/**Projectname**Store.js
-1. git mv src/components/widgets/ContentFormservice.vue src/components/widgets/Content**Projectname**.vue
-1. git mv src/components/widgets/ContentFormserviceProps.vue src/components/widgets/Content**Projectname**Props.vue
+1. git mv src/components/widgets/FixedPositionForm.vue src/components/widgets/Content**Projectname**.vue
+1. git mv src/components/widgets/FixedPositionFormProps.vue src/components/widgets/Content**Projectname**Props.vue
 1. Modify README.md to explain what this widget library does.
 
 Commit to github, then publish at will:
@@ -57,8 +57,8 @@ Commit to github, then publish at will:
 
 To create new widgets, you can copy and modify the example widget files in src/components/widgets:
 
-- ContentFormservice.vue = the component displayed on the page
-- ContentFormserviceProps.vue = a component to edit the properties when in editing mode.
+- FixedPositionForm.vue = the component displayed on the page
+- FixedPositionFormProps.vue = a component to edit the properties when in editing mode.
 
 You can register your new widget using `$content.registerWidget` inside `src/components/index.js`.
 

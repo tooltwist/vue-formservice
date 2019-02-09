@@ -1,6 +1,7 @@
 <template lang="pug">
   .c-property-element(:class="propertyClass")
     .tt-property-header(@click="setExpandedElement")
+      property-bar-icons(v-if="isExpandedElement", :element="element")
       | Output
 
     transition(name="c-property-list-transition")
@@ -10,10 +11,6 @@
           .c-property-value
             input.input(v-model="attribute")
         .tt-property
-          .c-property-label Placeholder
-          .c-property-value
-            input.input(v-model="placeholder")
-        .tt-property
           .c-property-label Class
           .c-property-value
             input.input(v-model="clas")
@@ -21,13 +18,19 @@
           .c-property-label Style
           .c-property-value
             input.input(v-model="style")
+
+        fixed-position-properties(:element="element")
 </template>
 
 <script>
 import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
+import FixedPositionProperties from './FixedPositionProperties'
 
 export default {
   name: 'form-output-props',
+  components: {
+    FixedPositionProperties
+  },
   mixins: [ PropertyMixins ],
   computed: {
 
@@ -41,15 +44,6 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'attribute', value })
-      }
-    },
-    placeholder: {
-      get () {
-        let value = this.element['placeholder']
-        return value ? value : ''
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
       }
     },
     clas: {
@@ -70,6 +64,45 @@ export default {
         this.$content.setProperty({ vm: this, element: this.element, name: 'style', value })
       }
     },
+
+
+    width: {
+      get () {
+        let value = this.element['width']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'width', value })
+      }
+    },
+    height: {
+      get () {
+        let value = this.element['height']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'height', value })
+      }
+    },
+    x: {
+      get () {
+        let value = this.element['x']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'x', value })
+      }
+    },
+    y: {
+      get () {
+        let value = this.element['y']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'y', value })
+      }
+    },
+
   },
 }
 </script>

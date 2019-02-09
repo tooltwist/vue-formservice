@@ -40,7 +40,7 @@ export default {
       // NEW
       leftPane: true,
       editable: true,
-      contentId: 'formservice.test.layout',
+      contentId: 'formservice.test.philJunk',
 
       // OLD
       editcontext: {

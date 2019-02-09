@@ -9,8 +9,7 @@ context<template lang="pug">
     div(v-if="isDesignMode", @click.stop="selectThisElement")
       .c-layout-mode-heading
         edit-bar-icons(:element="element")
-        | form {{name}}
-        span(v-if="dataset ") &nbsp;&nbsp;{ dataset: {{dataset}} }
+        | fixed form - {{absoluteDataPath}}
 
       drop.formservice-box.droparea.my-design-mode(:style="boxStyle", @drop="handleDrop(form, ...arguments)")
         div(v-if="element.children", v-for="(child, index) in element.children")
@@ -37,6 +36,8 @@ context<template lang="pug">
 <script>
 import ContentMixins from 'vue-contentservice/src/mixins/ContentMixins'
 import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
+import EditMixins from '../../mixins/EditMixins'
+import FormserviceMixins from '../../mixins/FormserviceMixins'
 
 export default {
   name: 'content-formservice',
@@ -63,7 +64,9 @@ export default {
       required: false
     }
   },
-  mixins: [ ContentMixins, CutAndPasteMixins ],
+
+  mixins: [ ContentMixins, CutAndPasteMixins, EditMixins, FormserviceMixins ],
+
   data: function () {
     return {
       counter: 1,
@@ -89,6 +92,11 @@ export default {
 
   computed: {
 
+    absoluteDataPath: function ( ) {
+      let dataset = this.element['dataset']
+      return this.mAbsolutePath(dataset)
+    },
+
     //  Our form will need it's own context object cloned
     //  from the context we received, but with extra information.
     newContext: {
@@ -96,8 +104,6 @@ export default {
         // console.error(`******* newContext(): old=`, this.context);
 
         if (this.context && this.context.formservice) {
-          // console.log(`- need to clone existing context`)
-
           // This is a form inside a form
           // Dataset is inherited if not overridden
           let parentFormservice = this.context.formservice
@@ -105,24 +111,23 @@ export default {
           let newContext = this.cloneContextZZZ(this.context)
           let name = this.element['name'] ? this.element['name'] : ''
           let dataset = this.element['dataset']
-          let dataPath
+          let dataPath = this.context.formservice.dataPath
           if (dataset) {
-            // Override the inherited dataPath - use our own dataset
-            dataPath = '!' + dataset
-
-          } else {
-
-            // Use inherited dataPath
-            dataPath = this.context.formservice.dataPath
-
+            if (dataset.startsWith('!')) {
+              // Override the inherited dataPath - use our own dataset
+              dataPath = dataset.trim()
+            } else {
+              // Add to inherited dataPath
+              dataPath = `${this.context.formservice.dataPath}.${dataset}`
+            }
           }
           newContext.formservice = {
             name,
-            // dataset,
             dataPath,
             parentFormservice
           }
           return newContext
+
         } else {
 
           // Not a form inside a form
@@ -132,14 +137,14 @@ export default {
           let newContext = { }
           let name = this.element['name']
           let dataset = this.element['dataset']
-          let dataPath = (dataset) ? `!${dataset}` : '!mock'
+          let dataPath = (dataset) ? dataset : '!mock'
           newContext.formservice = {
             name,
             // dataset,
             dataPath,
             parentFormservice: null
           }
-          // console.log(`newContext(): new=`, newContext);
+          console.error(`newContext(): new=`, newContext);
           return newContext
         }
       } // - newContext.get
@@ -193,66 +198,6 @@ export default {
       return def ? def.componentName : null
     },
 
-    // labelClass: function (field) {
-    //   // console.log(`labelClass()`, field);
-    //
-    //   if (field.classname) {
-    //     return field.classname
-    //   }
-    //   return null
-    // },
-    //
-    // labelStyle: function (field) {
-    //   // console.log(`labelStyle()`, field);
-    //   // return { }
-    //   return {
-    //     // 'background-color': 'red',
-    //     // color: 'white',
-    //     left: `${field.x}px`,
-    //     top: `${field.y}px`,
-    //   }
-    // },
-
-    // inputClass: function (field) {
-    //   // console.log(`inputClass()`, field);
-    //
-    //   if (field.classname) {
-    //     return field.classname
-    //   }
-    //   return null
-    // },
-    //
-    // inputStyle: function (field) {
-    //   // console.log(`inputStyle()`, field);
-    //   // return { }
-    //   return {
-    //     //'background-color': 'red',
-    //     //color: 'white',
-    //     left: `${field.x}px`,
-    //     top: `${field.y}px`,
-    //   }
-    // },
-
-    // otherClass: function (field) {
-    //   // console.log(`otherClass()`, field);
-    //
-    //   if (field.classname) {
-    //     return field.classname
-    //   }
-    //   return null
-    // },
-    //
-    // otherStyle: function (field) {
-    //   // console.log(`otherStyle()`, field);
-    //   // return { }
-    //   return {
-    //     'background-color': 'red',
-    //     color: 'white',
-    //     left: `${field.x}px`,
-    //     top: `${field.y}px`,
-    //   }
-    // },
-
     positionClass: function (element) {
       // console.log(`positionClass()`, element);
 
@@ -301,9 +246,9 @@ export default {
 
     // The drop event normally provides (data, event) but we've added (form, ...) in front.
     handleDrop (form, data, event) {
-      console.log(`ContentFormservice.handleDrop(). form=`, form)
-      console.log(`ContentFormservice.handleDrop(), data=`, data)
-      console.log(`ContentFormservice.handleDrop(), event=`, event)
+      console.log(`FixedPositionForm.handleDrop(). form=`, form)
+      console.log(`FixedPositionForm.handleDrop(), data=`, data)
+      console.log(`FixedPositionForm.handleDrop(), event=`, event)
 
       // Work out the drop position
       let x = event.layerX - this.mouseDownX
@@ -499,7 +444,7 @@ export default {
       //min-width: 400px;
 
       .my-component {
-        min-width: 120px;
+        min-width: 20px;
         background-color: white;
       }
     }

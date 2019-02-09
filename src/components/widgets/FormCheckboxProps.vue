@@ -1,7 +1,7 @@
 <template lang="pug">
   .c-property-element(:class="propertyClass")
     .tt-property-header(@click="setExpandedElement")
-      | Input
+      | Checkbox
 
     transition(name="c-property-list-transition")
       .c-element-properties(v-show="isExpandedElement")
@@ -21,13 +21,19 @@
           .c-property-label Class
           .c-property-value
             input.input(v-model="clas")
+
+        fixed-position-properties(:element="element")
 </template>
 
 <script>
 import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
+import FixedPositionProperties from './FixedPositionProperties'
 
 export default {
   name: 'form-checkbox-props',
+  components: {
+    FixedPositionProperties
+  },
   mixins: [ PropertyMixins ],
   computed: {
 

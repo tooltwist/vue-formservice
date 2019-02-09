@@ -192,9 +192,10 @@ export default {
         if (attribute) {
           let path = `${recordPath}.${attribute}`
           let defaultValue = '' //ZZZ This could come from a schema
-          let {data, error} = this.$formservice.getData(path, defaultValue)
+          let {data, error} = this.$formservice.findOrCreate({ vm: this, path, updatePath: true, value: '', debug: false })
 
           let value = data
+          // console.log(`path`, path);
           // console.log(`value`, value);
           // console.log(`error`, error);
 
@@ -221,8 +222,9 @@ export default {
           let attribute = this.element['attribute']
 
           if (attribute) {
-            console.log(`FormInput: datavalue.set(${attribute}, ${value}`);
-            this.$formservice.setValue(recordPath, attribute, value, String)
+            let path = `${recordPath}.${attribute}`
+            // this.$formservice.setValue(recordPath, attribute, value, String)
+            this.$formservice.save({ vm: this, path, updatePath: true, value, debug: false })
             // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
           }
         }

@@ -16,6 +16,7 @@ const ARRAY = 104
 const ELEMENT_IN_ARRAY = 105
 const WHATEVER = 106
 
+const MOCK_STRING = 'XXXXX'
 
 const NOTFOUND = { error: 'NOTFOUND', data: null }
 const SUCCESS = { error: null, data: null }
@@ -305,7 +306,7 @@ export const getters = {
 
     // If we ask for mock data, we always get question marks
     if (datasetName === 'mock') {
-      return { data: '???', error: null }
+      return { data: MOCK_STRING, error: null }
     }
 
     let parcel = state.datasetIndex[datasetName]
@@ -498,7 +499,7 @@ if (TESTHACK) {
 
     // If we ask for mock data, we always get question marks
     if (datasetName === 'mock') {
-      return { data: '???', error: null }
+      return { data: MOCK_STRING, error: null }
     }
 
     if (!state.datasetIndex.hasOwnProperty(datasetName)) {
@@ -584,7 +585,7 @@ find: (state) => ({ vm, path, debug }) => {
 
   // If we ask for mock data, we always get question marks
   if (datasetName === 'mock') {
-    return { data: '???', error: null }
+    return { data: MOCK_STRING, error: null }
   }
 
   if (!state.datasetIndex.hasOwnProperty(datasetName)) {
@@ -2299,17 +2300,23 @@ export const actions = {
   // },//- scanDocument
 
   setValueFromSeekAction({commit, state}, {vm, parent, name, index, value, debug}) {
-    console.log(`setValueFromSeekAction(name=${name}, index=${index}, value=${describe(value)}`, value)
+    if (debug) {
+      console.log(`setValueFromSeekAction(name=${name}, index=${index}, value=${describe(value)}`, value)
+    }
     commit('setValueFromSeekMutation', { vm, parent, name, index, value, debug })
   },
 
   deleteValueFromSeekAction({commit, state}, {vm, parent, name, index, debug}) {
-    console.log(`deleteValueFromSeekAction(name=${name}, index=${index})`);
+    if (debug) {
+      console.log(`deleteValueFromSeekAction(name=${name}, index=${index})`);
+    }
     commit('deleteValueFromSeekMutation', {vm, parent, name, index, debug})
   },
 
   setValue ({ commit, state }, { recordPath, path, value, type }) {
-    console.log(`ACTION FormserviceStore.setValue(${recordPath}, ${path}, ${value}, type)`);
+    if (debug) {
+      console.log(`ACTION FormserviceStore.setValue(${recordPath}, ${path}, ${value}, type)`);
+    }
     commit('setValueMutation', { recordPath, path, value, type })
   },
 
@@ -2415,7 +2422,7 @@ console.log(`ok 7`);
     // If we ask for mock data, we always get question marks
     if (datasetName === 'mock') {
       // Mock data, nothing to save
-      return { data: '???', error: null }
+      return { data: MOCK_STRING, error: null }
     }
     let datasetIndex = parts[0].index
     console.log(`ok 8 ${datasetName}[${datasetIndex}]`)

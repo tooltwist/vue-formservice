@@ -22,10 +22,12 @@ import AdlInspectAreasProps from './widgets/AdlInspectAreasProps.vue'
 // Our components
 import FormElementPosition from './widgets/FormElementPosition.vue'
 import FormElementPositionProps from './widgets/FormElementPositionProps.vue'
-import ContentFormservice from './widgets/ContentFormservice.vue'
-import ContentFormserviceProps from './widgets/ContentFormserviceProps.vue'
+import FixedPositionForm from './widgets/FixedPositionForm.vue'
+import FixedPositionFormProps from './widgets/FixedPositionFormProps.vue'
 import FormLabel from './widgets/FormLabel.vue'
 import FormLabelProps from './widgets/FormLabelProps.vue'
+import FormLine from './widgets/FormLine.vue'
+import FormLineProps from './widgets/FormLineProps.vue'
 import FormInput from './widgets/FormInput.vue'
 import FormInputProps from './widgets/FormInputProps.vue'
 import FormOutput from './widgets/FormOutput.vue'
@@ -126,6 +128,7 @@ function install (Vue, options) {
    */
 
   // 'formservice' Widget
+  // WARNING: This is for backwards compatibility only. Use fixedform instead.
   $content.registerWidget(Vue, {
     name: 'formservice',
     label: 'Fixed form',
@@ -135,8 +138,8 @@ function install (Vue, options) {
 
     // Register native Vue templates
     componentName: 'content-formservice',
-    component: ContentFormservice,
-    propertyComponent: ContentFormserviceProps,
+    component: FixedPositionForm,
+    propertyComponent: FixedPositionFormProps,
 
     // Identical structure to a CUT or COPY from edit mode.
     data: {
@@ -149,11 +152,34 @@ function install (Vue, options) {
       }
     }
   })
+  $content.registerWidget(Vue, {
+    name: 'fixedform',
+    label: 'Fixed form',
+    category: '',
+    iconClass: 'c-toolbox-icon-fixed-form',
+    dragtype: 'component',
+
+    // Register native Vue templates
+    componentName: 'content-fixedform',
+    component: FixedPositionForm,
+    propertyComponent: FixedPositionFormProps,
+
+    // Identical structure to a CUT or COPY from edit mode.
+    data: {
+      type: "contentservice.io",
+      version: "1.0",
+      source: "toolbox",
+      layout: {
+        type: 'fixedform',
+        children: []
+      }
+    }
+  })
 
   $content.registerWidget(Vue, {
     name: 'formlabel',
     label: 'Label',
-    category: '',
+    category: 'PDF Generation',
     iconClass: 'c-toolbox-icon-label',
     dragtype: 'component',
 
@@ -174,6 +200,35 @@ function install (Vue, options) {
       }
     }
   })
+
+  $content.registerWidget(Vue, {
+    name: 'formline',
+    label: 'Line',
+    category: 'PDF Generation',
+    iconClass: 'c-toolbox-icon-line',
+    dragtype: 'component',
+
+    // Register native Vue templates
+    componentName: 'content-formline',
+    component: FormLine,
+    propertyComponent: FormLineProps,
+
+    // Identical structure to a CUT or COPY from edit mode.
+    data: {
+      type: "contentservice.io",
+      version: "1.0",
+      source: "toolbox",
+      layout: {
+        "type": "formline",
+        "label": "line",
+        "children": [],
+        "_fixed": true,
+        "width": "200",
+        "height": "2"
+      }
+    }
+  })
+
 
   $content.registerWidget(Vue, {
     name: 'forminput',
@@ -201,8 +256,8 @@ function install (Vue, options) {
 
   $content.registerWidget(Vue, {
     name: 'formoutput',
-    label: 'PDF Field',
-    category: 'Application',
+    label: 'Text',
+    category: 'PDF Generation',
     iconClass: 'c-toolbox-icon-pdf-output',
     dragtype: 'component',
 

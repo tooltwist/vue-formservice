@@ -17,15 +17,20 @@
         br
 
       // Design mode
-      .my-design-mode(v-if="isDesignMode && false", @click.stop="selectThisElement")
-        input(readonly, type="checkbox", :id="`c-formservice-checkbox-${element.id}`", v-model="checked", :style="mInputStyle", :class="mInputClass")
-        label(:for="`c-formservice-checkbox-${element.id}`", :style="mInputStyle", :class="mInputClass") &nbsp;{{ label }}
+      //.my-design-mode(v-if="isDesignMode && false", @click.stop="selectThisElement")
+      //  //input(readonly, type="checkbox", :id="`c-formservice-checkbox-${element.id}`", v-model="checked", :style="mInputStyle", :class="mInputClass")
+      //  //label(:for="`c-formservice-checkbox-${element.id}`", :style="mInputStyle", :class="mInputClass") &nbsp;{{ label }}
+      //  label.checkbox(disabled, :style="mInputStyle", :class="mInputClass")
+      //    input(disabled type="checkbox", :style="mInputStyle", :class="mInputClass")
+      //    | &nbsp; {{ label }}
 
       // Editing
-      .my-edit-mode(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
-        label.checkbox(disabled, :style="mInputStyle", :class="mInputClass")
-          input(disabled type="checkbox", :style="mInputStyle", :class="mInputClass")
-          | &nbsp; {{ label }}
+      .my-edit-mode(v-if="isDesignMode || isEditMode")
+        //label.checkbox(disabled, :style="mInputStyle", :class="mInputClass")
+        .my-box(:style="mInputStyle", :class="mInputClass", @click.stop="selectThisElement")
+          label.checkbox(disabled)
+            input(type="checkbox", :style="mInputStyle", :class="mInputClass", @click.stop="selectThisElement")
+            | &nbsp; {{ label }}
 
       // Live mode
       template(v-else)

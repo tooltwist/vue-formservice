@@ -10,6 +10,9 @@
       option(value="/practice3") Practice Screen 3
       option(value="/practice4") Practice Screen 4
       option(value="/practice5") Practice Screen 5
+
+      option(value="/practice1") -----
+      option(value="/pdf1") PDF 1
       option(value="/practice1") -----
 
       option(value="/inspection") Inspection Report

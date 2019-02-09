@@ -19,24 +19,28 @@
       //  br
 
       // Design mode
-      div(v-if="isDesignMode", @click.stop="selectThisElement")
+      div(v-if="isDesignMode && false", @click.stop="selectThisElement")
         //.c-layout-mode-heading
         //  edit-bar-icons(:element="element")
         //  | output
-        input.input(readonly, :style="outputStype", :class="inputClass", :placeholder="placeholder", v-model="actualData")
+        input.input(readonly, :style="outputStyle", :class="outputClass")
 
       // Editing
       div(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
-        input.input(readonly, :style="outputStype", :class="inputClass", :placeholder="placeholder")
+        input.input(readonly, :style="outputStyle", :class="outputClass")
 
       // Live mode
       template(v-else)
-        input.input.my-live-mode(:style="outputStype", :class="inputClass", :placeholder="placeholder", v-model="actualData")
+        //input.input.my-live-mode(:style="outputStyle", :class="outputClass", v-model="actualData")
+        //input.input(:style="outputStyle", :class="outputClass", v-model="actualData")
+        //| {{actualData}}
+        .my-output {{actualData}}
 </template>
 
 <script>
 import ContentMixins from 'vue-contentservice/src/mixins/ContentMixins'
 import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
+import FormserviceMixins from '../../mixins/FormserviceMixins'
 
 export default {
   name: 'content-forminput',
@@ -51,7 +55,7 @@ export default {
       required: true
     }
   },
-  mixins: [ ContentMixins, CutAndPasteMixins ],
+  mixins: [ ContentMixins, CutAndPasteMixins, FormserviceMixins ],
   data: function () {
     return {
     }
@@ -72,11 +76,7 @@ export default {
       return false
     },
 
-    inputClass: function () {
-      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
-        console.log(`inputClass()`, this.element);
-      }
-
+    outputClass: function () {
       var obj = { }
       let classesForElement = this.element['class']
       if (classesForElement) {
@@ -91,14 +91,10 @@ export default {
       } else {
         obj['form-output-default'] = true
       }
-      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
-        console.log(`element=`, this.element);
-        console.log(`obj=`, obj)
-      }
       return obj
     },
 
-    outputStype: function ( ) {
+    outputStyle: function ( ) {
       let style = this.element['style'] + ';'
       // width
       try {
@@ -115,20 +111,9 @@ export default {
           style += `height:${num}px;`
         }
       } catch (e) { }
-      // console.log(`outputStype=`, style)
+      // console.log(`outputStyle=`, style)
       return style
     },
-
-    // outputStype: function (field) {
-    //   console.log(`outputStype()`, field);
-    //   // return { }
-    //   return {
-    //     //'background-color': 'red',
-    //     //color: 'white',
-    //     left: `${field.x}px`,
-    //     top: `${field.y}px`,
-    //   }
-    // },
 
     attribute: {
       get () {
@@ -141,52 +126,40 @@ export default {
       }
     },
 
-    placeholder: {
-      get () {
-        // Temporary - display a symbol if data is not found
-        let placeholder = this.element['placeholder']
-        if (!placeholder) {
-          placeholder = ''
-        }
-
-        // Display a nice message in design mode
-        if (this.isDesignMode || this.isEditMode) {
-          let str = (this.attribute) ? this.attribute : '?'
-          if (placeholder) {
-            str += ` - ${placeholder}`
-          }
-          return str
-        }
-        return placeholder
-      },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
-      }
-    },
-
     /*
-     *  Actual data edited by this output field
+     *  Actual data displayed by this output field
      */
     actualData: {
       get () {
         let recordPath = this.context.formservice.dataPath
         let attribute = this.element['attribute']
 
+        // {
+        //   let {data, error} = this.$formservice.find({ vm: this, path: '!adlform.abandon', debug: false })
+        //   console.error(`data=`, data);
+        //   return 'qqq'
+        // }
+
         if (attribute) {
+          // console.error(`this.context.formservice=`, this.context.formservice)
           let path = `${recordPath}.${attribute}`
+          // console.error(`path=${path}`);
           let defaultValue = '' //ZZZ This could come from a schema
-          let {data, error} = this.$formservice.getData(path, defaultValue)
+          // let {data, error} = this.$formservice.findOrCreate({ vm: this, path, updatePath: true, value: '', debug: false })
+          let {data, error} = this.$formservice.find({ vm: this, path, debug: false })
 
           let value = data
-          // console.log(`value`, value);
+          // console.error(`${attribute}: value`, value);
           // console.log(`error`, error);
 
 
           if (error) {
-            console.error(`FieldInput: ${error}`);
+            if (error !== 'NOTFOUND') {
+              console.error(`FieldOutput: ${error}`);
+            }
             return ''
           } else if (value) {
-            console.log(`value for field ${path} is ${value}`);
+            // console.log(`value for field ${path} is ${value}`);
             return value
           } else {
             return ''
@@ -197,16 +170,16 @@ export default {
           return ''
         }
       },
-      set (value) {
-        let recordPath = this.context.formservice.dataPath
-        let attribute = this.element['attribute']
-
-        if (attribute) {
-          console.log(`FormOutput: datavalue.set(${attribute}, ${value}`);
-          this.$formservice.setValue(recordPath, attribute, value, String)
-          // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
-        }
-      }
+      // set (value) {
+      //   let recordPath = this.context.formservice.dataPath
+      //   let attribute = this.element['attribute']
+      //
+      //   if (attribute) {
+      //     console.log(`FormOutput: datavalue.set(${attribute}, ${value}`);
+      //     this.$formservice.setValue(recordPath, attribute, value, String)
+      //     // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
+      //   }
+      // }
     }
   }
 }
@@ -224,128 +197,135 @@ export default {
   $text-color: #700;
 
 
-  .c-form-output {
-
-    // Design mode
-    &.c-edit-mode-debug {
-      border-top: solid 4px $frame-color;
-      border-left: dashed 2px $frame-color;
-      border-bottom: dashed 2px $frame-color;
-      border-right: dashed 2px $frame-color;
-      margin: 1px;
-
-      .container {
-        width: 90% !important;
-      }
-
-      input.form-output-default {
-        border-color: $border-color-default;
-        background-color: $bg-default;
-        //background-color: red;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 9px;
-      }
-      input.form-output-borderless {
-        border-color: $border-color-borderless;
-        zborder: none;
-        box-shadow: none;
-        zbackground-color: $bg-borderless;
-        font-size: 9px;
-      }
-    }
-
-    // Edit mode
-    &.c-edit-mode-edit {
-    //.my-edit-mode {
-      input.form-output-default {
-        border-color: $border-color-default;
-        background-color: $bg-default;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 9px;
-      }
-      input.form-output-borderless {
-        //border-color: $border-color-borderless;
-        border: dashed 1px $border-color-borderless;
-        box-shadow: none;
-        background-color: $bg-borderless;
-        font-size: 9px;
-      }
-    }
-
-    // Live modes
-    &.c-edit-mode-view {
-      input.my-live-mode.form-output-default {
-        border-color: $border-color-default;
-
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 11px;
-        color: blue;
-        background-color: #ffffff;
-      }
-      input.my-live-mode.form-output-borderless {
-        border-color: #eee;
-        //border: none;
-        box-shadow: none;
-        font-family: Arial;
-        font-weight: bold;
-        font-size: 11px;
-        color: blue;
-        background-color: #ffffff;
-      }
-    }
-  }
+  // .c-form-output {
+  //
+  //   // Design mode
+  //   &.c-edit-mode-debug {
+  //     border-top: solid 4px $frame-color;
+  //     border-left: dashed 2px $frame-color;
+  //     border-bottom: dashed 2px $frame-color;
+  //     border-right: dashed 2px $frame-color;
+  //     margin: 1px;
+  //
+  //     .container {
+  //       width: 90% !important;
+  //     }
+  //
+  //     input.form-output-default {
+  //       border-color: $border-color-default;
+  //       background-color: $bg-default;
+  //       //background-color: red;
+  //       font-family: Arial;
+  //       font-weight: bold;
+  //       font-size: 9px;
+  //     }
+  //     input.form-output-borderless {
+  //       border-color: $border-color-borderless;
+  //       zborder: none;
+  //       box-shadow: none;
+  //       zbackground-color: $bg-borderless;
+  //       font-size: 9px;
+  //     }
+  //   }
+  //
+  //   // Edit mode
+  //   &.c-edit-mode-edit {
+  //   //.my-edit-mode {
+  //     input.form-output-default {
+  //       border-color: $border-color-default;
+  //       background-color: $bg-default;
+  //       font-family: Arial;
+  //       font-weight: bold;
+  //       font-size: 9px;
+  //     }
+  //     input.form-output-borderless {
+  //       //border-color: $border-color-borderless;
+  //       border: dashed 1px $border-color-borderless;
+  //       box-shadow: none;
+  //       background-color: $bg-borderless;
+  //       font-size: 9px;
+  //     }
+  //   }
+  //
+  //   // Live modes
+  //   &.c-edit-mode-view {
+  //     input.my-live-mode.form-output-default {
+  //       border-color: $border-color-default;
+  //
+  //       font-family: Arial;
+  //       font-weight: bold;
+  //       font-size: 11px;
+  //       color: blue;
+  //       background-color: #ffffff;
+  //     }
+  //     input.my-live-mode.form-output-borderless {
+  //       border-color: #eee;
+  //       //border: none;
+  //       box-shadow: none;
+  //       font-family: Arial;
+  //       font-weight: bold;
+  //       font-size: 11px;
+  //       color: blue;
+  //       background-color: #ffffff;
+  //     }
+  //   }
+  // }
 </style>
 
 
 <style lang="scss" scoped>
   @import '../../assets/css/content-variables.scss';
 
-  $frame-color: pink;
-  $text-color: #700;
-
   .c-form-output {
-    &.c-edit-mode-debug {
-      border-top: solid 4px $frame-color;
-      border-left: dashed 2px $frame-color;
-      border-bottom: dashed 2px $frame-color;
-      border-right: dashed 2px $frame-color;
-      margin: 1px;
+    $frame-color: pink;
+    $text-color: #700;
 
-      .container {
-        width: 90% !important;
-      }
-    }
-
-    .c-layout-mode-heading {
-      // This overrides the definition in content-editor.scss
-      //background-color: $frame-color;
-      //color: $text-color;
-    }
-
-    // .my-edit-mode {
-    //   input {
-    //     font-size: 10px;
-    //   }
-    // }
-    //
-    // .my-design-mode {
-    //   input {
-    //     font-size: 10px;
-    //   }
-    // }
-    //
-    // .my-live-mode {
-    //   input {
-    //     font-size: 10px;
-    //   }
-    // }
     .sanity-error {
       color: red;
       font-family: courier;
       font-size: 11px;
     }
+
+    /*
+     *  Design mode
+     */
+    &.c-edit-mode-debug {
+      // border-top: solid 4px $frame-color;
+      // border-left: dashed 2px $frame-color;
+      // border-bottom: dashed 2px $frame-color;
+      // border-right: dashed 2px $frame-color;
+      // margin: 1px;
+      //
+      // .container {
+      //   width: 90% !important;
+      // }
+      border: solid 1px blue;
+      input {
+        background-color: $c-input-default-background-color;
+      }
+    }
+
+    /*
+     *  Edit mode
+     */
+    &.c-edit-mode-edit {
+      input {
+        background-color: $c-input-default-background-color;
+      }
+    }
+
+    /*
+     *  Live mode
+     */
+    &.c-edit-mode-view {
+      .my-output {
+        position: relative;
+        top: -2px;
+        left: -0px;
+        font-family: Courier;
+        font-size: 14px;
+      }
+    }
+
   }
 </style>

@@ -14,6 +14,8 @@ import Practice3 from './testapp/Practice3.vue'
 import Practice4 from './testapp/Practice4.vue'
 import Practice5 from './testapp/Practice5.vue'
 
+import Pdf1 from './testapp/Pdf1.vue'
+
 
 import ADLEntryNotice from './testapp/ADLEntryNotice.vue'
 
@@ -76,6 +78,9 @@ new Vue({
       case '/practice3': return h(Practice3)
       case '/practice4': return h(Practice4)
       case '/practice5': return h(Practice5)
+
+      case '/pdf1': return h(Pdf1)
+
       case '/AUQLDREPMT13':
         console.log(`Go to 13`);
         return h(AUQLDREPMT13_EntryNotice)

@@ -27,6 +27,12 @@ let filename = process.argv[2]
 // console.log(`Loading ${filename}`);
 // process.exit(1)
 
+if (!filename.endsWith('.fm')) {
+  console.log(`\nError: Expected filename to end with .fm\n`);
+  process.exit(1);
+}
+let basename = filename.substring(0, filename.length - 3)
+console.log(`basename is ${basename}`);
 
 let form = {
   filename: filename,
@@ -39,10 +45,11 @@ let section = null
 let element = null
 let elementType = null
 let nextId = 10000000000
+let fieldNames = [ ]
 
 // Parse the file, line by line
 //let input = fs.createReadStream(`Forms/${filename}`)
-let input = fs.createReadStream(filename)
+let input = fs.createReadStream(filename, { encoding: 'utf8'})
 let rl = require('readline').createInterface({ input })
 let lineNo = 0
 
@@ -238,7 +245,7 @@ function parseFrame (line) {
 function parseCheck1 (line) {
   if (false) { }
   else if (line.startsWith('  Name')) {
-    element.name = getValue(line)
+    element.name = getValue(line).trim()
   }
 
   // Position
@@ -365,7 +372,7 @@ function parseLabel (line) {
     element.fontItalic = getValue(line)
   }
   else if (line.startsWith('  FontSize')) {
-    element.fontSize = getValue(line)
+    element.fontSize = getFontSize(line)
   }
   else if (line.startsWith('  FontStrikethru')) {
     element.fontStrikethru = getValue(line)
@@ -443,7 +450,7 @@ function parseText (line) {
   //   AlignVertical               = 0
   if (false) { }
   else if (line.startsWith('  Name')) {
-    element.name = getValue(line)
+    element.name = getValue(line).trim()
   }
   else if (line.startsWith('  TextBoxType')) {
     element.textboxType = getInteger(line)
@@ -464,7 +471,7 @@ function parseText (line) {
     element.fontItalic = getValue(line)
   }
   else if (line.startsWith('  FontSize')) {
-    element.fontSize = getValue(line)
+    element.fontSize = getFontSize(line)
   }
   else if (line.startsWith('  ForeColor')) {
     element.foreColor = getColor(line)
@@ -518,7 +525,33 @@ function parseLine (line) {
   //   LockBottomTo                =
   //   LockTopTo                   =
   //   Print                       = True
-
+  // https://docs.microsoft.com/en-us/previous-versions/visualstudio/visual-basic-6/aa267216(v=vs.60)
+  // console.log(`parseFrame: ${line}`);
+  if (false) { }
+  else if (line.startsWith('  Container')) {
+    element.container = getInteger(line)
+  }
+  else if (line.startsWith('  BorderStyle')) {
+    element.borderStyle = getInteger(line)
+  }
+  else if (line.startsWith('  BorderColor')) {
+    element.borderColor = getColor(line)
+  }
+  else if (line.startsWith('  BorderWidth')) {
+    element.borderWidth = getInteger(line)
+  }
+  else if (line.startsWith('  x1')) {
+    element.x1 = getInteger(line)
+  }
+  else if (line.startsWith('  x2')) {
+    element.x2 = getInteger(line)
+  }
+  else if (line.startsWith('  y1')) {
+    element.y1 = getInteger(line)
+  }
+  else if (line.startsWith('  y2')) {
+    element.y2 = getInteger(line)
+  }
 }
 
 function parseOption (line) {
@@ -631,6 +664,25 @@ function getInteger(line) {
   return -1
 }
 
+// Return an integer from a line of the form:
+// <name><spaces>=<spaces><integer>
+function getFontSize(line) {
+  let i = line.indexOf('=')
+  if (i > 0) {
+    for (i++; line.charAt(i) == ' '; i++) {
+    }
+    try {
+      let originalSize = parseInt(line.substring(i))
+      let newSize = Math.ceil(originalSize * 1.3)
+      console.log(`fontSize ${originalSize} => ${newSize}`);
+      return newSize
+    } catch {
+
+    }
+  }
+  return 0
+}
+
 // Convert an String RGB value (integer) to String (#rrggbb)
 function getColor (line) {
   // console.log(`getColor(${line})`)
@@ -642,6 +694,10 @@ function getColor (line) {
     // console.log(`=> getColor(${value})`)
     let rgb = parseInt(value)
     // console.log(`=> getColor(${rgb})`)
+
+    if (rgb < 0) {
+      return ''
+    }
 
     let redComponent = rgb % 256
     let greenComponent = Math.floor(rgb / 256) % 256
@@ -657,7 +713,9 @@ function getColor (line) {
 
     const chars = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']
     // console.log(`=> ${chars[r1]} ${chars[r2]}, ${chars[g1]} ${chars[g2]}, ${chars[b1]} ${chars[b2]}`);
-    return `#${chars[r1]}${chars[r2]}${chars[g1]}${chars[g2]}${chars[b1]}${chars[b2]}`
+    let color = `#${chars[r1]}${chars[r2]}${chars[g1]}${chars[g2]}${chars[b1]}${chars[b2]}`
+    // console.log(` - ${color}`);
+    return color
   }
   return '#888888'
 }
@@ -693,12 +751,12 @@ function dump () {
 }
 
 function convertForm () {
-  form.sections.forEach(section => {
-    convertSection(section)
+  form.sections.forEach((section, i) => {
+    convertSection(section, i)
   })
 }
 
-function convertSection (section) {
+function convertSection (section, sectionNo) {
   console.log(`vvvvv SECTION vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv`);
   // console.log(`Section is `, section);
 
@@ -708,7 +766,7 @@ function convertSection (section) {
     "source": `imported ${form.filename} (${section.sectionName})`,
     "timestamp": "2018-11-15T12:48:21.615Z",
     "layout": {
-      "type": "formservice",
+      "type": "fixedform",
       "id": nextId++,
       width: 800,
       height: 1150,
@@ -726,6 +784,9 @@ function convertSection (section) {
         break
       case 'frame':
         child = convertFrame(element)
+        break
+      case 'line':
+        child = convertLine(element)
         break
       case 'text':
         child = convertText(element)
@@ -755,7 +816,7 @@ function convertSection (section) {
           // console.log(`\nAdd:`, element)
           // console.log(`\nTo ${element.container}:`, container)
           // console.log(`${element.type} in container ${element.container}:`, container)
-          if (container.type !== 'formservice') {
+          if (container.type !== 'fixedform') {
             console.log(`Error: ${element.type} uses non-frame Container ${element.container}`)
           } else {
             container.children.push(child)
@@ -769,7 +830,20 @@ function convertSection (section) {
 
   // Display the section as JSON
   let json = JSON.stringify(def, null, 2)
-  console.log(`\n\nSection ${section.sectionName} definition:\n\n${json}`);
+  // console.log(`\n\nSection ${section.sectionName} definition:\n\n${json}`);
+
+
+
+  // Open the output definition, and field list files
+  console.log(`File is ${basename}-definition-${sectionNo}.json`);
+  return
+  let jsonStream = fs.createWriteStream(`${basename}-definition-${sectionNo}.json`);
+  jsonStream.write(json);
+  jsonStream.end();
+  // let fieldStream = fs.createWriteStream(`${basename}-fields.txt`);
+
+  // write some data with a base64 encoding
+
 }
 
 function convertFrame (element) {
@@ -793,7 +867,7 @@ function convertFrame (element) {
     style += 'font-style:italic; '
   }
   if (element.fontSize) {
-    style += `font-size:${parseInt(element.fontSize)}px; `
+    style += `font-size:${element.fontSize}px; `
   }
   if (element.fontStrikethru === 'True') {
     style += 'text-decoration:line-through; '
@@ -820,7 +894,7 @@ function convertFrame (element) {
   // style = 'width:100px; height:100px; background-color:cyan;'
 
   return {
-    "type": "formservice",
+    "type": "fixedform",
     "name": element.name,
     // "label": `${element.label}`,
     "id": nextId++,
@@ -832,6 +906,71 @@ function convertFrame (element) {
     "_fixed_y": y,
     "children": []
   }
+}
+
+function convertLine (element) {
+  // console.log(`\n\n\nconvertLine():\n`, element);
+  // Line
+  //   Container                   = -1
+  //   BorderStyle                 = 1
+  //   BorderColor                 = -2147483640
+  //   BorderWidth                 = 2
+  //   x1                          = 500
+  //   x2                          = 11500
+  //   y1                          = 1450
+  //   y2                          = 1450
+
+  // console.log(`  label ${element.label}`);
+  let x1 = Math.floor(parseInt(element.x1) / TWIPS_PER_PIXEL)
+  let y1 = Math.floor(parseInt(element.y1) / TWIPS_PER_PIXEL)
+  let x2 = Math.floor(parseInt(element.x2) / TWIPS_PER_PIXEL)
+  let y2 = Math.floor(parseInt(element.y2) / TWIPS_PER_PIXEL)
+
+  let style = ''
+  if (element.borderColor) {
+    // console.log(`\n\nYAHYAHYAH borderColor is ${element.borderColor}\n\n\n`);
+    style += `background-color:${element.borderColor}; `
+    style += `border-color-top:${element.borderColor}; `
+    style += `border-color-left:${element.borderColor}; `
+  }
+
+  // Make it into a box
+  let w = x2 - x1
+  let h = y2 - y1
+  if (y1 === y2) {
+    // Horizontal
+    console.log(`HORIZONTAL`);
+    w = x2 - x1
+    h = element.borderWidth
+  } else if (x1 === x2) {
+    // Vertical
+    w = element.borderWidth
+    h = y2 - y1
+  } else {
+    // Diagonal... a problem
+    console.log(`WARNING: line is not horizontal or vertical.`);
+  }
+
+  if (w < 1) {
+    w = 1
+  }
+  if (h < 1) {
+    h = 1
+  }
+
+  let def = {
+    "type": "formline",
+    "label": "line",
+    "_fixed": true,
+    "_fixed_x": `${x1}`,
+    "_fixed_y": `${y1}`,
+    "width": `${w}`,
+    "height": `${h}`,
+    "style": `${style}`,
+    "class": "",
+    "children": [],
+  }
+  return def
 }
 
 function convertLabel (element) {
@@ -863,7 +1002,7 @@ function convertLabel (element) {
     // console.log(`default label styles`);
     clas += (element.fontBold === 'True') ? 'form-label-bold-default' : 'form-label-default'
     if (element.fontSize !== '9') {
-      style += `font-size:${parseInt(element.fontSize)}px; `
+      style += `font-size:${element.fontSize}px; `
     }
   } else {
     // console.log(`#ffffff|Arial|True|False|9|False|False|#000000 - default`)
@@ -880,7 +1019,7 @@ function convertLabel (element) {
       style += 'font-style:italic; '
     }
     if (element.fontSize) {
-      style += `font-size:${parseInt(element.fontSize)}px; `
+      style += `font-size:${element.fontSize}px; `
     }
     if (element.fontStrikethru === 'True') {
       style += 'text-decoration:line-through; '
@@ -900,6 +1039,43 @@ function convertLabel (element) {
 
   // console.log(`clas=${clas}, style=${style}.`);
 
+  // Replace weird characters
+  if (element.label) {
+    // element.label = element.label.replace(/�'/g, `'`)
+
+    let changed = false
+    for ( ; ; ) {
+      let i = element.label.search(/[^ -~]+/)
+      if (i < 0) {
+        break
+      }
+      console.log(`\n\nWOW FOUND ONE at ${i}: (${element.label})`);
+
+      let before = element.label.substring(0, i)
+      let code = element.label.charCodeAt(i)
+      let after = element.label.substring(i + 1)
+
+
+      if (code === 65533) {
+        element.label = before + '\'' + after
+        changed = true
+      } else if (code === 9) {
+        element.label = before + '<br>' + after
+        changed = true
+      } else {
+        console.log(`     ===> ${code}`);
+        element.label = before + 'XXXXX' + after
+        changed = true
+      }
+    }
+
+
+    element.label = element.label.replace(/[^ -~]+/g, 'XXX');
+    if (changed) {
+      console.log(`     ----> (${element.label})\n\n`);
+    }
+  }
+
   return {
     "type": "formlabel",
     "label": `${element.label}`,
@@ -915,6 +1091,11 @@ function convertLabel (element) {
 
 function convertText (element) {
   // console.log(`  convertText`, element);
+
+  if (element.name) {
+    fieldNames.push(element.name)
+  }
+
   let x = Math.floor(parseInt(element.x) / TWIPS_PER_PIXEL)
   let y = Math.floor(parseInt(element.y) / TWIPS_PER_PIXEL)
   let w = Math.floor(parseInt(element.width) / TWIPS_PER_PIXEL)
@@ -945,12 +1126,9 @@ function convertText (element) {
   // console.log(`${element.fontName}|${element.fontBold}|${element.fontItalic}|${element.fontSize}|${element.foreColor}|${element.backColor}|`);
   if (
     element.fontName === 'Arial'
-    &&
-    element.fontBold === 'True'
-    &&
-    element.fontItalic === 'False'
-    &&
-    element.fontSize === '9.761248'
+    && element.fontBold === 'True'
+    && element.fontItalic === 'False'
+    && element.fontSize === '9.761248'
   ) {
     // Has default styles. We only need to worry about border or not
     clas += hasBorder ? 'form-input-default' : 'form-input-borderless'
@@ -965,7 +1143,7 @@ function convertText (element) {
       style += 'font-style:italic; '
     }
     if (element.fontSize) {
-      style += `font-size:${parseInt(element.fontSize)}px; `
+      style += `font-size:${element.fontSize}px; `
     }
   }
 
@@ -977,8 +1155,14 @@ function convertText (element) {
     style += `background-color:${element.backColor}; `
   }
 
+  // Replace weird characters
+  if (element.label) {
+    // element.label = element.label.replace(/�'/g, `'`)
+    element.label = element.label.replace(/[^ -~]+/g, '');
+  }
+
   return {
-    "type": "forminput",
+    "type": "formoutput",
     "label": `${element.label}`,
     "attribute": `${element.name}`,
     "id": nextId++,
@@ -997,10 +1181,22 @@ function convertText (element) {
 function convertCheckbox (element) {
   // console.log(`  convertCheckbox`, element);
   // console.log(`  convertCheckbox()`)
+
+
+  if (element.name) {
+    fieldNames.push(element.name)
+  }
+
   let x = Math.floor(parseInt(element.x) / TWIPS_PER_PIXEL)
   let y = Math.floor(parseInt(element.y) / TWIPS_PER_PIXEL)
   let w = Math.floor(parseInt(element.width) / TWIPS_PER_PIXEL)
   let h = Math.floor(parseInt(element.height) / TWIPS_PER_PIXEL)
+
+  // Replace weird characters
+  if (element.label) {
+    // element.label = element.label.replace(/�'/g, `'`)
+    element.label = element.label.replace(/[^ -~]+/g, '');
+  }
 
   /*
   { type: 'checkbox',
@@ -1031,46 +1227,3 @@ function convertCheckbox (element) {
     "children": []
   }
 }
-
-// function convertFrame (element) {
-//   // console.log(`  label ${element.label}`);
-//   let x = Math.floor(parseInt(element.x) / TWIPS_PER_PIXEL)
-//   let y = Math.floor(parseInt(element.y) / TWIPS_PER_PIXEL)
-//
-//   let style = ''
-//   if (element.backColor) {
-//     style += `background-color:${element.backColor}; `
-//   }
-//   if (element.fontName) {
-//     style += `font-family:${element.fontName}; `
-//   }
-//   if (element.fontBold === 'True') {
-//     style += 'font-weight:bold; '
-//   }
-//   if (element.fontItalic === 'True') {
-//     style += 'font-style:italic; '
-//   }
-//   if (element.fontSize) {
-//     style += `font-size:${parseInt(element.fontSize)}px; `
-//   }
-//   if (element.fontStrikethru === 'True') {
-//     style += 'text-decoration:line-through; '
-//   }
-//   if (element.fontUnderline === 'True') {
-//     style += 'text-decoration:underline; '
-//   }
-//   if (element.foreColor === 'True') {
-//     style += `color:${element.foreColor}; `
-//   }
-//
-//   return {
-//     "type": "formlabel",
-//     "label": `${element.label}`,
-//     "id": nextId++,
-//     style: `${style}`,
-//     "_fixed": true,
-//     "_fixed_x": x,
-//     "_fixed_y": y,
-//     "children": []
-//   }
-// }

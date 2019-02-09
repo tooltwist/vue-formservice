@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  // This never gets used, as ContentFormService bypasses it.
+  // This never gets used, as FixedPositionForm bypasses it.
   div
     | form-element-position
 </template>

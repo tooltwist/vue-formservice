@@ -2,14 +2,10 @@
   .c-property-element(:class="propertyClass")
     .tt-property-header(@click="setExpandedElement")
       property-bar-icons(v-if="isExpandedElement", :element="element")
-      | Label
+      | Line
 
     transition(name="c-property-list-transition")
       .c-element-properties(v-show="isExpandedElement")
-        .tt-property
-          .c-property-label Label
-          .c-property-value
-            input.input(v-model="label")
         .tt-property
           .c-property-label Class
           .c-property-value
@@ -27,7 +23,7 @@ import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
 import FixedPositionProperties from './FixedPositionProperties'
 
 export default {
-  name: 'form-label-props',
+  name: 'form-line-props',
   components: {
     FixedPositionProperties
   },
@@ -44,6 +40,15 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'label', value })
+      }
+    },
+    vertical: {
+      get () {
+        let value = this.element['vertical']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'vertical', value })
       }
     },
     clas: {

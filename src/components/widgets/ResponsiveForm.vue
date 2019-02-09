@@ -7,7 +7,7 @@
     .my-design-mode(v-if="isDesignMode", v-on:click.stop="mSelectMe")
       .c-layout-mode-heading
         edit-bar-icons(:element="element")
-        | form - {{absoluteDataPath}}
+        | responsive form - {{absoluteDataPath}}
       div
         content-children.my-content(:element="element", :context="newContext")
 

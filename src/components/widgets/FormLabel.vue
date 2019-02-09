@@ -6,24 +6,26 @@
       br
 
     // Debug mode
-    .my-design-mode(v-if="isDesignMode && false", @click.stop="selectThisElement2")
+    //.my-design-mode(v-if="isDesignMode && false", @click.stop="selectThisElement")
       //.c-layout-mode-heading
         edit-bar-icons(:element="element")
         | label
-      .label(:style="myStyle", :class="myClass") {{label}}
+      .my-label(:style="myStyle", :class="myClass")
+        span(v-html="label")
 
     // Editing
-    .my-edit-mode(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement2")
-      .label(:style="myStyle", :class="myClass") {{label}}
+    template(v-if="isDesignMode || isEditMode")
+      span.my-label(:style="myStyle", :class="myClass", v-html="label", @click.stop="selectThisElement")
 
     // Live mode
     template(v-else)
-      .my-live-mode.label(:style="myStyle", :class="myClass") {{label}}
+      .my-label(:style="myStyle", :class="myClass", v-html="label")
 </template>
 
 <script>
 import ContentMixins from 'vue-contentservice/src/mixins/ContentMixins'
 import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
+import FormserviceMixins from '../../mixins/FormserviceMixins'
 
 export default {
   name: 'form-label',
@@ -33,7 +35,7 @@ export default {
       required: true
     }
   },
-  mixins: [ ContentMixins, CutAndPasteMixins ],
+  mixins: [ ContentMixins, CutAndPasteMixins, FormserviceMixins ],
   data: function () {
     return {
     }
@@ -43,11 +45,9 @@ export default {
     label: {
       get () {
         let value = this.element['label']
-        return value ? value : ''
-      },
-      // set (value) {
-      //   this.$content.setProperty({ vm: this, element: this.element, name: 'label', value })
-      // }
+        // return value ? value : ''
+        return value ? convertLabel(value) : ''
+      }
     },
 
     style: {
@@ -109,11 +109,6 @@ export default {
 
   },
   methods: {
-    selectThisElement2: function () {
-      console.log(`selectThisElement2() IN LABEL`, this.element)
-      return this.selectThisElement()
-    },
-
     labelClass: function (field) {
       console.log(`fieldClass()`, field);
 
@@ -136,69 +131,146 @@ export default {
 
   }
 }
+
+function convertLabel(v) {
+  // Convert the label
+  // ^B...^b   (bold)
+  // ^I...^i   (italics)
+  let label = ''
+  while (v) {
+
+    let pos = findFirstString(v, ['^B', '^I'])
+    if (pos < 0) {
+      label += v
+      break
+    }
+
+    label += v.substring(0, pos)
+    v = v.substring(pos)
+
+    if (v.startsWith('^B')) {
+      // Find end of bold section
+      let end = v.indexOf('^b')
+      if (end >= 0) {
+        let boldStuff = v.substring(2, end)
+        v = v.substring(end + 2)
+        label += `<b>${convertLabel(boldStuff)}</b>`
+      } else {
+        // No end, ignore this bold
+        v = v.substring(2)
+      }
+    }
+    else if (v.startsWith('^I')) {
+      // Find end of italic section
+      let end = v.indexOf('^i')
+      if (end >= 0) {
+        let italicStuff = v.substring(2, end)
+        v = v.substring(end + 2)
+        label += `<i>${convertLabel(italicStuff)}</i>`
+      } else {
+        // No end, ignore this italics
+        v = v.substring(2)
+      }
+    }
+  }
+  return label
+}
+
+
+// Find the first matching pattern.
+// Returns { pos, pattern }
+// Returns { pos:-1, pattern:null } if none found
+function findFirstString(string, patterns /*[String]*/) {
+  // console.error(`findFirstString(${string})`, patterns);
+  let bestPos = -1
+  patterns.forEach((pattern) => {
+    let pos = string.indexOf(pattern)
+    if (pos >= 0 && (bestPos < 0 || pos < bestPos)) {
+      // console.error(`- have natch ${pattern}`)
+      bestPos = pos
+    }
+  })
+  return bestPos
+}
 </script>
 
 
 <style lang="scss" scoped>
   @import '../../assets/css/content-variables.scss';
 
-  $frame-color: lightblue;
-  $text-color: darkblue;
+  .c-content-formlabel {
+    $frame-color: lightblue;
+    $text-color: darkblue;
 
-  // .c-edit-mode-debug {
-  //   border-left: dashed 2px $frame-color;
-  //   border-bottom: dashed 2px $frame-color;
-  //   border-right: dashed 2px $frame-color;
-  //   margin: 1px;
-  //
-  //   .container {
-  //     width: 90% !important;
-  //   }
-  // }
+    // .c-edit-mode-debug {
+    //   border-left: dashed 2px $frame-color;
+    //   border-bottom: dashed 2px $frame-color;
+    //   border-right: dashed 2px $frame-color;
+    //   margin: 1px;
+    //
+    //   .container {
+    //     width: 90% !important;
+    //   }
+    // }
 
-  .c-layout-mode-heading {
-    // This overrides the definition in content-editor.scss
-    background-color: $frame-color;
-    color: $text-color;
-  }
+    .c-layout-mode-heading {
+      // This overrides the definition in content-editor.scss
+      background-color: $frame-color;
+      color: $text-color;
+    }
 
 
-  .c-label {
-    position: absolute;
-    //background-color: pink;
-  }
+    .c-label {
+      position: absolute;
+      //background-color: pink;
+    }
 
-  .form-label-default {
-    //color: #000000;
-    color: #333;
-    font-family: Arial;
-    font-weight: normal;
-    font-size: 9px;
-  }
+    .form-label-default {
+      //color: #000000;
+      color: #333;
+      font-family: Arial;
+      font-weight: normal;
+      font-size: 12px;
+      line-height: 130%;
+    }
 
-  .form-label-bold-default {
-    //color: #000000;
-    color: #333;
-    font-family: Arial;
-    font-weight: bold;
-    font-size: 9px;
-  }
+    .form-label-bold-default {
+      //color: #000000;
+      color: #333;
+      font-family: Arial;
+      font-weight: bold;
+      font-size: 12px;
+    }
 
-//form-checkbox-bold-default
+    /*
+     *  Design mode
+     */
+    &.c-edit-mode-debug {
+      .my-label {
+        display: block;
+        text-align: left;
+        border: solid 1px red;
+      }
+    }
 
-  .my-edit-mode {
-    .my-label {
+    /*
+     *  Edit mode
+     */
+    &.c-edit-mode-edit {
+      .my-label {
+        display: block;
+        text-align: left;
+      }
+    }
+
+    /*
+     *  Live mode
+     */
+    &.c-edit-mode-view {
+      .my-label {
+        display: block;
+        text-align: left;
+      }
     }
   }
-
-  .my-design-mode {
-    .my-label {
-    }
-  }
-
-  .my-live-mode {
-    .my-label {
-    }
-  }
-
 </style>
