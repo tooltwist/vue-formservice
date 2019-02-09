@@ -71,7 +71,7 @@ export default {
         return value ? value : ''
       },
       set (value) {
-        if (value > 0) {
+        if (value >= 0) {
           this.$content.setProperty({ vm: this, element: this.element, name: '_fixed_x', value })
         }
       }
@@ -82,7 +82,7 @@ export default {
         return value ? value : ''
       },
       set (value) {
-        if (value > 0) {
+        if (value >= 0) {
           this.$content.setProperty({ vm: this, element: this.element, name: '_fixed_y', value })
         }
       }

@@ -26,17 +26,23 @@
 
       // Editing
       .my-edit-mode(v-if="isDesignMode || isEditMode")
-        //label.checkbox(disabled, :style="mInputStyle", :class="mInputClass")
-        .my-box(:style="mInputStyle", :class="mInputClass", @click.stop="selectThisElement")
-          label.checkbox(disabled)
-            input(type="checkbox", :style="mInputStyle", :class="mInputClass", @click.stop="selectThisElement")
-            | &nbsp; {{ label }}
+        //- .my-box(:style="mInputStyle", :class="mInputClass", @click.stop="selectThisElement")
+        //-   label.checkbox(disabled)
+        //-     input(type="checkbox", :style="mInputStyle", :class="mInputClass", @click.stop="selectThisElement")
+        //-     | &nbsp; {{ label }}
+        .my-checkbox(:style="mInputStyle", :class="mInputClass", @click.stop="selectThisElement")
+          .my-box
+          .my-label(v-if="label")
+            | {{label}}
 
       // Live mode
       template(v-else)
-        label.checkbox(:style="mInputStyle", :class="mInputClass")
-          input(type="checkbox", v-model="checked", :style="mInputStyle", :class="mInputClass")
-          | &nbsp; {{ label }}
+        .my-checkbox
+          .my-box
+            .my-selected(v-if="checked")
+              | X
+          .my-label(v-if="label")
+            | {{label}}
 </template>
 
 <script>
@@ -77,45 +83,23 @@ export default {
       }
       return false
     },
-
-    // inputStyle: function ( ) {
-    //   let style = this.element['style'] + ';'
-    //   // width
-    //   try {
-    //     let num = parseInt(this.element['width'])
-    //     if (num >= 20) {
-    //       style += `width:${num}px;`
-    //     }
-    //   } catch (e) { }
-    //
-    //   // height
-    //   try {
-    //     let num = parseInt(this.element['height'])
-    //     if (num >= 20) {
-    //       style += `height:${num}px;`
-    //     }
-    //   } catch (e) { }
-    //   return style
-    // },
-    //
-    // inputClass: function () {
-    //
-    //   var obj = { }
-    //   let classesForElement = this.element['class']
-    //   if (classesForElement) {
-    //     // console.log(`classesForElement=${classesForElement}`);
-    //     classesForElement.split(' ').forEach(clas => {
-    //       // console.log(`-- ${clas}`);
-    //       let classname = clas.trim()
-    //       if (classname) {
-    //         obj[classname] = true
-    //       }
-    //     })
-    //   } else {
-    //     obj['form-checkbox-default'] = true
-    //   }
-    //   return obj
-    // },
+    inputClass: function () {
+      var obj = { }
+      let classesForElement = this.element['class']
+      if (classesForElement) {
+        console.log(`classesForElement=${classesForElement}`);
+        classesForElement.split(' ').forEach(clas => {
+          console.log(`-- ${clas}`);
+          let classname = clas.trim()
+          if (classname) {
+            obj[classname] = true
+          }
+        })
+      } else {
+        obj['form-checkbox-default'] = true
+      }
+      return obj
+    },
 
     attribute: {
       get () {
@@ -298,5 +282,40 @@ export default {
   //     font-size: 10px;
   //   }
   // }
+
+  .my-checkbox {
+    display: inline-block;
+
+    .my-box {
+      display: inline-block;
+      //postition: relative;
+      width: 16px;
+      height: 16px;
+      border: solid 1px #333;
+      padding: 0px;
+
+      .my-selected {
+        position: absolute;
+        top: -2px;
+        left: 4px;
+        font-family: Courier;
+        font-size: 14px;
+      }
+    }
+    .my-label {
+      display: inline-block;
+      position: absolute;
+      top: 2px;
+      left: 22px;
+      text-align: left;
+      color: #333;
+      font-family: Arial;
+      font-weight: normal;
+      font-size: 12px;
+      line-height: 130%;
+      white-space: nowrap;
+    }
+  }
+
 
 </style>

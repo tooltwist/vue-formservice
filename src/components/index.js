@@ -30,6 +30,8 @@ import FormLine from './widgets/FormLine.vue'
 import FormLineProps from './widgets/FormLineProps.vue'
 import FormInput from './widgets/FormInput.vue'
 import FormInputProps from './widgets/FormInputProps.vue'
+import FormImage from './widgets/FormImage.vue'
+import FormImageProps from './widgets/FormImageProps.vue'
 import FormOutput from './widgets/FormOutput.vue'
 import FormOutputProps from './widgets/FormOutputProps.vue'
 import FormCheckbox from './widgets/FormCheckbox.vue'
@@ -229,6 +231,30 @@ function install (Vue, options) {
     }
   })
 
+
+  $content.registerWidget(Vue, {
+    name: 'formimage',
+    label: 'Image',
+    category: '',
+    iconClass: 'c-toolbox-icon-image',
+    dragtype: 'component',
+
+    // Register native Vue templates
+    componentName: 'content-form-image',
+    component: FormImage,
+    propertyComponent: FormImageProps,
+
+    // Identical structure to a CUT or COPY from edit mode.
+    data: {
+      type: "contentservice.io",
+      version: "1.0",
+      source: "toolbox",
+      layout: {
+        type: 'formimage',
+        children: [ ]
+      }
+    }
+  })
 
   $content.registerWidget(Vue, {
     name: 'forminput',

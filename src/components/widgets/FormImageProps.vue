@@ -2,10 +2,14 @@
   .c-property-element(:class="propertyClass")
     .tt-property-header(@click="setExpandedElement")
       property-bar-icons(v-if="isExpandedElement", :element="element")
-      | Line
+      | Image
 
     transition(name="c-property-list-transition")
       .c-element-properties(v-show="isExpandedElement")
+        .tt-property
+          .c-property-label URL
+          .c-property-value
+            input.input(v-model="url")
         .tt-property
           .c-property-label Class
           .c-property-value
@@ -40,6 +44,15 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'label', value })
+      }
+    },
+    url: {
+      get () {
+        let value = this.element['url']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'url', value })
       }
     },
     clas: {

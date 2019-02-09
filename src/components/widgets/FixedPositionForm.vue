@@ -211,8 +211,8 @@ export default {
       // console.log(`positionStyle()`, element);
       // return { }
 
-      let x = element._fixed_x ? element._fixed_x : 10
-      let y = element._fixed_y ? element._fixed_y : 10
+      let x = element._fixed_x ? element._fixed_x : 0
+      let y = element._fixed_y ? element._fixed_y : 0
 
       let style = {
         position: 'absolute',
