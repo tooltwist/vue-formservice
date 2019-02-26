@@ -16,7 +16,7 @@ const ARRAY = 104
 const ELEMENT_IN_ARRAY = 105
 const WHATEVER = 106
 
-const MOCK_STRING = 'XXXXX'
+const MOCK_STRING = ''
 
 const NOTFOUND = { error: 'NOTFOUND', data: null }
 const SUCCESS = { error: null, data: null }

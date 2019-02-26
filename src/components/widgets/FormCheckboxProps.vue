@@ -1,6 +1,7 @@
 <template lang="pug">
   .c-property-element(:class="propertyClass")
     .tt-property-header(@click="setExpandedElement")
+      property-bar-icons(v-if="isExpandedElement", :element="element")
       | Checkbox
 
     transition(name="c-property-list-transition")

@@ -238,6 +238,8 @@ export default {
   $border-color-borderless: #ccc;
 
   .c-form-checkbox {
+    text-align: left;
+
     input.form-checkbox-default {
       font-size: 9px;
       background-color: pink;
@@ -285,10 +287,11 @@ export default {
 
   .my-checkbox {
     display: inline-block;
+    position: relative;
 
     .my-box {
       display: inline-block;
-      //postition: relative;
+      //position: relative;
       width: 16px;
       height: 16px;
       border: solid 1px #333;
