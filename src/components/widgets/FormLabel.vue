@@ -108,45 +108,40 @@ export default {
     },
 
   },
-  methods: {
-    labelClass: function (field) {
-      console.log(`fieldClass()`, field);
-
-      if (field.classname) {
-        return field.classname
-      }
-      return null
-    },
-
-    labelStyle: function (field) {
-      console.log(`fieldStyle()`, field);
-      // return { }
-      return {
-        // 'background-color': 'red',
-        // color: 'white',
-        left: `${field.x}px`,
-        top: `${field.y}px`,
-      }
-    }
-
-  }
 }
 
 function convertLabel(v) {
+  // See if we are using tabs
+  let tabStop = 4
+  if (v.startsWith('^T8~')) {
+    tabStop = 8
+    v = v.substring(4)
+  } else if (v.startsWith('^T6~')) {
+      tabStop = 6
+      v = v.substring(4)
+  } else if (v.startsWith('^T4~')) {
+    tabStop = 4
+    v = v.substring(4)
+  }
+
+  if (
+    v.startsWith('^H4~')
+    || v.startsWith('^H6~')
+    || v.startsWith('^H8~')
+    // v.startsWith('^H4~')
+  ) {
+    // Not sure what to do with this
+    v = v.substring(4)
+  }
+
   // Convert the label
   // ^B...^b   (bold)
   // ^I...^i   (italics)
+  // ^U...^u   (underline)
+  // ^I   (tab)
   let label = ''
+  let pos = 0
   while (v) {
-
-    let pos = findFirstString(v, ['^B', '^I'])
-    if (pos < 0) {
-      label += v
-      break
-    }
-
-    label += v.substring(0, pos)
-    v = v.substring(pos)
 
     if (v.startsWith('^B')) {
       // Find end of bold section
@@ -155,6 +150,7 @@ function convertLabel(v) {
         let boldStuff = v.substring(2, end)
         v = v.substring(end + 2)
         label += `<b>${convertLabel(boldStuff)}</b>`
+        pos += boldStuff.length
       } else {
         // No end, ignore this bold
         v = v.substring(2)
@@ -167,10 +163,46 @@ function convertLabel(v) {
         let italicStuff = v.substring(2, end)
         v = v.substring(end + 2)
         label += `<i>${convertLabel(italicStuff)}</i>`
+        pos += italicStuff.length
       } else {
         // No end, ignore this italics
         v = v.substring(2)
       }
+    }
+    else if (v.startsWith('^U')) {
+      // Find end of underlined section
+      let end = v.indexOf('^u')
+      if (end >= 0) {
+        let underlineStuff = v.substring(2, end)
+        v = v.substring(end + 2)
+        label += `<u>${convertLabel(underlineStuff)}</u>`
+        pos += underlineStuff.length
+      } else {
+        // No end, ignore this italics
+        v = v.substring(2)
+      }
+    }
+    else if (v.startsWith('^t')) {
+      // Tab
+      v = v.substring(2)
+      while ((++pos % tabStop) != 0) {
+        label += '&nbsp;'
+      }
+    }
+    else if (v.startsWith(' ')) {
+      if (label.endsWith(' ')) {
+        // Because multiple spaces get treated as one space
+        label += '&nbsp;'
+      } else {
+        label += ' '
+      }
+      v = v.substring(1)
+      pos++
+    }
+    else {
+      label += v.substring(0, 1)
+      v = v.substring(1)
+      pos++
     }
   }
   return label
@@ -250,6 +282,7 @@ function findFirstString(string, patterns /*[String]*/) {
         display: block;
         text-align: left;
         border: solid 1px red;
+        word-wrap: break-word;
       }
     }
 
@@ -260,6 +293,7 @@ function findFirstString(string, patterns /*[String]*/) {
       .my-label {
         display: block;
         text-align: left;
+        word-wrap: break-word;
       }
     }
 
@@ -270,6 +304,7 @@ function findFirstString(string, patterns /*[String]*/) {
       .my-label {
         display: block;
         text-align: left;
+        word-wrap: break-word;
       }
     }
   }

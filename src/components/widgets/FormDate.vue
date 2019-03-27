@@ -24,7 +24,7 @@
               input.input(readonly, placeholder="YYYY/MM/DD")
 
       // Editing
-      div(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
+      div(v-else-if="isEditMode", @click.stop="selectThisElement")
         .field-body.has-text-left
           .field
             label.label(v-show="label") {{label}}
