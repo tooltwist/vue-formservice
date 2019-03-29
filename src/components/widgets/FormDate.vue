@@ -7,7 +7,7 @@
       | Contentservice has not been installed/initialized.
       br
       | (missing this.$content)
-    .sanity-error(v-else-if="!sane_context_formservice", @click.stop="mSelectMe")
+    .sanity-error(v-else-if="!sane_context_formservice", @click.stop="selectThisElement")
       | Please place this field inside a form.
       br
       | (missing this.context.formservice)

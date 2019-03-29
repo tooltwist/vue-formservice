@@ -78,6 +78,33 @@ class Formservice {
     if (debug) {
       console.error(`Formservice.find(${path})`);
     }
+
+    if (path.indexOf('[]') >= 0) {
+      console.error('FIND GOT AN INDEXLESS ARRAY: ${path}');
+
+    //  If we have an array without an index ("[]"), then:
+    //  1. look an ancestor element that repeats on that array, and use it's index.
+    //  2. Default to 0
+    for ( ; ; ) {
+      let pos = path.indexOf('[]')
+      if (pos < 0) {
+        break
+      }
+      let before = path.substring(0, pos + 1)
+      let after = path.substring(pos + 1)
+      path = `${before}0${after}`
+      console.log(`new path is ${path}`);
+    }
+      console.error(`new path=${path}`);
+      console.log(`vm.element=`, vm.element);
+
+      // console.log(`store is`, vm.$content.store);
+      // let elementId = vm.element.id
+      // let xyz = vm.$content.store.getters.getPathToElement(elementId)
+      // console.log(`xyz=`, xyz);
+    }
+
+
     return this.store.getters.seek({vm, operation: 'find', path, debug})
   }
   findOrCreate({vm, path, updatePath, value, debug }) {

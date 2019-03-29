@@ -7,7 +7,7 @@
       | Contentservice has not been installed/initialized.
       br
       | (missing this.$content)
-    .sanity-error(v-else-if="!sane_context_formservice")
+    .sanity-error(v-else-if="!sane_context_formservice", @click.stop="selectThisElement")
       | Please place this field inside a form.
       br
       | (missing this.context.formservice)
@@ -320,10 +320,11 @@ export default {
     &.c-edit-mode-view {
       .my-output {
         position: relative;
-        top: -2px;
+        top: 0px;
         left: -0px;
         font-family: Courier;
-        font-size: 14px;
+        font-size: 13px;
+        font-weight: 700;
       }
     }
 

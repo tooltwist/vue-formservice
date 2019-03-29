@@ -5,7 +5,7 @@
       | Contentservice has not been installed/initialized.
       br
       | (missing this.$content)
-    template(v-else-if="!sane_context_formservice")
+    template(v-else-if="!sane_context_formservice", @click.stop="selectThisElement")
       | Please place this field inside a form.
       br
       | (missing this.context.formservice)

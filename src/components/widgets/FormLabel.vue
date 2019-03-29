@@ -46,7 +46,8 @@ export default {
       get () {
         let value = this.element['label']
         // return value ? value : ''
-        return value ? convertLabel(value) : ''
+        const defaultTabStop = 4
+        return value ? convertLabel(value, defaultTabStop) : ''
       }
     },
 
@@ -110,15 +111,16 @@ export default {
   },
 }
 
-function convertLabel(v) {
+function convertLabel(v, tabStop) {
+  // console.log(`convertLabel(${v}, ${tabStop})`);
+
   // See if we are using tabs
-  let tabStop = 4
   if (v.startsWith('^T8~')) {
     tabStop = 8
     v = v.substring(4)
   } else if (v.startsWith('^T6~')) {
-      tabStop = 6
-      v = v.substring(4)
+    tabStop = 6
+    v = v.substring(4)
   } else if (v.startsWith('^T4~')) {
     tabStop = 4
     v = v.substring(4)
@@ -149,7 +151,7 @@ function convertLabel(v) {
       if (end >= 0) {
         let boldStuff = v.substring(2, end)
         v = v.substring(end + 2)
-        label += `<b>${convertLabel(boldStuff)}</b>`
+        label += `<b>${convertLabel(boldStuff, tabStop)}</b>`
         pos += boldStuff.length
       } else {
         // No end, ignore this bold
@@ -162,7 +164,7 @@ function convertLabel(v) {
       if (end >= 0) {
         let italicStuff = v.substring(2, end)
         v = v.substring(end + 2)
-        label += `<i>${convertLabel(italicStuff)}</i>`
+        label += `<i>${convertLabel(italicStuff, tabStop)}</i>`
         pos += italicStuff.length
       } else {
         // No end, ignore this italics
@@ -175,7 +177,7 @@ function convertLabel(v) {
       if (end >= 0) {
         let underlineStuff = v.substring(2, end)
         v = v.substring(end + 2)
-        label += `<u>${convertLabel(underlineStuff)}</u>`
+        label += `<u>${convertLabel(underlineStuff, tabStop)}</u>`
         pos += underlineStuff.length
       } else {
         // No end, ignore this italics
@@ -183,9 +185,12 @@ function convertLabel(v) {
       }
     }
     else if (v.startsWith('^t')) {
-      // Tab
+
+      // Tab (must have at least one space)
       v = v.substring(2)
-      while ((++pos % tabStop) != 0) {
+      label += '&nbsp;'
+      pos++
+      while ((pos++ % tabStop) != 0) {
         label += '&nbsp;'
       }
     }
