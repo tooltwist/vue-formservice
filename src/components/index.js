@@ -36,6 +36,8 @@ import FormOutput from './widgets/FormOutput.vue'
 import FormOutputProps from './widgets/FormOutputProps.vue'
 import FormCheckbox from './widgets/FormCheckbox.vue'
 import FormCheckboxProps from './widgets/FormCheckboxProps.vue'
+import FormShape from './widgets/FormShape.vue'
+import FormShapeProps from './widgets/FormShapeProps.vue'
 import FormSubmit from './widgets/FormSubmit.vue'
 import FormSubmitProps from './widgets/FormSubmitProps.vue'
 import FormGrid from './widgets/FormGrid.vue'
@@ -325,6 +327,31 @@ function install (Vue, options) {
       layout: {
         type: 'formcheckbox',
         label: 'checkbox',
+        children: [ ]
+      }
+    }
+  })
+
+  $content.registerWidget(Vue, {
+    name: 'formshape',
+    label: 'Shape',
+    category: 'PDF Generation',
+    iconClass: 'c-toolbox-icon-shape',
+    dragtype: 'component',
+
+    // Register native Vue templates
+    componentName: 'content-formshape',
+    component: FormShape,
+    propertyComponent: FormShapeProps,
+
+    // Identical structure to a CUT or COPY from edit mode.
+    data: {
+      type: "contentservice.io",
+      version: "1.0",
+      source: "toolbox",
+      layout: {
+        type: 'formshape',
+        label: 'shape',
         children: [ ]
       }
     }

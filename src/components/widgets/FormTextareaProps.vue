@@ -26,14 +26,20 @@
           .c-property-label Style
           .c-property-value
             input.input(v-model="style")
+
+        fixed-position-properties(:element="element")
 </template>
 
 <script>
 import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
+import FixedPositionProperties from './FixedPositionProperties'
 import EditMixins from '../../mixins/EditMixins'
 
 export default {
   name: 'form-textarea-props',
+  components: {
+    FixedPositionProperties
+  },
   mixins: [ PropertyMixins, EditMixins ],
   computed: {
     label: EditMixins.twoWayComputedProperty('label', ''),

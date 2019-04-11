@@ -40,7 +40,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(:style="inputStyle", :class="inputClass", :placeholder="placeholder", autocomplete="mAutocompleteDisabled", v-model="actualData")
+              input.input(:style="inputStyle", :class="inputClass", :placeholder="placeholder", autocomplete="mAutocompleteDisabled", v-model="actualData", :tabindex="tabIndex")
 </template>
 
 <script>
@@ -105,6 +105,13 @@ export default {
         console.log(`element=`, this.element);
         console.log(`obj=`, obj)
       }
+
+      // Add .c-is-empty class if the field has no content
+      let value = this.actualData
+      if (!value) {
+        obj['c-is-empty'] = true
+      }
+
       return obj
     },
 
@@ -155,6 +162,18 @@ export default {
       get () {
         let label = this.element['label'] ? this.element['label'] : ''
         return label
+      }
+    },
+
+    tabIndex: {
+      get () {
+        let value = this.element['tabIndex'] ? this.element['tabIndex'] : ''
+        let index = parseInt(value)
+        console.log(`TABINDEX=${index}`);
+        if (index === NaN) {
+          return null
+        }
+        return index
       }
     },
 
@@ -314,23 +333,28 @@ export default {
      *  Live mode
      */
     &.c-edit-mode-view {
-      margin-top: 2px;
-      margin-bottom: 8px;
+      margin-top: 0px;
+      margin-bottom: 10px;
       label {
         margin-bottom: 1px;
       }
       input {
-        border-color: $border-color-default;
+        border: none;
+        box-shadow: none;
         font-family: $c-input-default-font-family;
         font-weight: $c-input-default-font-weight;
         font-size: $c-input-default-font-size;
         color: $c-input-default-color;
         background-color: $c-input-default-background-color;
+        &.c-is-empty {
+          background-color:$c-input-empty-background-color;
+        }
       }
       &.form-input-borderless {
         input {
           border: none;
           box-shadow: none;
+          background-color: white;
         }
       }
     }//- live mode

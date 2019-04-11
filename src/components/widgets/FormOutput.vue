@@ -320,11 +320,12 @@ export default {
     &.c-edit-mode-view {
       .my-output {
         position: relative;
-        top: 0px;
+        top: 1px;
         left: -0px;
-        font-family: Courier;
+        font-family: 'Courier New';
         font-size: 13px;
         font-weight: 700;
+        color: #000020;
       }
     }
 

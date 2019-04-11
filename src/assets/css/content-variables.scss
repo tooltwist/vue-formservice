@@ -25,12 +25,20 @@ $f-widget-top-left-color: #ccc;
 $f-widget-bottom-right-color: #999;
 
 // Default input styles
-$c-input-default-color: blue;
-$c-input-default-font-size: 15px;
-$c-input-default-font-family: Arial;
-$c-input-default-font-weight: bold;
-$c-input-default-background-color: #ffffcc;
+// $c-input-default-color: blue;
+// $c-input-default-font-size: 15px;
+// $c-input-default-font-family: Arial;
+// $c-input-default-font-weight: bold;
+// $c-input-default-background-color: #ffffcc; // Yellow
 // $c-input-default-background-color: #FFF7AE;
+
+// ADL forms colors
+$c-input-default-color: black;
+$c-input-default-font-size: 16px;
+$c-input-default-font-family: 'Times New Roman' Arial;
+$c-input-default-font-weight: bold;
+$c-input-default-background-color: #c5dfe2;
+$c-input-empty-background-color: #a0e1e8;
 
 // Defaults while editing
 $c-input-layout-font-size: 13px;

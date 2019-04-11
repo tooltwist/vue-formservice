@@ -6,10 +6,22 @@
 
     transition(name="c-property-list-transition")
       .c-element-properties(v-show="isExpandedElement")
-        .tt-property
-          .c-property-label Label
-          .c-property-value
-            input.input(v-model="label")
+        //- .tt-property
+        //-   .c-property-label Border Color
+        //-   .c-property-value
+        //-     input.input(v-model="borderColor")
+        //- .tt-property
+        //-   .c-property-label Border Width
+        //-   .c-property-value
+        //-     input.input(v-model="borderWidth")
+        //- .tt-property
+        //-   .c-property-label Fill Color
+        //-   .c-property-value
+        //-     input.input(v-model="fillColor")
+        //- .tt-property
+        //-   .c-property-label Border Radius
+        //-   .c-property-value
+        //-     input.input(v-model="borderRadius")
         .tt-property
           .c-property-label Class
           .c-property-value
