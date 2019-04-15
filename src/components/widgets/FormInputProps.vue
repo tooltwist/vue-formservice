@@ -26,6 +26,10 @@
           .c-property-label Style
           .c-property-value
             input.input(v-model="style")
+        .tt-property
+          .c-property-label Hooks
+          .c-property-value
+            input.input(v-model="hooks")
 
         fixed-position-properties(:element="element")
 
@@ -102,6 +106,15 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'style', value })
+      }
+    },
+    hooks: {
+      get () {
+        let value = this.element['hooks']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'hooks', value })
       }
     },
   },

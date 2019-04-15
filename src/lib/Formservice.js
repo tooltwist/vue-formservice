@@ -31,7 +31,55 @@ class Formservice {
     // Remember the options
     this.options = options
 
-    this.zzzSnurg = 123
+    // Create the initial list of hook functions.
+    this.hooks = {
+
+      'capitalize': function(value, parameters, context) {
+        let startWord = true
+        let result = ''
+        for (let i = 0; i < value.length; i++) {
+          let ch = value.charAt(i)
+          if (ch===' ' || ch==='\t') {
+            startWord = true
+            result += ch
+          } else {
+            if (startWord) {
+              result += (''+ch).toUpperCase()
+              startWord = false
+            } else {
+              result += (''+ch).toLowerCase()
+            }
+          }
+        }
+        if (result !== value) {
+          return { newValue: result }
+        }
+        return { }
+      },
+
+      // Parameter characters:
+      // '-' = allow negative numbers
+      // '.' = allow decimals
+      '#numeric': function(value, parameters, context) {
+        let result = ''
+        for (let i = 0; i < value.length; i++) {
+          let ch = value.charAt(i)
+
+          if (
+            (ch >= '0' && ch <= '9')
+            || (ch==='-' && i===0 && parameters.includes('-'))
+            || (ch==='.' && i > 0 && parameters.includes('.') && value.indexOf('.')===i) // no prior '.'
+          ) {
+            result += ch
+          }
+        }
+        if (result !== value) {
+          return { newValue: result }
+        }
+        return { }
+      },
+
+    }//- hooks
   }
 
   init (app /* Vue component instance */) {
@@ -179,6 +227,112 @@ class Formservice {
   //----------------------------------------------------------------------------//
   //                         IF WE CALL AN API - end                          //
   //----------------------------------------------------------------------------//
+
+  // Call the hooks for a form field
+  runHooks (event, validators, value, hookContext) {
+    console.log(`*** runHooks(${event}, value=${value}, hookContext)`)
+
+    // Validate the value
+    //  default is leaving the field (onblur)
+    //  # for each character (onchange)
+    //  @ before saving page
+    hookContext.event = event
+
+    const NO_ERROR = hookContext.NO_ERROR = 0
+    const WARNING = hookContext.WARNING = 10
+    const ERROR = hookContext.ERROR = 20
+
+    let highestLevelSoFar = -1 // No error
+    let message = null
+    let latestValue = null
+
+    // Iterate through the required hooks for all event types.
+    let arr = validators.split(',')
+    for (let i = 0; i < arr.length; i++) {
+
+      // handle <hookname> or <hookname>(<parameters>)
+      let name = arr[i].trim()
+      // console.log(`hook=${name}.`);
+      let parameters = ''
+      let pos = name.indexOf('(')
+      if (pos > 0) {
+        parameters = name.substring(pos + 1).trim()
+        name = name.substring(0, pos)
+        if (parameters.endsWith(')')) {
+          parameters = parameters.substring(0, parameters.length - 1)
+        }
+      }
+      // console.log(`name=${name}`);
+      // console.log(`parameters=${parameters}`);
+
+      // See if this hook is for this event
+      let firstChar = name.charAt(0)
+      // console.log(`  --> ${firstChar}`);
+      if (firstChar === '#') {
+        // Call for every character entered (onchange)
+        if (event !== 'change') { continue; }
+      } else if (firstChar === '@') {
+        // Call on form save
+        if (event !== 'save') { continue; }
+      } else {
+        // Call when leaving the field
+        if (event !== 'blur') { continue; }
+      }
+
+      // Need to call this hook
+      let fn = this.hooks[name]
+      // console.log(`fn=${fn}`);
+      if (!fn) {
+        message = `Unknown hook function [${name}]`
+        return { errorLevel: 'error', errorMessage: message, newValue: null }
+      }
+
+      // Call the hook function
+      console.log(`Calling hook ${name}(${value}, parameters=${parameters}, context)`);
+      let { errorLevel, newValue, errorMessage } = fn(value, parameters, hookContext)
+      console.log(`- returned errorLevel=${errorLevel}, newValue=${newValue}, errorMessage=${errorMessage}`);
+      if (!errorLevel) {
+        errorLevel = NO_ERROR
+      }
+
+      // Check if the value was changed by the hook. If it
+      // has we'll pass the new value on to subsequent hooks.
+      if (newValue) {
+        console.log(`Replacing value with ${newValue}`);
+        value = newValue
+        latestValue = newValue
+      }
+
+      // We'll report the highest level error. If it's an
+      // error we won't carry on and call any more hooks.
+      if (errorLevel > highestLevelSoFar) {
+        highestLevelSoFar = errorLevel
+        message = errorMessage
+        if (errorLevel === ERROR) {
+          break
+          // return { errorLevel: 'error', errorMessage }
+        }
+      }
+    } // Next
+
+    let errorLevel = null
+    if (highestLevelSoFar === NO_ERROR) {
+      errorLevel = ''
+      message = ''
+    } else if (highestLevelSoFar === WARNING) {
+      errorLevel = 'warning'
+    } else if (highestLevelSoFar === ERROR) {
+      errorLevel = 'error'
+    }
+    return { errorLevel, errorMessage: message, newValue: latestValue }
+  }//- runHooks
+
+  /*
+   *  Register a function by name.
+   */
+  registerHook(name, func) {
+    this.hooks[name] = func
+  }
 }
 
 /*

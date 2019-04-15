@@ -39,8 +39,16 @@
         .field-body.has-text-left
           .field
             label.label(v-show="label") {{label}}
-            .control
-              input.input(:style="inputStyle", :class="inputClass", :placeholder="placeholder", autocomplete="mAutocompleteDisabled", v-model="actualData", :tabindex="tabIndex")
+            .control.has-icons-right(:class="tooltipClass", :data-tooltip="errorMessage", v-if="true || errorMessage")
+              input.input.tooltip(:style="inputStyle", :class="inputClass", :placeholder="placeholder", autocomplete="mAutocompleteDisabled", v-model="actualData", :tabindex="tabIndex", @blur="onblur", data-tooltip="Tooltip Text")
+              .icon.is-small.is-right(v-if="errorMessage")
+                //.tooltip.is-tooltip-top(data-tooltip="Tooltip Text") Y
+                //button.button.is-error.is-small.tooltip.is-tooltip-active(data-tooltip="Tooltip Text") error
+                //i.my-error-icon
+                i.my-error-icon.c-input-error-icon
+            .control(v-else)
+              input.input(:style="inputStyle", :class="inputClass", :placeholder="placeholder", autocomplete="mAutocompleteDisabled", v-model="actualData", :tabindex="tabIndex", @blur="onblur")
+              | X
 </template>
 
 <script>
@@ -55,7 +63,6 @@ export default {
       type: Object,
       required: true
     },
-
     context: {
       type: Object,
       required: true
@@ -64,6 +71,9 @@ export default {
   mixins: [ ContentMixins, CutAndPasteMixins, FormserviceMixins ],
   data: function () {
     return {
+      errorLevel: null,
+      errorMessage: '',
+      sequence: 0, // Increment this to force display of a new value.
     }
   },
   computed: {
@@ -110,6 +120,11 @@ export default {
       let value = this.actualData
       if (!value) {
         obj['c-is-empty'] = true
+      }
+
+      // Check the warning level
+      if (this.errorLevel) {
+        obj[`error-level-${this.errorLevel}`] = true
       }
 
       return obj
@@ -208,10 +223,19 @@ export default {
         let recordPath = this.context.formservice.dataPath
         let attribute = this.element['attribute']
 
+        // This reference forces 'actualData' to be
+        // re-computed if this.sequence is incremented.
+        let sequence = this.sequence
+
         if (attribute) {
           let path = `${recordPath}.${attribute}`
-          let defaultValue = '' //ZZZ This could come from a schema
-          let {data, error} = this.$formservice.findOrCreate({ vm: this, path, updatePath: true, value: '', debug: false })
+          let defaultValue = ''
+          let {data, error} = this.$formservice.findOrCreate({
+            vm: this,
+            path,
+            updatePath: true,
+            value: defaultValue,
+            debug: false});
 
           let value = data
           // console.log(`path`, path);
@@ -237,28 +261,140 @@ export default {
       set (value) {
         if (this.isLive) {
           let recordPath = this.context.formservice.dataPath
-          console.error(`WARP FormInput.actualData.set: recordPath=${recordPath}`);
+          console.error(`WARP1 FormInput.actualData.set: recordPath=${recordPath}`);
           let attribute = this.element['attribute']
 
           if (attribute) {
             let path = `${recordPath}.${attribute}`
-            // this.$formservice.setValue(recordPath, attribute, value, String)
+
+            // Run any 'onchange' hooks.
+            let hooks = this.element['hooks']
+            if (hooks) {
+              let hookContext = {
+                vm: this,
+                recordPath,
+                attribute,
+                path,
+              }
+              let { errorLevel, errorMessage, newValue } = this.$formservice.runHooks('change', hooks, value, hookContext)
+
+              // See if we got a changed value or error
+              console.log(`A. errorLevel=${errorLevel}, newValue=${newValue}, errorMessage=${errorMessage}`);
+              if (newValue !== null) {
+                console.log(`A. setting new value to ${newValue}`);
+                value = newValue
+                this.sequence++ // Force redisplay of the field
+              }
+              if (errorLevel !== null) {
+                this.errorLevel = errorLevel
+              }
+              if (errorMessage !== null) {
+                this.errorMessage = errorMessage
+              }
+            }
+
+            // Save the value
             this.$formservice.save({ vm: this, path, updatePath: true, value, debug: false })
-            // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
+            return true
           }
         }
       }
-    }//- actualData
-  }
+    },//- actualData
+
+    tooltipClass: function () {
+      if (this.errorLevel) {
+        console.log(`tooltipClass: ${this.errorLevel}`);
+        return 'tooltip'
+      }
+    },
+  }, //- computed
+
+  methods: {
+    onblur: function () {
+      // console.log('onblur')
+      if (this.isLive) {
+        let recordPath = this.context.formservice.dataPath
+        // console.error(`WARP1 FormInput.actualData.set: recordPath=${recordPath}`);
+        let attribute = this.element['attribute']
+
+        if (attribute) {
+          // Get the current value
+          let path = `${recordPath}.${attribute}`
+          let defaultValue = ''
+          let {data, error} = this.$formservice.findOrCreate({
+              vm: this,
+              path,
+              updatePath: true,
+              value: defaultValue,
+              debug: false});
+          let value = data
+
+          // Run the 'onblur' hooks
+          let hooks = this.element['hooks']
+          if (hooks) {
+            console.log(`hooks=${hooks}`)
+            let hookContext = {
+              vm: this,
+              recordPath,
+              attribute,
+              path,
+            }
+            let { errorLevel, errorMessage, newValue } = this.$formservice.runHooks('blur', hooks, value, hookContext)
+
+            // If the value has been chanfged by the hooks, update it now.
+            // console.log(`A2. errorLevel=${errorLevel}, newValue=${newValue}, errorMessage=${errorMessage}`);
+            if (newValue !== null) {
+              // console.log(`A2. setting new value to ${newValue}`);
+              this.sequence++ // Force redisplay of the field
+              this.$formservice.save({ vm: this, path, updatePath: true, value:newValue, debug:false })
+            }
+            if (errorLevel !== null) {
+              this.errorLevel = errorLevel
+            }
+            if (errorMessage !== null) {
+              this.errorMessage = errorMessage
+            }
+          }
+        }
+      }
+    },//- onblur
+  },//- methods
+
+//   mounted: function () {
+//     // Don't allow a string to start with 'hello'
+//     this.$formservice.registerHook('notFriendly', function(value, parameters, context) {
+//       if (value.toLowerCase().startsWith('hello')) {
+//         return { errorLevel: context.ERROR, errorMessage: 'This message is too friendly.' }
+//       }
+//       return { }
+//     })
+//
+//     // Increment a number less than 100
+//     this.$formservice.registerHook('#mytest', function(value, parameters, context) {
+//       let num = parseInt(value)
+//       if (isNaN(num)) {
+//         return { errorLevel: context.WARNING, errorMessage: 'Must be a number' }
+//       }
+//       if (num >= 100) {
+//         return { errorLevel: context.ERROR, errorMessage: 'Number is too big!' }
+//       }
+//       let newValue = num + 1
+//       return { newValue }
+//     })
+//   },//- mounted
+
 }
 </script>
 
 
 <style lang="scss">
   @import '../../assets/css/content-variables.scss';
+  @import '~bulma-tooltip';
 
   $border-color-default: #ccc;
   $border-color-borderless: #ccc;
+  $c-input-warning-color: #ffeac6;
+  $c-input-error-color: #ffdedd;
 
   .c-form-input {
 
@@ -349,6 +485,14 @@ export default {
         &.c-is-empty {
           background-color:$c-input-empty-background-color;
         }
+        &.error-level-warning {
+          background-color: $c-input-warning-color;
+          border: solid 2px orange;
+        }
+        &.error-level-error {
+          background-color: $c-input-error-color;
+          border: solid 2px red;
+        }
       }
       &.form-input-borderless {
         input {
@@ -357,6 +501,13 @@ export default {
           background-color: white;
         }
       }
+      .my-error-icon {
+        width: 30px;
+        height: 30px;
+        margin-top: 2px;
+        margin-right: 5px;
+      }
+
     }//- live mode
   }
 </style>
