@@ -8,9 +8,9 @@
       br
       | (missing this.$content)
     .sanity-error(v-else-if="!sane_context_formservice", @click.stop="selectThisElement")
-      | Please place this field inside a form.
+      | FormInput: missing this.context.formservice
       br
-      | (missing this.context.formservice)
+      | Please place this field inside a form.
     template(v-else)
 
       // Normal operation below here

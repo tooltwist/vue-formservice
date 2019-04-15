@@ -8,9 +8,9 @@ time<template lang="pug">
       br
       | (missing this.$content)
     .sanity-error(v-else-if="!sane_context_formservice", @click.stop="mSelectMe")
-      | Please place this field inside a form.
+      | FormTime: missing this.context.formservice
       br
-      | (missing this.context.formservice)
+      | Please place this field inside a form.
     template(v-else)
 
       // No Errors

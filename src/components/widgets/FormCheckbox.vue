@@ -4,9 +4,13 @@
 
     // Sanity checks
     .sanity-error(v-if="!sane_$content")
-      | Missing this.$content
-    .sanity-error(v-else-if="!sane_context_formservice")
-      | Missing this.context.formservice
+      | Contentservice has not been installed/initialized.
+      br
+      | (missing this.$content)
+    .sanity-error(v-else-if="!sane_context_formservice", @click.stop="selectThisElement")
+      | FormCheckbox: Missing this.context.formservice
+      br
+      | Please place this component within a form.
     template(v-else)
       //| YEP: {{$formservice.store.state.refreshCounter}}
       //br
