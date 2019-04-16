@@ -39,16 +39,10 @@
         .field-body.has-text-left
           .field
             label.label(v-show="label") {{label}}
-            .control.has-icons-right(:class="tooltipClass", :data-tooltip="errorMessage", v-if="true || errorMessage")
+            .control.has-icons-right(:class="tooltipClass", :data-tooltip="errorMessage")
               input.input.tooltip(:style="inputStyle", :class="inputClass", :placeholder="placeholder", autocomplete="mAutocompleteDisabled", v-model="actualData", :tabindex="tabIndex", @blur="onblur", data-tooltip="Tooltip Text")
               .icon.is-small.is-right(v-if="errorMessage")
-                //.tooltip.is-tooltip-top(data-tooltip="Tooltip Text") Y
-                //button.button.is-error.is-small.tooltip.is-tooltip-active(data-tooltip="Tooltip Text") error
-                //i.my-error-icon
                 i.my-error-icon.c-input-error-icon
-            .control(v-else)
-              input.input(:style="inputStyle", :class="inputClass", :placeholder="placeholder", autocomplete="mAutocompleteDisabled", v-model="actualData", :tabindex="tabIndex", @blur="onblur")
-              | X
 </template>
 
 <script>
@@ -184,9 +178,11 @@ export default {
       get () {
         let value = this.element['tabIndex'] ? this.element['tabIndex'] : ''
         let index = parseInt(value)
-        console.log(`TABINDEX=${index}`);
         if (index === NaN) {
           return null
+        }
+	if (index <= 0) {
+          index = 1
         }
         return index
       }
@@ -303,7 +299,6 @@ export default {
 
     tooltipClass: function () {
       if (this.errorLevel) {
-        console.log(`tooltipClass: ${this.errorLevel}`);
         return 'tooltip'
       }
     },
