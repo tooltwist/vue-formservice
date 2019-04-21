@@ -506,9 +506,12 @@ if (TESTHACK) {
       return { data: null, error: `Unknown dataset: !${datasetName}`}
     }
     let parcel = state.datasetIndex[datasetName]
-
-    // Are we just looking for the dataset?
     let data = parcel.data
+
+if (debug) {
+console.log(`parcel=`, data);
+}
+    // Are we just looking for the dataset?
     if (parts.length === 1) {
 
       // We're only looking for the dataset

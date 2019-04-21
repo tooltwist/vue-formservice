@@ -52,6 +52,7 @@ export function parseDataPath (path) {
 
   // Parse a specification of the form <name> or <name>[index].
 export function parseDataPart (spec) {
+  // console.log(`parseDataPart(${spec})`);
 
   // Check for '['
   spec = spec.trim()
@@ -67,7 +68,7 @@ export function parseDataPart (spec) {
     // console.log(`parseDataPart: with index: ${spec}`);
     let name = spec.substring(0, openBracketPos)
     let indexSpec = spec.substring(openBracketPos)
-    console.log(`indexSpec=${indexSpec}`)
+    // console.log(`indexSpec=${indexSpec}`)
     // Check for ']'
     let closeBracketPos = indexSpec.indexOf(']')
     if (closeBracketPos < 0) {

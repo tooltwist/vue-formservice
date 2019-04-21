@@ -226,11 +226,16 @@ export default {
         if (attribute) {
           let path = `${recordPath}.${attribute}`
           let defaultValue = ''
-          let {data, error} = this.$formservice.findOrCreate({
+          // let debug = (path.endsWith('nameOrCompanyName'))
+          // let {data, error} = this.$formservice.findOrCreate({
+          //   vm: this,
+          //   path,
+          //   updatePath: true,
+          //   value: defaultValue,
+          //   debug});
+          let {data, error} = this.$formservice.find({
             vm: this,
             path,
-            updatePath: true,
-            value: defaultValue,
             debug: false});
 
           let value = data
@@ -299,6 +304,7 @@ export default {
 
     tooltipClass: function () {
       if (this.errorLevel) {
+        // console.log(`tooltipClass: ${this.errorLevel}`);
         return 'tooltip'
       }
     },
