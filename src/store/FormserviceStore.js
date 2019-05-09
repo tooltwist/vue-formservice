@@ -2316,7 +2316,7 @@ export const actions = {
     commit('deleteValueFromSeekMutation', {vm, parent, name, index, debug})
   },
 
-  setValue ({ commit, state }, { recordPath, path, value, type }) {
+  setValue ({ commit, state }, { recordPath, path, value, type, debug }) {
     if (debug) {
       console.log(`ACTION FormserviceStore.setValue(${recordPath}, ${path}, ${value}, type)`);
     }
