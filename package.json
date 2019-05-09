@@ -1,6 +1,6 @@
 {
   "name": "@tooltwist/vue-formservice",
-  "version": "0.1.85",
+  "version": "0.1.86",
   "private": false,
   "scripts": {
     "dev": "vue-cli-service serve --open",
