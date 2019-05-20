@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
+import PropertyMixins from '@tooltwist/vue-contentservice/src/mixins/PropertyMixins'
 
 export default {
   name: 'form-pdf-props',

@@ -50,8 +50,8 @@
 </template>
 
 <script>
-import ContentMixins from 'vue-contentservice/src/mixins/ContentMixins'
-import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
+import ContentMixins from '@tooltwist/vue-contentservice/src/mixins/ContentMixins'
+import CutAndPasteMixins from '@tooltwist/vue-contentservice/src/mixins/CutAndPasteMixins'
 import WidgetMixins from '../../mixins/WidgetMixins'
 
 export default {

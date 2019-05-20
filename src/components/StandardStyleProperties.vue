@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
-import CutAndPasteMixins from 'vue-contentservice/src/mixins/CutAndPasteMixins'
+import PropertyMixins from '@tooltwist/vue-contentservice/src/mixins/PropertyMixins'
+import CutAndPasteMixins from '@tooltwist/vue-contentservice/src/mixins/CutAndPasteMixins'
 
 export default {
   name: 'content-formservice-props',

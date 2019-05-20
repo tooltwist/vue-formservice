@@ -50,8 +50,6 @@ import ResponsiveForm from './widgets/ResponsiveForm.vue'
 import ResponsiveFormProps from './widgets/ResponsiveFormProps.vue'
 import ExampleWidget from './widgets/ExampleWidget.vue'
 import ExampleWidgetProps from './widgets/ExampleWidgetProps.vue'
-import PanelWithoutProperties from './widgets/PanelWithoutProperties.vue'
-import PanelWithoutPropertiesProps from './widgets/PanelWithoutPropertiesProps.vue'
 
 import FormDate from './widgets/FormDate.vue'
 import FormDateProps from './widgets/FormDateProps.vue'
@@ -709,8 +707,6 @@ function install (Vue, options) {
 
 
 
-
-  $content.registerLayoutType(Vue, 'panelWithoutProperties', 'panel-without-properties', PanelWithoutProperties, PanelWithoutPropertiesProps)
 
   //ZZZZ Move this component to vue-contentservice
   Vue.component('property-bar-icons', PropertyBarIcons)

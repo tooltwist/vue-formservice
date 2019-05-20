@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
 
-import ContentService from 'vue-contentservice';
+import ContentService from '@tooltwist/vue-contentservice';
 import Formservice from './components/index.js';
 
 import TestInLayout from './testapp/TestInLayout.vue'
@@ -35,7 +35,7 @@ import InspectionReport from './testapp/InspectionReport.vue'
 
 require('font-awesome/css/font-awesome.min.css')
 require('bulma/css/bulma.min.css')
-require('vue-contentservice/dist/vue-contentservice.css')
+require('@tooltwist/vue-contentservice/dist/vue-contentservice.css')
 require('@/assets/css/content-editor.scss')
 // require('vue-contentservice/dist/vue-contentservice.css')
 

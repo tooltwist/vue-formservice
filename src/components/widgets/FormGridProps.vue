@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import PropertyMixins from 'vue-contentservice/src/mixins/PropertyMixins'
+import PropertyMixins from '@tooltwist/vue-contentservice/src/mixins/PropertyMixins'
 import FormGridMixins from './FormGridMixins'
 import EditMixins from '../../mixins/EditMixins'
 
