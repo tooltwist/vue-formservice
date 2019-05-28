@@ -206,9 +206,6 @@ export default {
         }
         return placeholder
       },
-      set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'placeholder', value })
-      }
     },
 
     /*

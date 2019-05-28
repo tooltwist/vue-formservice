@@ -19,7 +19,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              textarea.textarea(readonly, :placeholder="cPlaceholder", :rows="rows")
+              textarea.textarea(readonly, :style="inputStyle", :class="inputClass", :placeholder="cPlaceholder")
 
       // Editing
       div(v-else-if="isEditMode", @click.stop="selectThisElement")
@@ -27,20 +27,23 @@
           .field
             label.label(v-show="label") {{label}}
             .control
-              textarea.textarea(readonly, :placeholder="cPlaceholder", :rows="rows")
+              textarea.textarea(readonly, :style="inputStyle", :class="inputClass", :placeholder="cPlaceholder")
 
       // Live mode
       template(v-else)
         .field-body.has-text-left
           .field
             label.label(v-show="label") {{label}}
-            .control
-              textarea.textarea(:placeholder="cPlaceholder", :rows="rows", v-model="actualData")
+            .control.has-icons-right(:class="tooltipClass", :data-tooltip="errorMessage")
+              textarea.textarea(:style="inputStyle", :class="inputClass", :placeholder="cPlaceholder", v-model="actualData", :tabindex="tabIndex")
+              .icon.is-small.is-right(v-if="errorMessage")
+                i.my-error-icon.c-input-error-icon
 </template>
 
 <script>
 import ContentMixins from '@tooltwist/vue-contentservice/src/mixins/ContentMixins'
 import CutAndPasteMixins from '@tooltwist/vue-contentservice/src/mixins/CutAndPasteMixins'
+import FormserviceMixins from '../../mixins/FormserviceMixins'
 
 export default {
   name: 'form-textarea',
@@ -55,9 +58,12 @@ export default {
       required: true
     }
   },
-  mixins: [ ContentMixins, CutAndPasteMixins ],
+  mixins: [ ContentMixins, CutAndPasteMixins, FormserviceMixins ],
   data: function () {
     return {
+      errorLevel: null,
+      errorMessage: '',
+      sequence: 0, // Increment this to force display of a new value.
     }
   },
   computed: {
@@ -76,55 +82,64 @@ export default {
       return false
     },
 
-    // inputClass: function () {
-    //   var obj = { }
-    //   let classesForElement = this.element['class']
-    //   if (classesForElement) {
-    //     // console.log(`classesForElement=${classesForElement}`);
-    //     classesForElement.split(' ').forEach(clas => {
-    //       // console.log(`-- ${clas}`);
-    //       let classname = clas.trim()
-    //       if (classname) {
-    //         obj[classname] = true
-    //       }
-    //     })
-    //   } else {
-    //     obj['form-input-default'] = true
-    //   }
-    //   return obj
-    // },
-    //
-    // inputStyle: function ( ) {
-    //   let style = this.element['style'] + ';'
-    //   // width
-    //   try {
-    //     let num = parseInt(this.element['width'])
-    //     if (num >= 20) {
-    //       style += `width:${num}px;`
-    //     }
-    //   } catch (e) { }
-    //
-    //   // height
-    //   try {
-    //     let num = parseInt(this.element['height'])
-    //     if (num >= 20) {
-    //       style += `height:${num}px;`
-    //     }
-    //   } catch (e) { }
-    //   // console.log(`inputStyle=`, style)
-    //   return style
-    // },
+    inputClass: function () {
+      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
+        console.log(`inputClass()`, this.element);
+      }
 
-    // inputStyle: function (field) {
-    //   console.log(`inputStyle()`, field);
-    //   // return { }
-    //   return {
-    //     //'background-color': 'red',
-    //     //color: 'white',
-    //     left: `${field.x}px`,
-    //     top: `${field.y}px`,
-    //   }
-    // },
+      var obj = { }
+      let classesForElement = this.element['class']
+      if (classesForElement) {
+        // console.log(`classesForElement=${classesForElement}`);
+        classesForElement.split(' ').forEach(clas => {
+          // console.log(`-- ${clas}`);
+          let classname = clas.trim()
+          if (classname) {
+            obj[classname] = true
+          }
+        })
+      } else {
+        obj['form-input-default'] = true
+      }
+      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
+        console.log(`element=`, this.element);
+        console.log(`obj=`, obj)
+      }
+
+      // Add .c-is-empty class if the field has no content
+      let value = this.actualData
+      if (!value) {
+        obj['c-is-empty'] = true
+      }
+
+      // Check the warning level
+      if (this.errorLevel) {
+        obj[`error-level-${this.errorLevel}`] = true
+      }
+
+      return obj
+    },
+
+    inputStyle: function ( ) {
+      let style = this.element['style'] + ';'
+      // width
+      try {
+        let num = parseInt(this.element['width'])
+        if (num >= 20) {
+          style += `width:${num}px;`
+        }
+      } catch (e) { }
+
+      // height
+      try {
+        let num = parseInt(this.element['height'])
+        if (num >= 20) {
+          style += `height:${num}px;`
+        }
+      } catch (e) { }
+      // console.log(`inputStyle=`, style)
+      return style
+    },
 
     attribute: {
       get () {
@@ -144,8 +159,18 @@ export default {
       }
     },
 
-    rows: function ( ) {
-      return 15
+    tabIndex: {
+      get () {
+        let value = this.element['tabIndex'] ? this.element['tabIndex'] : ''
+        let index = parseInt(value)
+        if (index === NaN) {
+          return null
+        }
+	if (index <= 0) {
+          index = 1
+        }
+        return index
+      }
     },
 
     cPlaceholder: {
@@ -179,10 +204,17 @@ export default {
         let recordPath = this.context.formservice.dataPath
         let attribute = this.element['attribute']
 
+        // This reference forces 'actualData' to be
+        // re-computed if this.sequence is incremented.
+        let sequence = this.sequence
+
         if (attribute) {
           let path = `${recordPath}.${attribute}`
           let defaultValue = '' //ZZZ This could come from a schema
-          let {data, error} = this.$formservice.getData(path, defaultValue)
+          let {data, error} = this.$formservice.find({
+            vm: this,
+            path,
+            debug: false});
 
           let value = data
           // console.log(`value`, value);
@@ -211,32 +243,22 @@ export default {
           let attribute = this.element['attribute']
 
           if (attribute) {
-            console.log(`FormTextarea: datavalue.set(${attribute}, ${value}`);
-            this.$formservice.setValue(recordPath, attribute, value, String)
-            // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
+            let path = `${recordPath}.${attribute}`
+
+            // Save the value
+            this.$formservice.save({ vm: this, path, updatePath: true, value, debug: false })
+            this.$content.refresh({})
+            return true
           }
         }
       }
     },//- actualData
 
-
-    cClass: function () {
-      // Get the class for design/edit/live mode
-      let cls = this.editModeClass + ' '
-
-      // Add classes defined by the user
-      let classesForElement = this.element['class']
-      if (classesForElement) {
-        cls +=  classesForElement
-      } else {
-        cls += ' form-input-default'
+    tooltipClass: function () {
+      if (this.errorLevel) {
+        // console.log(`tooltipClass: ${this.errorLevel}`);
+        return 'tooltip'
       }
-      return cls
-    },
-
-    cStyle: function ( ) {
-      let style = this.element['style'] + ';'
-      return style ? `${style};` : ``
     },
 
   }
@@ -246,9 +268,12 @@ export default {
 
 <style lang="scss">
   @import '../../assets/css/content-variables.scss';
+  @import '~bulma-tooltip';
 
   $border-color-default: #ccc;
   $border-color-borderless: #ccc;
+  $c-input-warning-color: #ffeac6;
+  $c-input-error-color: #ffdedd;
 
   .c-form-textarea {
 
@@ -271,15 +296,15 @@ export default {
 
       padding-left: 2px;
       padding-right: 2px;
-      //margin: 1px;
+      margin: 1px;
 
       // .container {
       //   width: 90% !important;
       // }
 
-      label {
-        min-height: 50px;
-      }
+      // label {
+      //   min-height: 50px;
+      // }
       textarea {
         border: solid 1px $c-input-layout-border-color-1;
         font-family: $c-input-default-font-family;
@@ -308,8 +333,8 @@ export default {
       textarea {
         border-color: $border-color-default;
         font-family: $c-input-default-font-family;
-        //font-weight: $c-input-default-font-weight;
-        font-weight: normal;
+        font-weight: $c-input-default-font-weight;
+        // font-weight: normal;
         font-size: $c-input-default-font-size;
         color: $c-input-default-color;
         background-color: $c-input-default-background-color;
@@ -347,32 +372,38 @@ export default {
      *  Live mode
      */
     &.c-edit-mode-view {
-      margin-top: 2px;
+      margin-top: -1px;
+      margin-left: 2px;
       margin-bottom: 8px;
       label {
         margin-bottom: 1px;
       }
       textarea {
-        border-color: $border-color-default;
+        // border-color: $border-color-default;
+        border: none;
+        box-shadow: none;
         font-family: $c-input-default-font-family;
         font-weight: $c-input-default-font-weight;
         font-size: $c-input-default-font-size;
         color: $c-input-default-color;
         background-color: $c-input-default-background-color;
       }
-      // textarea.my-live-mode.form-input-default {
-      //   border-color: $border-color-default;
-      //
-      //   font-family: Arial;
-      //   font-weight: bold;
-      //   font-size: 11px;
-      //   color: blue;
-      //   background-color: #ffffff;
-      // }
+      &.c-is-empty {
+        background-color:$c-input-empty-background-color;
+      }
+      &.error-level-warning {
+        background-color: $c-input-warning-color;
+        border: solid 2px orange;
+      }
+      &.error-level-error {
+        background-color: $c-input-error-color;
+        border: solid 2px red;
+      }
       &.form-input-borderless {
         textarea {
           border: none;
           box-shadow: none;
+          background-color: white;
         }
         // border-color: #eee;
         // //border: none;
@@ -382,6 +413,12 @@ export default {
         // font-size: 11px;
         // color: blue;
         // background-color: #ffffff;
+      }
+      .my-error-icon {
+        width: 30px;
+        height: 30px;
+        margin-top: 2px;
+        margin-right: 5px;
       }
     }
   }

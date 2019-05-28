@@ -36,6 +36,8 @@ import FormOutput from './widgets/FormOutput.vue'
 import FormOutputProps from './widgets/FormOutputProps.vue'
 import FormCheckbox from './widgets/FormCheckbox.vue'
 import FormCheckboxProps from './widgets/FormCheckboxProps.vue'
+import FormOption from './widgets/FormOption.vue'
+import FormOptionProps from './widgets/FormOptionProps.vue'
 import FormShape from './widgets/FormShape.vue'
 import FormShapeProps from './widgets/FormShapeProps.vue'
 import FormSubmit from './widgets/FormSubmit.vue'
@@ -57,8 +59,8 @@ import FormDropdown from './widgets/FormDropdown.vue'
 import FormDropdownProps from './widgets/FormDropdownProps.vue'
 import FormPDF from './widgets/FormPDF.vue'
 import FormPDFProps from './widgets/FormPDFProps.vue'
-import FormSignature from './widgets/FormSignature.vue'
-import FormSignatureProps from './widgets/FormSignatureProps.vue'
+// import FormSignature from './widgets/FormSignature.vue'
+// import FormSignatureProps from './widgets/FormSignatureProps.vue'
 import FormTextarea from './widgets/FormTextarea.vue'
 import FormTextareaProps from './widgets/FormTextareaProps.vue'
 import FormTime from './widgets/FormTime.vue'
@@ -325,6 +327,31 @@ function install (Vue, options) {
       layout: {
         type: 'formcheckbox',
         label: 'checkbox',
+        children: [ ]
+      }
+    }
+  })
+
+  $content.registerWidget(Vue, {
+    name: 'formoption',
+    label: 'Option',
+    category: '',
+    iconClass: 'c-toolbox-icon-checkbox',
+    dragtype: 'component',
+
+    // Register native Vue templates
+    componentName: 'content-form-option',
+    component: FormOption,
+    propertyComponent: FormOptionProps,
+
+    // Identical structure to a CUT or COPY from edit mode.
+    data: {
+      type: "contentservice.io",
+      version: "1.0",
+      source: "toolbox",
+      layout: {
+        type: 'formoption',
+        label: 'option',
         children: [ ]
       }
     }
@@ -632,29 +659,29 @@ function install (Vue, options) {
     }
   })
 
-  $content.registerWidget(Vue, {
-    name: 'signature',
-    label: 'Signature',
-    category: 'Application',
-    iconClass: 'c-toolbox-icon-signature',
-    dragtype: 'component',
-
-    // Register native Vue templates
-    componentName: 'form-signature',
-    component: FormSignature,
-    propertyComponent: FormSignatureProps,
-
-    // Identical structure to a CUT or COPY from edit mode.
-    data: {
-      type: "contentservice.io",
-      version: "1.0",
-      source: "toolbox",
-      layout: {
-        type: 'signature',
-        children: [ ]
-      }
-    }
-  })
+  // $content.registerWidget(Vue, {
+  //   name: 'signature',
+  //   label: 'Signature',
+  //   category: 'Application',
+  //   iconClass: 'c-toolbox-icon-signature',
+  //   dragtype: 'component',
+  //
+  //   // Register native Vue templates
+  //   componentName: 'form-signature',
+  //   component: FormSignature,
+  //   propertyComponent: FormSignatureProps,
+  //
+  //   // Identical structure to a CUT or COPY from edit mode.
+  //   data: {
+  //     type: "contentservice.io",
+  //     version: "1.0",
+  //     source: "toolbox",
+  //     layout: {
+  //       type: 'signature',
+  //       children: [ ]
+  //     }
+  //   }
+  // })
 
   $content.registerWidget(Vue, {
     name: 'textarea',

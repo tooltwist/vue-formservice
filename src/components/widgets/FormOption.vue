@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .c-form-checkbox(:class="editModeClass")
+  .c-form-option(:class="editModeClass")
 
     // Sanity checks
     .sanity-error(v-if="!sane_$content")
@@ -8,7 +8,7 @@
       br
       | (missing this.$content)
     .sanity-error(v-else-if="!sane_context_formservice", @click.stop="selectThisElement")
-      | FormCheckbox: Missing this.context.formservice
+      | FormOption: Missing this.context.formservice
       br
       | Please place this component within a form.
     template(v-else)
@@ -17,7 +17,7 @@
 
       // Normal operation below here
       span(v-if="extraDebug")
-        | &lt;form-checkbox&gt;
+        | &lt;form-option&gt;
         br
 
       // Design mode
@@ -34,15 +34,15 @@
         //-   label.checkbox(disabled)
         //-     input(type="checkbox", :style="mInputStyle", :class="mInputClass", @click.stop="selectThisElement")
         //-     | &nbsp; {{ label }}
-        .my-checkbox(:style="mInputStyle", :class="mInputClass", @click.stop="selectThisElement")
+        .my-option(:style="mInputStyle", :class="mInputClass", @click.stop="selectThisElement")
           .my-box
           .my-label(v-if="label")
             | {{label}}
 
       // Live mode
       template(v-else)
-        .my-checkbox
-          .my-box(@click.stop="clickOnCheckbox")
+        .my-option
+          .my-box(@click.stop="clickOnOption")
             .my-selected(v-if="checked")
               | X
           .my-label(v-if="label")
@@ -55,7 +55,7 @@ import CutAndPasteMixins from '@tooltwist/vue-contentservice/src/mixins/CutAndPa
 import WidgetMixins from '../../mixins/WidgetMixins'
 
 export default {
-  name: 'content-form-checkbox',
+  name: 'content-form-option',
   props: {
     element: {
       type: Object,
@@ -100,7 +100,7 @@ export default {
           }
         })
       } else {
-        obj['form-checkbox-default'] = true
+        obj['form-option-default'] = true
       }
       return obj
     },
@@ -135,64 +135,79 @@ export default {
         // console.error(`CHECKBOX getting value`);
         let recordPath = this.context.formservice.dataPath
         let attribute = this.element['attribute']
+        let valueWhenSelected = this.element['value']
 
-        if (attribute) {
+        console.log(`option.get(), ${recordPath}, ${attribute}, ${valueWhenSelected}`);
+
+        if (attribute && valueWhenSelected) {
           let path = `${recordPath}.${attribute}`
-          let defaultValue = false //ZZZ This could come from a schema
+          let defaultValue = ''
           let {data, error} = this.$formservice.getData(path, defaultValue)
-
-          let value = data
-          // console.log(`value`, value);
-          // console.log(`type=`, typeof(value));
-          // console.log(`error`, error);
-
-          // console.log(`checked.get(), ${data}, ${error}, ${typeof(data)}`);
-
-
-          if (error) {
-            console.error(`FormCheckbox: ${error}`);
-            return false
-          } else if (value) {
-            console.log(`YY value for field ${path} is ${value} (${typeof(value)})`);
-            if (typeof(value) === 'boolean') {
-              console.log(`is a boolean`);
-              return value
-            }
-            if (typeof(value) === 'string') {
-              value = value.toUpperCase()
-              if (value.startsWith('T') || value.startsWith('Y')) {
-                return true
-              }
-            }
-            if (typeof(value) === 'number') {
-              return (value > 0)
-            }
-            // Unknown type
-            return false
-          } else {
-            return false
+          console.log(`option.get(), ${data}, ${valueWhenSelected}`);
+          if (data == valueWhenSelected) {
+            return true
           }
+          return false
         } else {
-          console.log(`Warning: checkbox is missing 'attribute' property`, this.element);
+          console.log(`Warning: option is missing 'attribute' property`, this.element);
           //ZZZZZ Do something about this...
           return false
         }
       },
+      // set (value) {
+      //   console.error(`CHECKBOX SET TO ${value} (${typeof(value)})`);
+      //   let recordPath = this.context.formservice.dataPath
+      //   let attribute = this.element['attribute']
+      //
+      //   if (attribute) {
+      //     console.log(`datavalue.set(${attribute}, ${value}`);
+      //     console.log(`type is ${typeof(value)}`);
+      //     this.$formservice.setValue(recordPath, attribute, value, Boolean)
+      //     // this.$content.setProperty({ vm: this, element: this.element, name: 'fieldname', value })
+      //   }
+      // }
     },
   },
   methods: {
 
-    clickOnCheckbox: function () {
+    // checkboxStatus () {
+    //   let recordPath = this.context.formservice.dataPath
+    //   let attribute = this.element['attribute']
+    //
+    //   if (attribute) {
+    //     let path = `${recordPath}.${attribute}`
+    //     let defaultValue = '' //ZZZ This could come from a schema
+    //     let {data, error} = this.$formservice.getData(path, defaultValue)
+    //
+    //     let value = data
+    //     console.log(`value`, value);
+    //     console.log(`error`, error);
+    //
+    //
+    //     if (error) {
+    //       console.error(`FormCheckbox: ${error}`);
+    //       return false
+    //     } else if (value) {
+    //       console.log(`ZZ value for field ${path} is ${value}`);
+    //       return value
+    //     } else {
+    //       return ''
+    //     }
+    //   } else {
+    //     console.log(`Warning: checkbox is missing 'attribute' property`, this.element);
+    //     //ZZZZZ Do something about this...
+    //     return false
+    //   }
+    // },
+
+    clickOnOption: function () {
       let recordPath = this.context.formservice.dataPath
       let attribute = this.element['attribute']
+      let value = this.element['value']
 
-      if (attribute) {
-        let currentValue = this.checked
-        let value = true
-        if (currentValue) {
-          value = false
-        }
-        this.$formservice.setValue(recordPath, attribute, value, Boolean)
+      if (attribute && value) {
+        this.$formservice.setValue(recordPath, attribute, value, String)
+        this.$content.refresh({ })
       }
     },
   },
@@ -216,14 +231,14 @@ export default {
   $bg-borderless: #ffff00;
   $border-color-borderless: #ccc;
 
-  .c-form-checkbox {
+  .c-form-option {
     text-align: left;
 
-    input.form-checkbox-default {
+    input.form-option-default {
       font-size: 9px;
       background-color: pink;
     }
-    label.form-checkbox-default {
+    label.form-option-default {
       background-color: none;
       font-family: Arial;
       font-weight: bold;
@@ -264,7 +279,7 @@ export default {
   //   }
   // }
 
-  .my-checkbox {
+  .my-option {
     display: inline-block;
     position: relative;
 
