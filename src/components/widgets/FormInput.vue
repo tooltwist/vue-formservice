@@ -223,13 +223,6 @@ export default {
         if (attribute) {
           let path = `${recordPath}.${attribute}`
           let defaultValue = ''
-          // let debug = (path.endsWith('nameOrCompanyName'))
-          // let {data, error} = this.$formservice.findOrCreate({
-          //   vm: this,
-          //   path,
-          //   updatePath: true,
-          //   value: defaultValue,
-          //   debug});
           let {data, error} = this.$formservice.find({
             vm: this,
             path,
@@ -239,13 +232,11 @@ export default {
           // console.log(`path`, path);
           // console.log(`value`, value);
           // console.log(`error`, error);
-
-
           if (error) {
-            console.error(`FieldInput: ${error}`);
+            console.error(`FormInput: ${error}`);
             return ''
           } else if (value) {
-            console.log(`value for field ${path} is ${value}`);
+            //console.log(`value for field ${path} is ${value}`);
             return value
           } else {
             return ''
@@ -259,7 +250,7 @@ export default {
       set (value) {
         if (this.isLive) {
           let recordPath = this.context.formservice.dataPath
-          console.error(`WARP1 FormInput.actualData.set: recordPath=${recordPath}`);
+          // console.error(`WARP1 FormInput.actualData.set: recordPath=${recordPath}`);
           let attribute = this.element['attribute']
 
           if (attribute) {

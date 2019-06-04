@@ -19,6 +19,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@tooltwist/vue-contentservice": "^0.1.95",
     "axios": "^0.18.0",
     "buefy": "^0.7.1",
     "bulma": "^0.7.1",
@@ -31,7 +32,7 @@
     "v-hotkey": "^0.2.0",
     "vue": "^2.5.16",
     "vue-awesome": "^3.0.3",
-    "@tooltwist/vue-contentservice": "^0.1.95",
+    "vue-date-pick": "^1.1.0",
     "vue-drag-drop": "^1.1.2",
     "vue-froala-wysiwyg": "^2.8.4",
     "vue-google-autocomplete": "^1.1.0",
