@@ -11,6 +11,15 @@
           .c-property-value
             input.input(v-model="label")
         .tt-property
+          .c-property-label Indent
+          .c-property-value
+            input.input(v-model="indent", type="number", style="width: 45px")
+            | &nbsp;px
+        .tt-property(v-if="indent > 0")
+          .c-property-label Prefix
+          .c-property-value
+            input.input(v-model="prefix")
+        .tt-property
           .c-property-label Class
           .c-property-value
             input.input(v-model="clas")
@@ -54,6 +63,31 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'label', value })
+      }
+    },
+    prefix: {
+      get () {
+        let value = this.element['prefix']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'prefix', value })
+      }
+    },
+    indent: {
+      get () {
+        let value = this.element['indent']
+        let indent = ''
+        if (value) {
+          indent = parseInt(value)
+          if (isNaN(indent)) {
+            indent = ''
+          }
+        }
+        return indent
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'indent', value })
       }
     },
     clas: {

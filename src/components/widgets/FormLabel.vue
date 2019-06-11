@@ -15,11 +15,18 @@
 
     // Editing
     template(v-if="isDesignMode || isEditMode")
-      span.my-label(:style="myStyle", :class="myClass", v-html="label", @click.stop="selectThisElement")
+      .my-prefix-and-label(v-if="indent > 0", :style="myStyle", :class="myClass", @click.stop="selectThisElement")
+        span.my-prefix(v-html="prefix", :style="{ width: `${indent}px` }")
+        span.my-label-with-prefix(v-html="label", :style="{ left: `${indent}px` }")
+      span.my-label-without-prefix(v-else, :style="myStyle", :class="myClass", v-html="label", @click.stop="selectThisElement")
+      //span.my-label(:style="myStyle", :class="myClass", v-html="label", @click.stop="selectThisElement")
 
     // Live mode
     template(v-else)
-      .my-label(:style="myStyle", :class="myClass", v-html="label")
+      .my-prefix-and-label(v-if="indent > 0", :style="myStyle", :class="myClass")
+        span.my-prefix(v-html="prefix", :style="{ width: `${indent}px` }")
+        span.my-label-with-prefix(v-html="label", :style="{ left: `${indent}px` }")
+      .my-label-without-prefix(v-else, :style="myStyle", :class="myClass", v-html="label")
 </template>
 
 <script>
@@ -49,6 +56,24 @@ export default {
         const defaultTabStop = 4
         return value ? convertLabel(value, defaultTabStop) : ''
       }
+    },
+    indent: function () {
+      let value = this.element['indent']
+      let indent = 0
+      if (value) {
+        indent = parseInt(value)
+        if (isNaN(indent)) {
+          indent = 0
+        }
+      }
+      return indent
+    },
+    prefix: function () {
+      let value = this.element['prefix']
+      if (value && value.startsWith('^P159~')) {
+        return '&bull;'
+      }
+      return value
     },
 
     myClass: function () {
@@ -291,14 +316,11 @@ function findFirstString(string, patterns /*[String]*/) {
      *  Design mode
      */
     &.c-edit-mode-debug {
-      .my-label {
-        display: block;
-        padding-top: 1px;
-        padding-left: 2px;
-        padding-right: 2px;
-        text-align: left;
+      .my-label-with-prefix {
         border: solid 1px red;
-        word-wrap: break-word;
+      }
+      .my-label-without-prefix {
+        border: solid 1px red;
       }
     }
 
@@ -306,27 +328,39 @@ function findFirstString(string, patterns /*[String]*/) {
      *  Edit mode
      */
     &.c-edit-mode-edit {
-      .my-label {
-        display: block;
-        padding-top: 1px;
-        padding-left: 2px;
-        padding-right: 2px;
-        text-align: left;
-        word-wrap: break-word;
-      }
     }
 
     /*
      *  Live mode
      */
     &.c-edit-mode-view {
-      .my-label {
-        display: block;
-        padding-top: 1px;
-        padding-left: 2px;
-        padding-right: 2px;
-        text-align: left;
-        word-wrap: break-word;
+    }
+
+    .my-label-without-prefix {
+      display: block;
+      padding-top: 1px;
+      padding-left: 2px;
+      padding-right: 2px;
+      text-align: left;
+      word-wrap: break-word;
+    }
+    .my-prefix-and-label {
+      display: block;
+      position: relative;
+      // background-color: yellow;
+      .my-prefix {
+        display: inline-block;
+        // background-color: pink;
+        //float: left;
+        overflow-x: visible;
+        position: absolute;
+        top: 0px;
+      }
+      .my-label-with-prefix {
+        display: inline-block;
+        // background-color: green;
+        position: absolute;
+        top: 0px;
       }
     }
   }
