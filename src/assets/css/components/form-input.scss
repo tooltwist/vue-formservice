@@ -1,0 +1,122 @@
+@import '~bulma-tooltip';
+
+.c-form-input {
+
+  $border-color-default: #ccc;
+  $border-color-borderless: #ccc;
+  $c-input-warning-color: #ffeac6;
+  $c-input-error-color: #ffdedd;
+
+  // Used if not in a valid form
+  .sanity-error {
+    color: red;
+    font-family: courier;
+    font-size: 11px;
+  }
+
+  /*
+   *  Design mode
+   */
+  &.c-edit-mode-debug {
+    border-top: $c-input-layout-border-color-1;
+    border-left: $c-input-layout-border-color-1;
+    background-color: $c-input-layout-frame-color;
+    border-bottom: $c-input-layout-border-color-2;
+    border-right: $c-input-layout-border-color-2;
+
+    padding-left: 2px;
+    padding-right: 2px;
+    margin: 1px;
+
+    // .container {
+    //   width: 90% !important;
+    // }
+
+    input {
+      border: solid 1px $c-input-layout-border-color-1;
+      font-family: $c-input-default-font-family;
+      font-weight: normal;
+      font-size: $c-input-layout-font-size;
+      padding-top: 0px;
+      padding-bottom: 0px;
+      color: $c-input-default-color;
+      //background-color: $c-input-default-background-color;
+      background-color: rgba(0, 151, 19, 0.1);
+      margin-bottom: 4px;
+    }
+    &.form-input-borderless {
+      input {
+        border: dashed 1px $border-color-borderless;
+        box-shadow: none;
+        font-weight: normal;
+        background-color: none;
+      }
+    }
+  }
+
+  /*
+   *  Edit mode
+   */
+  &.c-edit-mode-edit {
+  //.my-edit-mode {
+    input {
+      border-color: $border-color-default;
+      font-family: $c-input-default-font-family;
+      font-weight: $c-input-default-font-weight;
+      font-size: $c-input-default-font-size;
+      color: $c-input-default-color;
+      background-color: $c-input-default-background-color;
+    }
+    &.form-input-borderless {
+      input {
+        border: dashed 1px $border-color-borderless;
+        box-shadow: none;
+      }
+    }
+  }
+
+  /*
+   *  Live mode
+   */
+  &.c-edit-mode-view {
+    margin-top: 0px;
+    margin-bottom: 10px;
+    label {
+      margin-bottom: 1px;
+    }
+    input {
+      border: none;
+      box-shadow: none;
+      font-family: $c-input-default-font-family;
+      font-weight: $c-input-default-font-weight;
+      font-size: $c-input-default-font-size;
+      color: $c-input-default-color;
+      background-color: $c-input-default-background-color;
+      &.c-is-empty {
+        background-color:$c-input-empty-background-color;
+      }
+      &.error-level-warning {
+        background-color: $c-input-warning-color;
+        border: solid 2px orange;
+      }
+      &.error-level-error {
+        background-color: $c-input-error-color;
+        border: solid 2px red;
+      }
+    }
+    &.form-input-borderless {
+      input {
+        border: none;
+        box-shadow: none;
+        background-color: white;
+      }
+    }
+    .my-error-icon {
+      width: 30px;
+      height: 30px;
+      margin-top: 2px;
+      margin-right: 5px;
+    }
+
+  }//- live mode
+}
