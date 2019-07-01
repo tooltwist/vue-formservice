@@ -1,6 +1,7 @@
-context<template lang="pug">
+<template lang="pug">
 
-  .c-content-form(:class="editModeClass")
+  // Mixin editModeClass() adds .c-edit-mode-view, .c-edit-mode-edit or .c-edit-mode-design
+  .c-fixed-position-form(:class="editModeClass")
     span(v-if="extraDebug")
       | &lt;content-formservice&gt;
       br
@@ -11,7 +12,7 @@ context<template lang="pug">
         edit-bar-icons(:element="element")
         | fixed form - {{absoluteDataPath}}
 
-      drop.formservice-box.droparea.my-design-mode(:style="boxStyle", @drop="handleDrop(form, ...arguments)")
+      drop.formservice-box.droparea.Zmy-design-mode(:style="boxStyle", @drop="handleDrop(form, ...arguments)")
         div(v-if="element.children", v-for="(child, index) in element.children")
           drag.my-drag(:transfer-data="child", @dragstart="dragStart")
             .fixed-position(:class="positionClass(child)", :style="positionStyle(child)", @mousedown="mouseDown")
@@ -19,7 +20,7 @@ context<template lang="pug">
 
     // Editing
     div(v-else-if="isEditMode", @click.stop="selectThisElement")
-      drop.formservice-box.droparea.my-edit-mode(:style="boxStyle", @drop="handleDrop(form, ...arguments)")
+      drop.formservice-box.droparea.Zmy-edit-mode(:style="boxStyle", @drop="handleDrop(form, ...arguments)")
         div(v-if="element.children", v-for="(child, index) in element.children")
           drag.my-drag(:transfer-data="child", @dragstart="dragStart")
             .fixed-position(:class="positionClass(child)", :style="positionStyle(child)", @mousedown="mouseDown")
@@ -181,7 +182,7 @@ export default {
           style += `height:${num}px;`
         }
       } catch (e) { }
-      // console.log(`boxStyle=`, style)
+      //console.log(`boxStyle=`, style)
       return style
     },
   },//- computed
@@ -349,104 +350,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '../../assets/css/content-variables.scss';
-
-  // $frame-color: lightblue;
-  // $text-color: darkblue;
-
-  $frame-color: lightgreen;
-  $text-color: darkgreen;
-
-  .c-content-form {
-    // & > .c-edit-mode-debug {
-    //   border-left: dashed 2px $frame-color;
-    //   border-bottom: dashed 2px $frame-color;
-    //   border-right: dashed 2px $frame-color;
-    //   margin: 1px;
-    //
-    //   .container {
-    //     width: 90% !important;
-    //   }
-    // }
-
-    .c-layout-mode-heading {
-      // This overrides the definition in content-editor.scss
-      background-color: $frame-color;
-      color: $text-color;
-    }
-
-    .formservice-box {
-      position: relative;
-      overflow-x: visible;
-      overflow-y: visible;
-
-      zborder: solid 1px #ccc;
-      // text-align: center;
-      margin: 0 auto;
-      padding: 0px;
-
-      width: 1500px;
-      height: 1000px;
-      zbackground-color: yellow;
-    }
-
-    .c-label {
-      position: absolute;
-      //background-color: pink;
-    }
-
-    .c-field {
-      position: absolute;
-      background-color: pink;
-
-      input {
-        font-size: 11px;
-      }
-    }
-
-    .c-other {
-      position: absolute;
-      background-color: red;
-      color: pink;
-    }
-
-    .happy {
-      //font-size: 25px;
-    }
-
-    .my-drag {
-      overflow-x: visible;
-      overflow-y: visible;
-      color: black;
-    }
-
-    .fixed-position {
-      position: absolute;
-      overflow-x: visible;
-      overflow-y: visible;
-      zwidth: 200px;
-      zheight: 200px;
-      zbackground-color: blue;
-      zborder: solid 1px black;
-      zcolor: black;
-    }
-
-    .my-edit-mode {
-      //min-width: 400px;
-      background-color: #f9f9f9;
-
-      .my-component {
-        //min-width: 300px;
-      }
-    }
-
-    .my-design-mode {
-      //min-width: 400px;
-
-      .my-component {
-        min-width: 20px;
-        background-color: white;
-      }
-    }
-  }
 </style>

@@ -56,6 +56,7 @@
                 td.down-arrow-cell
                   img.down-arrow(src="../../assets/icons/icons8-sort-down-24.png", @click="height++")
                 td
+            //| Z {{minWidth}}, {{width}}, {{typeof(width)}}, {{minHeight}}
 </template>
 
 <script>
@@ -64,6 +65,16 @@ import EditMixins from '../../mixins/EditMixins'
 
 export default {
   mixins: [ PropertyMixins, EditMixins ],
+  props: {
+    minWidth: {
+      type: Number,
+      default: 1
+    },
+    minHeight: {
+      type: Number,
+      default: 1
+    },
+  },
   computed: {
     x: {
       get () {
@@ -90,10 +101,23 @@ export default {
     width: {
       get () {
         let value = this.element['width']
-        return value ? value : ''
+        console.log(`<<< get width: ${value}, ${typeof(value)}`);
+        // if (typeof(value) === 'number') {
+        //   console.log(`IS ZE NUMERO!!!`);
+        //   return value
+        // }
+        return value
       },
       set (value) {
-        if (value > 0) {
+        console.log(`>>> set width: ${value}, ${typeof(value)}`);
+        if (typeof(value) === 'string') {
+          console.log(`IS ZE STRINGERO!!!`);
+          value = parseInt(value)
+          if (isNaN(value)) {
+            value = this.minWidth
+          }
+        }
+        if (value >= this.minWidth) {
           this.$content.setProperty({ vm: this, element: this.element, name: 'width', value })
         }
       }

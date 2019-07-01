@@ -1,22 +1,21 @@
 <template lang="pug">
-  .property-bar-icons
-    // handle font-awesome 4 and 5
+  .c-property-bar-icons
     // Clipboard. See https://www.npmjs.com/package/v-clipboard
     span(v-clipboard="myElementCutToClipboard" v-clipboard:success="clipboardSuccessHandler" v-clipboard:error="clipboardErrorHandler")
       | &nbsp;
-      i.fa.fa-cut.fas.fa-cut
-      | &nbsp;
-    span(v-clipboard="myElementCopyToClipboard" v-clipboard:success="clipboardSuccessHandler" v-clipboard:error="clipboardErrorHandler")
-      | &nbsp;
-      i.fa.fa-files-o.fas.fa-copy
+      .c-property-element-header-icon.c-icon-cut
       | &nbsp;
     span(@click="downloadMyElement")
       | &nbsp;
-      i.fa.fa-download.fas.fa-download
+      .c-property-element-header-icon.c-icon-download
+      | &nbsp;
+    span(v-clipboard="myElementCopyToClipboard" v-clipboard:success="clipboardSuccessHandler" v-clipboard:error="clipboardErrorHandler")
+      | &nbsp;
+      .c-property-element-header-icon.c-icon-copy
       | &nbsp;
     span(@click="deleteMyElement")
       | &nbsp;
-      i.fa.fa-trash-o.fas.fa-trash-alt
+      .c-property-element-header-icon.c-icon-trash
       | &nbsp;
 </template>
 
@@ -37,12 +36,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .property-bar-icons {
-    margin-top: 2px;
-    position: absolute;
-    // float: right;
-    right: 3px;
-    cursor: pointer;
-    font-size: 10px;
-  }
 </style>

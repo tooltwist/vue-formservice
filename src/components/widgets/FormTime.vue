@@ -21,7 +21,7 @@ time<template lang="pug">
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(readonly, placeholder="HH:MM")
+              input.input(readonly, :style="inputStyle", :class="inputClass", placeholder="HH:MM")
 
       // Editing
       div(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
@@ -29,13 +29,13 @@ time<template lang="pug">
           .field
             label.label(v-show="label") {{label}}
             .control
-              input.input(readonly, placeholder="HH:MM")
+              input.input(readonly, :style="inputStyle", :class="inputClass", placeholder="HH:MM")
 
       // Live mode
       template(v-else)
         b-field.has-text-left(:label="label")
           //b-datepicker(icon-pack="fa", icon="fa-calendar", v-model="actualData")
-          b-timepicker(icon="calendar-today", v-model="actualData", :readonly="false")
+          b-timepicker(:style="inputStyle", :class="inputClass", icon="calendar-today", v-model="actualData", :readonly="false")
 </template>
 
 <script>
@@ -213,7 +213,62 @@ export default {
           }
         }
       }
-    }
+    },
+
+    inputClass: function () {
+      var obj = { }
+      let classesForElement = this.element['class']
+      if (classesForElement) {
+        // console.log(`classesForElement=${classesForElement}`);
+        classesForElement.split(' ').forEach(clas => {
+          // console.log(`-- ${clas}`);
+          let classname = clas.trim()
+          if (classname) {
+            obj[classname] = true
+          }
+        })
+      } else {
+        obj['form-input-default'] = true
+      }
+      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
+        console.log(`element=`, this.element);
+        console.log(`obj=`, obj)
+      }
+
+      // Add .c-is-empty class if the field has no content
+      let value = this.actualData
+      if (!value) {
+        obj['c-is-empty'] = true
+      }
+
+      // Check the warning level
+      if (this.errorLevel) {
+        obj[`error-level-${this.errorLevel}`] = true
+      }
+
+      return obj
+    },
+
+    inputStyle: function ( ) {
+      let style = this.element['style'] + ';'
+      // width
+      try {
+        let num = parseInt(this.element['width'])
+        if (num >= 20) {
+          style += `width:${num}px;`
+        }
+      } catch (e) { }
+
+      // height
+      try {
+        let num = parseInt(this.element['height'])
+        if (num >= 20) {
+          style += `height:${num}px;`
+        }
+      } catch (e) { }
+      // console.log(`inputStyle=`, style)
+      return style
+    },
   }
 }
 </script>
@@ -222,118 +277,6 @@ export default {
 <style lang="scss">
   @import '../../assets/css/content-variables.scss';
 
-  $bg-default: #ffffe0;
-  $border-color-default: #ccc;
-
-  $bg-borderless: #ffff00;
-  $border-color-borderless: #ccc;
 
 
-  .c-form-time {
-
-    // Used if not in a valid form
-    .sanity-error {
-      color: red;
-      font-family: courier;
-      font-size: 11px;
-    }
-
-    input {
-      max-width: 120px;
-    }
-
-    /*
-     *  Design mode
-     */
-    &.c-edit-mode-debug {
-      border-top: $c-input-layout-border-color-1;
-      border-left: $c-input-layout-border-color-1;
-      background-color: $c-input-layout-frame-color;
-      border-bottom: $c-input-layout-border-color-2;
-      border-right: $c-input-layout-border-color-2;
-
-      padding-left: 2px;
-      padding-right: 2px;
-      margin: 1px;
-
-      // .container {
-      //   width: 90% !important;
-      // }
-
-      input {
-        border: solid 1px $c-input-layout-border-color-1;
-        font-family: $c-input-default-font-family;
-        font-weight: normal;
-        font-size: $c-input-layout-font-size;
-        padding-top: 0px;
-        padding-bottom: 0px;
-        color: $c-input-default-color;
-        background-color: $c-input-default-background-color;
-        margin-bottom: 4px;
-      }
-      &.form-input-borderless {
-        input {
-          border: dashed 1px $border-color-borderless;
-          box-shadow: none;
-          font-weight: normal;
-        }
-      }
-
-
-      // input.form-input-default {
-      //   border-color: $border-color-default;
-      //   background-color: $bg-default;
-      //   //background-color: red;
-      //   font-family: Arial;
-      //   font-weight: bold;
-      //   font-size: 9px;
-      // }
-      // input.form-input-borderless {
-      //   border-color: $border-color-borderless;
-      //   zborder: none;
-      //   box-shadow: none;
-      //   zbackground-color: $bg-borderless;
-      //   font-size: 9px;
-      // }
-    }
-
-    /*
-     *  Edit mode
-     */
-    &.c-edit-mode-edit {
-      input {
-        border-color: $border-color-default;
-        font-family: $c-input-default-font-family;
-        font-weight: $c-input-default-font-weight;
-        font-size: $c-input-default-font-size;
-        color: $c-input-default-color;
-        background-color: $c-input-default-background-color;
-      }
-      &.form-input-borderless {
-        input {
-          border: dashed 1px $border-color-borderless;
-          box-shadow: none;
-          font-weight: normal;
-        }
-      }
-    }
-
-    // Live mode
-    &.c-edit-mode-view {
-      input {
-        border-color: $border-color-default;
-        font-family: $c-input-default-font-family;
-        font-weight: $c-input-default-font-weight;
-        font-size: $c-input-default-font-size;
-        color: $c-input-default-color;
-        background-color: $c-input-default-background-color;
-      }
-      &.form-input-borderless {
-        input {
-          border: none;
-          box-shadow: none;
-        }
-      }
-    }
-  }
 </style>

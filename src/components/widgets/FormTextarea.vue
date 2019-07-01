@@ -14,20 +14,20 @@
     template(v-else)
 
       // Design mode
-      div(v-if="isDesignMode", @click.stop="selectThisElement")
-        .field-body.has-text-left
-          .field
-            label.label(v-show="label") {{label}}
-            .control
-              textarea.textarea(readonly, :style="inputStyle", :class="inputClass", :placeholder="cPlaceholder")
+      //div(v-if="isDesignMode", @click.stop="selectThisElement")
+      //  .field-body.has-text-left
+      //    .field
+      //      label.label(v-show="label") {{label}}
+      //      .control
+      //        textarea.textarea(readonly, :style="inputStyle", :class="inputClass", :placeholder="cPlaceholder")
 
       // Editing
-      div(v-else-if="isEditMode", @click.stop="selectThisElement")
+      div(v-if="isEditMode || isDesignMode", @click.stop="selectThisElement")
         .field-body.has-text-left
           .field
             label.label(v-show="label") {{label}}
             .control
-              textarea.textarea(readonly, :style="inputStyle", :class="inputClass", :placeholder="cPlaceholder")
+              textarea.textarea.highlight-when-selected(readonly, :style="inputStyle", :class="inputClass", :placeholder="cPlaceholder", v-model="actualData", :tabindex="tabIndex")
 
       // Live mode
       template(v-else)
@@ -35,7 +35,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control.has-icons-right(:class="tooltipClass", :data-tooltip="errorMessage")
-              textarea.textarea(:style="inputStyle", :class="inputClass", :placeholder="cPlaceholder", v-model="actualData", :tabindex="tabIndex")
+              textarea.textarea(:style="inputStyle", :class="inputClass", :placeholder="cPlaceholder", v-model="actualData", :tabindex="tabIndex", :readonly="readonly")
               .icon.is-small.is-right(v-if="errorMessage")
                 i.my-error-icon.c-input-error-icon
 </template>
@@ -112,6 +112,11 @@ export default {
         obj['c-is-empty'] = true
       }
 
+      // See if this is readonly (i.e. in a pdf)
+      if (this.readonly) {
+        obj['c-readonly'] = true
+      }
+
       // Check the warning level
       if (this.errorLevel) {
         obj[`error-level-${this.errorLevel}`] = true
@@ -121,7 +126,7 @@ export default {
     },
 
     inputStyle: function ( ) {
-      let style = this.element['style'] + ';'
+      let style = this.readonly ? '' : this.element['style'] + ';'
       // width
       try {
         let num = parseInt(this.element['width'])
@@ -166,11 +171,23 @@ export default {
         if (index === NaN) {
           return null
         }
-	if (index <= 0) {
+      	if (index <= 0) {
           index = 1
         }
         return index
       }
+    },
+
+    readonly: function () {
+      let value = this.element['readonly']
+      if (typeof(value) === 'boolean') {
+        return value
+      }
+      if (typeof(value) === 'string') {
+        let uc = value.toUpperCase()
+        return (rc === 'TRUE')
+      }
+      return false
     },
 
     cPlaceholder: {
@@ -270,156 +287,4 @@ export default {
   @import '../../assets/css/content-variables.scss';
   @import '~bulma-tooltip';
 
-  $border-color-default: #ccc;
-  $border-color-borderless: #ccc;
-  $c-input-warning-color: #ffeac6;
-  $c-input-error-color: #ffdedd;
-
-  .c-form-textarea {
-
-    // Used if not in a valid form
-    .sanity-error {
-      color: red;
-      font-family: courier;
-      font-size: 11px;
-    }
-
-    /*
-     *  Design mode
-     */
-    &.c-edit-mode-debug {
-      border-top: $c-input-layout-border-color-1;
-      border-left: $c-input-layout-border-color-1;
-      background-color: $c-input-layout-frame-color;
-      border-bottom: $c-input-layout-border-color-2;
-      border-right: $c-input-layout-border-color-2;
-
-      padding-left: 2px;
-      padding-right: 2px;
-      margin: 1px;
-
-      // .container {
-      //   width: 90% !important;
-      // }
-
-      // label {
-      //   min-height: 50px;
-      // }
-      textarea {
-        border: solid 1px $c-input-layout-border-color-1;
-        font-family: $c-input-default-font-family;
-        font-weight: normal;
-        font-size: $c-input-layout-font-size;
-        padding-top: 0px;
-        padding-bottom: 0px;
-        color: $c-input-default-color;
-        background-color: $c-input-default-background-color;
-        margin-bottom: 4px;
-      }
-      &.form-input-borderless {
-        textarea {
-          border: dashed 1px $border-color-borderless;
-          box-shadow: none;
-          font-weight: normal;
-          background-color: none;
-        }
-      }
-    }//- design mode
-
-    /*
-     *  Edit mode
-     */
-    &.c-edit-mode-edit {
-      textarea {
-        border-color: $border-color-default;
-        font-family: $c-input-default-font-family;
-        font-weight: $c-input-default-font-weight;
-        // font-weight: normal;
-        font-size: $c-input-default-font-size;
-        color: $c-input-default-color;
-        background-color: $c-input-default-background-color;
-      }
-      &.form-input-borderless {
-        textarea {
-          border: dashed 1px $border-color-borderless;
-          box-shadow: none;
-        }
-        // //border-color: $border-color-borderless;
-        // border: dashed 1px $border-color-borderless;
-        // box-shadow: none;
-        // font-weight: normal;
-        // background-color: none;
-      }
-
-    // //.my-edit-mode {
-    //   input.form-input-default {
-    //     border-color: $border-color-default;
-    //     background-color: $bg-default;
-    //     font-family: Arial;
-    //     font-weight: bold;
-    //     font-size: 9px;
-    //   }
-    //   input.form-input-borderless {
-    //     //border-color: $border-color-borderless;
-    //     border: dashed 1px $border-color-borderless;
-    //     box-shadow: none;
-    //     background-color: $bg-borderless;
-    //     font-size: 9px;
-    //   }
-    }
-
-    /*
-     *  Live mode
-     */
-    &.c-edit-mode-view {
-      margin-top: -1px;
-      margin-left: 2px;
-      margin-bottom: 8px;
-      label {
-        margin-bottom: 1px;
-      }
-      textarea {
-        // border-color: $border-color-default;
-        border: none;
-        box-shadow: none;
-        font-family: $c-input-default-font-family;
-        font-weight: $c-input-default-font-weight;
-        font-size: $c-input-default-font-size;
-        color: $c-input-default-color;
-        background-color: $c-input-default-background-color;
-      }
-      &.c-is-empty {
-        background-color:$c-input-empty-background-color;
-      }
-      &.error-level-warning {
-        background-color: $c-input-warning-color;
-        border: solid 2px orange;
-      }
-      &.error-level-error {
-        background-color: $c-input-error-color;
-        border: solid 2px red;
-      }
-      &.form-input-borderless {
-        textarea {
-          border: none;
-          box-shadow: none;
-          background-color: white;
-        }
-        // border-color: #eee;
-        // //border: none;
-        // box-shadow: none;
-        // font-family: Arial;
-        // font-weight: bold;
-        // font-size: 11px;
-        // color: blue;
-        // background-color: #ffffff;
-      }
-      .my-error-icon {
-        width: 30px;
-        height: 30px;
-        margin-top: 2px;
-        margin-right: 5px;
-      }
-    }
-  }
 </style>

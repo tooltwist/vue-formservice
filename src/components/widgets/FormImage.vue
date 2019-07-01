@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .c-content-formimage(:class="editModeClass")
+  .c-form-image(:class="editModeClass")
     span(v-if="extraDebug")
       | &lt;form-image&gt;
       br
@@ -102,42 +102,4 @@ export default {
 <style lang="scss" scoped>
   @import '../../assets/css/content-variables.scss';
 
-  .c-content-formimage {
-    $edit-bg-color: lightblue;
-
-    .my-image {
-      min-width: 50px;
-      min-height: 30px;
-    }
-
-    /*
-     *  Design mode
-     */
-    &.c-edit-mode-debug {
-      .my-image {
-        display: block;
-        text-align: left;
-        background-color: $edit-bg-color;
-        border: solid 1px $edit-bg-color;
-      }
-    }
-
-    /*
-     *  Edit mode
-     */
-    &.c-edit-mode-edit {
-      .my-image {
-        display: block;
-        text-align: left;
-        background-color: $edit-bg-color;
-        // border: solid 1px $edit-bg-color;
-      }
-    }
-
-    /*
-     *  Live mode
-     */
-    &.c-edit-mode-view {
-    }
-  }
 </style>

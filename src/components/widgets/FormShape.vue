@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .c-content-formshape(:class="editModeClass")
+  .c-form-shape(:class="editModeClass")
     span(v-if="extraDebug")
       | &lt;form-shape&gt;
       br
@@ -108,93 +108,4 @@ export default {
 
 <style lang="scss" scoped>
   @import '../../assets/css/content-variables.scss';
-
-  .c-content-formshape {
-    $frame-color: lightblue;
-    $text-color: darkblue;
-
-    // .c-edit-mode-debug {
-    //   border-left: dashed 2px $frame-color;
-    //   border-bottom: dashed 2px $frame-color;
-    //   border-right: dashed 2px $frame-color;
-    //   margin: 1px;
-    //
-    //   .container {
-    //     width: 90% !important;
-    //   }
-    // }
-
-    .c-layout-mode-heading {
-      // This overrides the definition in content-editor.scss
-      background-color: $frame-color;
-      color: $text-color;
-    }
-
-
-    .c-shape {
-      position: absolute;
-      //background-color: pink;
-    }
-
-    .form-shape-default {
-      //color: #000000;
-      color: #333;
-      font-family: Arial;
-      font-weight: normal;
-      font-size: 12px;
-      line-height: 110%;
-    }
-
-    .form-shape-bold-default {
-      //color: #000000;
-      color: #333;
-      font-family: Arial;
-      font-weight: bold;
-      font-size: 12px;
-      line-height: 110%;
-    }
-
-    /*
-     *  Design mode
-     */
-    &.c-edit-mode-debug {
-      .my-shape {
-        display: block;
-        padding-top: 1px;
-        padding-left: 2px;
-        padding-right: 2px;
-        text-align: left;
-        border: solid 1px red;
-        word-wrap: break-word;
-      }
-    }
-
-    /*
-     *  Edit mode
-     */
-    &.c-edit-mode-edit {
-      .my-shape {
-        display: block;
-        padding-top: 1px;
-        padding-left: 2px;
-        padding-right: 2px;
-        text-align: left;
-        word-wrap: break-word;
-      }
-    }
-
-    /*
-     *  Live mode
-     */
-    &.c-edit-mode-view {
-      .my-shape {
-        display: block;
-        padding-top: 1px;
-        padding-left: 2px;
-        padding-right: 2px;
-        text-align: left;
-        word-wrap: break-word;
-      }
-    }
-  }
 </style>

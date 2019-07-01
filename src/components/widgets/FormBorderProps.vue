@@ -1,19 +1,11 @@
 <template lang="pug">
   .c-property-element(:class="propertyClass")
     .tt-property-header(@click="setExpandedElement")
-      | Fixed Form
+      | Border
       span.tt-property-header-extra {{header}}
 
     transition(name="c-property-list-transition")
       div.c-element-properties(v-show="isExpandedElement")
-        .tt-property
-          .c-property-label Name
-          .c-property-value
-            input.input(v-model="name")
-        .tt-property
-          .c-property-label Dataset
-          .c-property-value
-            input.input(v-model="dataset")
         //.tt-property
         //  .c-property-label View
         //  .c-property-value
@@ -33,7 +25,23 @@
         .tt-property
           .c-property-label Style
           .c-property-value
-            input.input(v-model="style")
+            input.input(v-model="inputStyle")
+        .tt-property
+          .c-property-label Class
+          .c-property-value
+            input.input(v-model="inputClass")
+        .tt-property
+          .c-property-label Color
+          .c-property-value
+            input.input(v-model="color")
+        .tt-property
+          .c-property-label Right
+          .c-property-value
+            input.input(v-model="right")
+        .tt-property
+          .c-property-label Bottom
+          .c-property-value
+            input.input(v-model="bottom")
 
         fixed-position-properties(:element="element")
 </template>
@@ -61,33 +69,33 @@ export default {
     // We cannot update the element directly - it is stored
     // in this.$store and must be updated with a 'commit'.
     // See https://vuex.vuejs.org/en/forms.html
-    name: {
+    right: {
       get () {
-        let value = this.element['name']
+        let value = this.element['right']
         return value ? value : ''
       },
       set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'name', value })
+        this.$content.setProperty({ vm: this, element: this.element, name: 'right', value })
       }
     },
-    dataset: {
+    bottom: {
       get () {
-        let value = this.element['dataset']
+        let value = this.element['bottom']
         return value ? value : ''
       },
       set (value) {
-        this.$content.setProperty({ vm: this, element: this.element, name: 'dataset', value })
+        this.$content.setProperty({ vm: this, element: this.element, name: 'bottom', value })
       }
     },
-    // view: {
-    //   get () {
-    //     let value = this.element['view']
-    //     return value ? value : ''
-    //   },
-    //   set (value) {
-    //     this.$content.setProperty({ vm: this, element: this.element, name: 'view', value })
-    //   }
-    // },
+    color: {
+      get () {
+        let value = this.element['color']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'color', value })
+      }
+    },
     // mode: {
     //   get () {
     //     let value = this.element['mode']
@@ -115,6 +123,15 @@ export default {
     //     this.$content.setProperty({ vm: this, element: this.element, name: 'height', value })
     //   }
     // },
+    clas: {
+      get () {
+        let value = this.element['class']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'class', value })
+      }
+    },
     style: {
       get () {
         let value = this.element['style']

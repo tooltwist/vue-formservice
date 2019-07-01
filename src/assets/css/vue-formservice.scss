@@ -1,3 +1,6 @@
+/* Global styles */
+
+@import './content-variables.scss';
 
 /*
  *  Properties styles
@@ -55,5 +58,22 @@
 /*
  *	Styles for our components.
  */
-@import './components/toolbox.scss'
-@import './components/form-input.scss'
+@import './components/toolbox.scss';
+@import './components/form-border.scss';
+@import './components/form-input.scss';
+@import './components/form-label.scss';
+@import './components/form-checkbox.scss';
+@import './components/form-date.scss';
+@import './components/form-dropdown.scss';
+@import './components/form-grid.scss';
+@import './components/form-image.scss';
+@import './components/form-line.scss';
+@import './components/form-option.scss';
+@import './components/form-output.scss';
+@import './components/form-pdf.scss';
+@import './components/form-shape.scss';
+@import './components/form-submit.scss';
+@import './components/form-textarea.scss';
+@import './components/form-time.scss';
+@import './components/fixed-position-form.scss';
+@import './components/property-bar-icons.scss';

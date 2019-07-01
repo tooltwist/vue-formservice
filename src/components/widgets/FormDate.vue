@@ -31,7 +31,11 @@
             .control
               input.input(readonly, :style="inputStyle", :class="inputClass", placeholder="DD/MM/YYYY")
 
-      // Live mode
+      // Live mode - read only (e.g. PDF)
+      template(v-else-if="readonly")
+        .my-pdf {{actualData}}
+
+      // Live mode - Normal date input
       template(v-else)
         .field-body.has-text-left
           .field
@@ -46,10 +50,12 @@
               //.icon.is-small.my-dropdown-icon(@click="mode = (mode==='closed') ? 'selectDate' : 'closed'")
                 //a(:href="`#${elementId}`")
                 .c-dropdown-caret-icon
-            .icon.is-small.is-right(v-if="errorMessage")
-              br
-              i.my-error-icon.c-input-error-icon
-              .sanity-error {{errorMessage}}
+            //.icon.is-small.is-right(v-if="errorMessage")
+            //  br
+            //  | YARP
+            //  br
+            //  i.my-error-icon.c-input-error-icon
+            //  .sanity-error {{errorMessage}} {{errorLevel}} {{typeof(errorLevel)}}.
             div
 
             // invisible div used to close the form
@@ -136,6 +142,7 @@ import moment from 'moment';
 import 'vue-date-pick/dist/vueDatePick.css';
 
 let elementIdCount = 100
+const ERROR = 20
 
 export default {
   name: 'form-date',
@@ -155,6 +162,7 @@ export default {
   data: function () {
     return {
       errorMessage: '',
+      errorLevel: 0,
       mode: 'closed', // closed, selectDate or selectOffset
       workingCopy: null, // edit this, save when correct
       elementId: `date-dropdown-${elementIdCount++}`,
@@ -190,10 +198,6 @@ export default {
     },
 
     inputClass: function () {
-      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
-        console.log(`inputClass()`, this.element);
-      }
-
       var obj = { }
       let classesForElement = this.element['class']
       if (classesForElement) {
@@ -425,6 +429,7 @@ export default {
           console.log(`!!! parts=`, parts);
           if (parts.length != 3) {
             this.errorMessage = 'Invalid date'
+            this.errorLevel = ERROR
             return
           }
           this.errorMessage = null
@@ -433,6 +438,7 @@ export default {
           let year = parseInt(parts[0], 10)
           if (isNaN(day) || isNaN(mth) || isNaN(year)) {
             this.errorMessage = 'Invalid date'
+            this.errorLevel = ERROR
             return
           }
 
@@ -452,6 +458,7 @@ export default {
 
           if (day < 1 || day > 31 || mth < 1 || mth > 12 || year < 1900) {
             this.errorMessage = 'Invalid date'
+            this.errorLevel = ERROR
             return
           }
 
@@ -465,6 +472,7 @@ export default {
           } else {
             console.log(`!!! not saving date yet`);
             this.errorMessage = 'Invalid date'
+            this.errorLevel = ERROR
             return
           }
 
@@ -504,7 +512,7 @@ export default {
                 value = newValue
                 this.sequence++ // Force redisplay of the field
               }
-              if (errorLevel !== null) {
+              if (typeof(errorLevel) !== 'undefined') {
                 this.errorLevel = errorLevel
               }
               if (errorMessage !== null) {
@@ -519,6 +527,18 @@ export default {
         }
       }
     },//- actualData
+
+    readonly: function () {
+      let value = this.element['readonly']
+      if (typeof(value) === 'boolean') {
+        return value
+      }
+      if (typeof(value) === 'string') {
+        let uc = value.toUpperCase()
+        return (rc === 'TRUE')
+      }
+      return false
+    },
 
     tooltipClass: function () {
       if (this.errorLevel) {
@@ -657,233 +677,4 @@ function isNumber(c) {
   @import '../../assets/css/content-variables.scss';
   @import '~bulma-tooltip';
 
-  $border-color-default: #ccc;
-  $border-color-borderless: #ccc;
-  $c-input-warning-color: #ffeac6;
-  $c-input-error-color: #ffdedd;
-
-/* OLD STUFF */
-  $bg-default: #ffffe0;
-  $border-color-default: #ccc;
-
-  $bg-borderless: #ffff00;
-  $border-color-borderless: #ccc;
-
-
-  .c-form-date {
-
-    // Used if not in a valid form
-    .sanity-error {
-      color: red;
-      font-family: courier;
-      font-size: 11px;
-    }
-
-    input {
-      //max-width: 140px;
-    }
-
-    /*
-     *  Design mode
-     */
-    &.c-edit-mode-debug {
-      border-top: $c-input-layout-border-color-1;
-      border-left: $c-input-layout-border-color-1;
-      background-color: $c-input-layout-frame-color;
-      border-bottom: $c-input-layout-border-color-2;
-      border-right: $c-input-layout-border-color-2;
-
-      padding-left: 2px;
-      padding-right: 2px;
-      margin: 1px;
-
-      // .container {
-      //   width: 90% !important;
-      // }
-
-      input {
-        border: solid 1px $c-input-layout-border-color-1;
-        font-family: $c-input-default-font-family;
-        font-weight: normal;
-        font-size: $c-input-layout-font-size;
-        padding-top: 0px;
-        padding-bottom: 0px;
-        color: $c-input-default-color;
-        background-color: $c-input-default-background-color;
-        margin-bottom: 4px;
-      }
-      &.form-input-borderless {
-        input {
-          border: dashed 1px $border-color-borderless;
-          box-shadow: none;
-          font-weight: normal;
-        }
-      }
-    }
-
-    /*
-     *  Edit mode
-     */
-    &.c-edit-mode-edit {
-      input {
-        border-color: $border-color-default;
-        font-family: $c-input-default-font-family;
-        font-weight: $c-input-default-font-weight;
-        font-size: $c-input-default-font-size;
-        color: $c-input-default-color;
-        background-color: $c-input-default-background-color;
-      }
-      &.form-input-borderless {
-        input {
-          border: dashed 1px $border-color-borderless;
-          box-shadow: none;
-          font-weight: normal;
-        }
-      }
-    }
-
-    // Live mode
-    &.c-edit-mode-view {
-      position: relative;
-      margin-top: 0px;
-      margin-bottom: 10px;
-      label {
-        margin-bottom: 1px;
-      }
-      input {
-        border: none;
-        box-shadow: none;
-        font-family: $c-input-default-font-family;
-        font-weight: $c-input-default-font-weight;
-        font-size: $c-input-default-font-size;
-        color: $c-input-default-color;
-        background-color: $c-input-default-background-color;
-        &.c-is-empty {
-          background-color:$c-input-empty-background-color;
-        }
-        &.error-level-warning {
-          background-color: $c-input-warning-color;
-          border: solid 2px orange;
-        }
-        &.error-level-error {
-          background-color: $c-input-error-color;
-          border: solid 2px red;
-        }
-      }
-      &.form-input-borderless {
-        input {
-          border: none;
-          box-shadow: none;
-          background-color: white;
-        }
-      }
-      .my-error-icon {
-        width: 30px;
-        height: 30px;
-        margin-top: 2px;
-        margin-right: 5px;
-      }
-    }
-
-    /*
-     *  Dropdown related stuff.
-     */
-    .my-dropdown-caret-icon {
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      margin-top: -2px;
-      background-image: url("../../assets/icons/icons8-drop-down-24.png");
-      cursor: pointer;
-      z-index: 3;
-    }
-
-    // Invisible div that covers the entire page; ignores clicks.
-    .my-fullpage {
-      position: fixed;
-      z-index: 3;
-      opacity: 0;
-      //background-color: yellow;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      //pointer-events: none;
-    }
-
-    // See https://www.youtube.com/watch?v=6-BwQ21nA54
-    .my-date-dropdown {
-      padding: 0px;
-
-      &.popupAbove {
-        position: absolute;
-        bottom: 20px;
-      }
-
-      &.popupBelow {
-        //top: 25px;
-      }
-
-      .my-selectDate-options {
-        position: relative;
-        z-index: 9999;
-        width: 280px;
-        margin-top: 2px;
-        margin-bottom: 5px;
-        label {
-          color: rbg(48, 48, 48);
-          font-size: 11px;
-          line-height: 240%;
-        }
-        padding-left: 10px;
-        padding-right: 10px;
-        padding-top: 5px;
-        padding-bottom: 5px;
-        background-color: white;
-        border: solid 1px rgba(0, 0, 0, 0.15);
-        border-radius: 4px;
-        box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 15px 0px;
-      }
-
-      .my-selectDate-pick {
-        position: relative;
-        z-index: 9999;
-        max-width: 280px;
-        //background-color: red;
-        padding: 0px;
-        margin: 0px;
-      }
-
-      .my-offset-options {
-        position: relative;
-        z-index: 9999;
-        width: 280px;
-        margin-top: 2px;
-
-        color: rbg(48, 48, 48);
-        font-size: 11px;
-        line-height: 240%;
-
-        padding-left: 10px;
-        padding-right: 10px;
-        padding-top: 5px;
-        padding-bottom: 5px;
-        background-color: white;
-        border: solid 1px rgba(0, 0, 0, 0.15);
-        border-radius: 4px;
-        box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 15px 0px;
-
-        input.my-specific-days {
-          font-size: 14px;
-          //font-family: $c-input-default-font-family;
-          font-family: Arial, Helvetica;
-          font-weight: bold;
-          border: none;
-          width: 35px;
-          color: blue;
-          background-color: white;
-        }
-      }
-    }//- .my-date-dropdown
-  }
 </style>

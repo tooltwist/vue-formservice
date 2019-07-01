@@ -727,7 +727,7 @@ function twoWayComputedAddressData(attribute) {
             font-weight: $c-input-default-font-weight;
             //font-size: $c-input-default-font-size;
             color: $c-input-default-color;
-            background-color: $c-input-default-background-color;
+            background: $c-input-default-background;
             margin-bottom: 15px;
           }
         }
@@ -740,7 +740,7 @@ function twoWayComputedAddressData(attribute) {
           font-weight: $c-input-default-font-weight;
           font-size: $c-input-default-font-size;
           color: $c-input-default-color;
-          background-color: $c-input-default-background-color;
+          background: $c-input-default-background;
           margin-bottom: 15px;
         }
       }

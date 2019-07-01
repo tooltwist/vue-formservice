@@ -4,7 +4,7 @@
 
 <template lang="pug">
 
-  .c-content-formlabel(:class="editModeClass")
+  .c-form-label(:class="editModeClass")
     span(v-if="extraDebug")
       | &lt;form-label&gt;
       br
@@ -216,7 +216,7 @@ export default {
   $frame-color: lightblue;
   $text-color: darkblue;
 
-  .c-content-formlabel {
+  .c-form-label {
 
     .c-layout-mode-heading {
       // This overrides the definition in content-editor.scss

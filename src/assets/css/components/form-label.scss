@@ -1,0 +1,87 @@
+
+.c-form-label {
+  $frame-color: lightblue;
+  $text-color: darkblue;
+
+  .c-layout-mode-heading {
+    // This overrides the definition in content-editor.scss
+    background-color: $frame-color;
+    color: $text-color;
+  }
+
+
+  .c-label {
+    position: absolute;
+    //background-color: pink;
+  }
+
+  .form-label-default {
+    //color: #000000;
+    color: #333;
+    font-family: Arial;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 110%;
+  }
+
+  .form-label-bold-default {
+    //color: #000000;
+    color: #333;
+    font-family: Arial;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 110%;
+  }
+
+  /*
+   *  Design mode
+   */
+  &.c-edit-mode-debug {
+    .my-label-with-prefix {
+      border: solid 1px red;
+    }
+    .my-label-without-prefix {
+      border: solid 1px red;
+    }
+  }
+
+  /*
+   *  Edit mode
+   */
+  &.c-edit-mode-edit {
+  }
+
+  /*
+   *  Live mode
+   */
+  &.c-edit-mode-view {
+  }
+
+  .my-label-without-prefix {
+    display: block;
+    padding-top: 1px;
+    padding-left: 2px;
+    padding-right: 2px;
+    text-align: left;
+    word-wrap: break-word;
+  }
+  .my-prefix-and-label {
+    display: block;
+    position: relative;
+    // background-color: yellow;
+    .my-prefix {
+      display: inline-block;
+      // background-color: pink;
+      //float: left;
+      overflow-x: visible;
+      position: absolute;
+      top: 0px;
+    }
+    .my-label-with-prefix {
+      display: inline-block;
+      // background-color: green;
+      position: absolute;
+      top: 0px;
+    }
+  }
+}

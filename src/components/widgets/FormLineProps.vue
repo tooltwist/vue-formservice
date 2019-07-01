@@ -14,8 +14,30 @@
           .c-property-label Style
           .c-property-value
             input.input(v-model="style")
+        .tt-property
+          .c-property-label Color
+          .c-property-value
+            input.input(v-model="lineColor")
+        .tt-property
+          .c-property-label Width
+          .c-property-value
+            input.input(v-model="lineWidth")
+        .tt-property
+          .c-property-label Type
+          .c-property-value
+          .select
+            select.is-small(v-model="lineType")
+              option(value="solid") Solid
+              option(value="dotted") Dotted
+              option(value="dashed") Dashed
 
-        fixed-position-properties(:element="element")
+        fixed-position-properties(:element="element", :min-width="0", :min-height="0")
+
+        .tt-property
+          .c-property-label-and-value
+            | Metadata
+            br
+            | {{metadata}}
 </template>
 
 <script>
@@ -59,6 +81,48 @@ export default {
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'style', value })
       }
+    },
+    lineColor: {
+      get () {
+        let value = this.element['lineColor']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'lineColor', value })
+      }
+    },
+    lineWidth: {
+      get () {
+        let value = this.element['lineWidth']
+        console.log(`Get lineWidth - ${value}, ${typeof(value)}`);
+        return value ? value : ''
+      },
+      set (value) {
+console.log(`Setting lineWidth - ${value}, ${typeof(value)}`);
+        this.$content.setProperty({ vm: this, element: this.element, name: 'lineWidth', value })
+      }
+    },
+    lineType: {
+      get () {
+        let value = this.element['lineType']
+        switch (value) {
+          case 'dotted':
+          case 'dashed':
+            return value
+          default:
+            return 'solid'
+        }
+      },
+      set (value) {
+        if (value!=='dotted' && value!=='dashed') {
+          value = 'solid'
+        }
+        this.$content.setProperty({ vm: this, element: this.element, name: 'lineType', value })
+      }
+    },
+    metadata: function () {
+      let value = this.element['metadata']
+      return value
     },
   },
 }

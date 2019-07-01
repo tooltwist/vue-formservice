@@ -34,7 +34,7 @@
         fixed-position-properties(:element="element")
 
         .tt-property
-          .c-property-label Tab Index
+          .c-property-label tabIndex
           .c-property-value
             input.input(v-model="tabIndex")
 </template>

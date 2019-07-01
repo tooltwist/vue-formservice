@@ -18,22 +18,13 @@
       //  | &lt;form-output&gt;
       //  br
 
-      // Design mode
-      div(v-if="isDesignMode && false", @click.stop="selectThisElement")
-        //.c-layout-mode-heading
-        //  edit-bar-icons(:element="element")
-        //  | output
-        input.input(readonly, :style="outputStyle", :class="outputClass")
-
-      // Editing
-      div(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
+      // Editing and Design mode
+      div(v-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
         input.input(readonly, :style="outputStyle", :class="outputClass")
 
       // Live mode
       template(v-else)
-        //input.input.my-live-mode(:style="outputStyle", :class="outputClass", v-model="actualData")
-        //input.input(:style="outputStyle", :class="outputClass", v-model="actualData")
-        //| {{actualData}}
+        //.my-output(:style="outputStyle", :class="outputClass") {{actualData}}
         .my-output {{actualData}}
 </template>
 
@@ -115,15 +106,9 @@ export default {
       return style
     },
 
-    attribute: {
-      get () {
-
-        //ZZZZZ
-        // console.error(`FormInput.attribute.get(): this.context=`, this.context);
-
-        let attribute = this.element['attribute'] ? this.element['attribute'] : this.element['field']
-        return attribute
-      }
+    attribute: function () {
+      let attribute = this.element['attribute'] ? this.element['attribute'] : this.element['field']
+      return attribute
     },
 
     /*
@@ -276,58 +261,4 @@ export default {
 <style lang="scss" scoped>
   @import '../../assets/css/content-variables.scss';
 
-  .c-form-output {
-    $frame-color: pink;
-    $text-color: #700;
-
-    .sanity-error {
-      color: red;
-      font-family: courier;
-      font-size: 11px;
-    }
-
-    /*
-     *  Design mode
-     */
-    &.c-edit-mode-debug {
-      // border-top: solid 4px $frame-color;
-      // border-left: dashed 2px $frame-color;
-      // border-bottom: dashed 2px $frame-color;
-      // border-right: dashed 2px $frame-color;
-      // margin: 1px;
-      //
-      // .container {
-      //   width: 90% !important;
-      // }
-      border: solid 1px blue;
-      input {
-        background-color: $c-input-default-background-color;
-      }
-    }
-
-    /*
-     *  Edit mode
-     */
-    &.c-edit-mode-edit {
-      input {
-        background-color: $c-input-default-background-color;
-      }
-    }
-
-    /*
-     *  Live mode
-     */
-    &.c-edit-mode-view {
-      .my-output {
-        position: relative;
-        top: 1px;
-        left: -0px;
-        font-family: 'Courier New';
-        font-size: 13px;
-        font-weight: 700;
-        color: #000020;
-      }
-    }
-
-  }
 </style>

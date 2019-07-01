@@ -1,0 +1,86 @@
+.c-form-signature {
+  // See https://www.w3schools.com/colors/colors_picker.asp
+  $bg-default: rgba(255, 255, 224, 0.5);
+  $border-color-default: #ccc;
+
+  $bg-borderless: #ffff00;
+  $border-color-borderless: #ccc;
+
+  $frame-color: goldenrod;
+  $text-color: #700;
+
+  // Used if not in a valid form
+  .sanity-error {
+    color: red;
+    font-family: courier;
+    font-size: 11px;
+  }
+
+  // Design mode
+  &.c-edit-mode-debug {
+    border-top: solid 1px #ccc;
+    border-left: solid 2px #ccc;
+    background-color: $frame-color;
+    border-bottom: solid 1px #999;
+    border-right: solid 1px #999;
+    padding-left: 2px;
+    padding-right: 2px;
+    margin: 1px;
+
+    .container {
+      width: 90% !important;
+    }
+
+    input.form-input-default {
+      border-color: $border-color-default;
+      background-color: $bg-default;
+      font-family: Arial;
+      font-weight: bold;
+      font-size: 9px;
+    }
+    input.form-input-borderless {
+      border-color: $border-color-borderless;
+      box-shadow: none;
+      font-size: 9px;
+    }
+  }
+
+  // Edit mode
+  &.c-edit-mode-edit {
+    input.form-input-default {
+      border-color: $border-color-default;
+      background-color: $bg-default;
+      font-family: Arial;
+      font-weight: bold;
+      font-size: 9px;
+    }
+    input.form-input-borderless {
+      border: dashed 1px $border-color-borderless;
+      box-shadow: none;
+      background-color: $bg-borderless;
+      font-size: 9px;
+    }
+  }
+
+  // Live modes
+  &.c-edit-mode-view {
+    input.my-live-mode.form-input-default {
+      border-color: $border-color-default;
+
+      font-family: Arial;
+      font-weight: bold;
+      font-size: 11px;
+      color: blue;
+      background-color: #ffffff;
+    }
+    input.my-live-mode.form-input-borderless {
+      border-color: #eee;
+      box-shadow: none;
+      font-family: Arial;
+      font-weight: bold;
+      font-size: 11px;
+      color: blue;
+      background-color: #ffffff;
+    }
+  }
+}

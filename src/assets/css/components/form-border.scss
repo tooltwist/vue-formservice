@@ -1,0 +1,21 @@
+.c-form-border {
+  $c-border-radius: 4px;
+
+  &.c-edit-mode-design {
+    .my-border {
+      border-radius: $c-border-radius;
+    }
+  }
+
+  &.c-edit-mode-edit {
+    .my-border {
+      border-radius: $c-border-radius;
+    }
+  }
+
+  &.c-edit-mode-view {
+    .my-border {
+      border-radius: $c-border-radius;
+    }
+  }
+}

@@ -26,14 +26,25 @@
           .c-property-label Style
           .c-property-value
             input.input(v-model="style")
+
+        fixed-position-properties(:element="element")
+
+        .tt-property
+          .c-property-label tabIndex
+          .c-property-value
+            input.input(v-model="tabIndex")
 </template>
 
 <script>
 import PropertyMixins from '@tooltwist/vue-contentservice/src/mixins/PropertyMixins'
+import FixedPositionProperties from './FixedPositionProperties'
 
 export default {
   name: 'form-time-props',
   mixins: [ PropertyMixins ],
+  components: {
+    FixedPositionProperties
+  },
   computed: {
 
     // We cannot update the element directly - it is stored
@@ -82,6 +93,15 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'style', value })
+      }
+    },
+    tabIndex: {
+      get () {
+        let value = this.element['tabIndex']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'tabIndex', value })
       }
     },
   },

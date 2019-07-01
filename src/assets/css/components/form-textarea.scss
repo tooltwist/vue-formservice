@@ -1,7 +1,4 @@
-@import '~bulma-tooltip';
-
-.c-form-input {
-
+.c-form-textarea {
   $border-color-default: #ccc;
   $border-color-borderless: #ccc;
   $c-input-warning-color: #ffeac6;
@@ -14,31 +11,22 @@
     font-size: 11px;
   }
 
-  input.my-input {
-    padding-top: 0px !important;
-    padding-bottom: 0px !important;
-    padding-left: 0px !important;
-    padding-right: 0px !important;
-    margin: 0px !important;
-  }
-
   /*
    *  Design mode
    */
   &.c-edit-mode-debug {
-    //border-top: $c-input-layout-border-color-1;
-    //border-left: $c-input-layout-border-color-1;
+    border-top: $c-input-layout-border-color-1;
+    border-left: $c-input-layout-border-color-1;
     background-color: $c-input-layout-frame-color;
-    // border-bottom: $c-input-layout-border-color-2;
-    // border-right: $c-input-layout-border-color-2;
-    border: none;
+    border-bottom: $c-input-layout-border-color-2;
+    border-right: $c-input-layout-border-color-2;
 
     padding-left: 2px;
     padding-right: 2px;
     margin: 0px;
 
-    input {
-      border: solid 1px $border-color-default;
+    textarea {
+      border: solid 1px $c-input-layout-border-color-1;
       font-family: $c-input-default-font-family;
       font-weight: normal;
       font-size: $c-input-layout-font-size;
@@ -46,9 +34,11 @@
       padding-bottom: 0px;
       color: $c-input-default-color;
       background: $c-input-default-background;
+      background-color: white;
+      //margin-bottom: 4px;
     }
     &.form-input-borderless {
-      input {
+      textarea {
         border: dashed 1px $border-color-borderless;
         box-shadow: none;
         font-weight: normal;
@@ -56,32 +46,33 @@
       }
     }
     &.c-selected {
-      input {
+      textarea {
         background: $c-selected-object-background1;
       }
     }
-  }
+  }//- design mode
 
   /*
    *  Edit mode
    */
   &.c-edit-mode-edit {
-    input {
+    textarea {
       border: solid 1px $border-color-default;
       font-family: $c-input-default-font-family;
       font-weight: $c-input-default-font-weight;
       font-size: $c-input-default-font-size;
       color: $c-input-default-color;
       background: $c-input-default-background;
+      background-color: white;
     }
     &.form-input-borderless {
-      input {
+      textarea {
         border: dashed 1px $border-color-borderless;
         box-shadow: none;
       }
     }
     &.c-selected {
-      input {
+      textarea {
         background: $c-selected-object-background1;
       }
     }
@@ -91,14 +82,13 @@
    *  Live mode
    */
   &.c-edit-mode-view {
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: 0px;
-    margin-bottom: 0px;
+    margin-top: -1px;
+    margin-left: 2px;
+    margin-bottom: 8px;
     label {
       margin-bottom: 1px;
     }
-    input {
+    textarea {
       border: none;
       box-shadow: none;
       font-family: $c-input-default-font-family;
@@ -106,6 +96,9 @@
       font-size: $c-input-default-font-size;
       color: $c-input-default-color;
       background: $c-input-default-background;
+      background-color: white;
+      border: none;
+
       &.c-is-empty {
         background: $c-input-empty-background;
       }
@@ -117,22 +110,22 @@
         background-color: $c-input-error-color;
         border: solid 2px red;
       }
+      &.c-readonly {
+        // For pdf
+        font-family: $c-pdf-font-family;
+        font-size: $c-pdf-font-size;
+        font-weight: $c-pdf-font-weight;
+        font-style: $c-pdf-font-style;
+        color: $c-pdf-color;
+      }
     }
     &.form-input-borderless {
-      input {
+      textarea {
         border: none;
         box-shadow: none;
         background-color: white;
       }
     }
-    &.is-selected {
-      .highlight-when-selected {
-        -webkit-box-shadow: $c-selected-shadow;
-        -moz-box-shadow: $c-selected-shadow;
-        box-shadow: $c-selected-shadow;
-      }
-    }
-
     .my-error-icon {
       width: 30px;
       height: 30px;

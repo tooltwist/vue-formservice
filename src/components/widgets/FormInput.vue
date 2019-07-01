@@ -18,25 +18,24 @@
       //  | &lt;form-input&gt;
       //  br
 
-      // Design mode
-      div(v-if="isDesignMode", @click.stop="selectThisElement")
-        .field-body.has-text-left
-          .field
-            label.label(v-show="label") {{label}}
-            .control
-              input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder")
-
-      // Editing
-      div(v-else-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
-        .field-body.has-text-left
-          .field
-            label.label(v-show="label") {{label}}
-            .control
-              input.input(readonly, :style="inputStyle", :class="inputClass", :placeholder="placeholder")
+      // Editing and Design mode
+      div(v-if="isDesignMode || isEditMode", @click.stop="selectThisElement")
+        template(v-if="label")
+          .my-label {{label}}
+          br
+        input.my-input.tooltip.highlight-when-selected(:style="inputStyle", :class="inputClass", :placeholder="placeholder", v-model="actualData", readonly)
+        .icon.is-small.is-right(v-if="errorMessage")
+          i.my-error-icon.c-input-error-icon
 
       // Live mode
       template(v-else)
-        .field-body.has-text-left
+        template(v-if="label")
+          .my-label {{label}}
+          br
+        input.my-input.tooltip(:style="inputStyle", :class="inputClass", :placeholder="placeholder", autocomplete="mAutocompleteDisabled", v-model="actualData", :tabindex="tabIndex", @blur="onblur", data-tooltip="Tooltip Text")
+        .icon.is-small.is-right(v-if="errorMessage")
+          i.my-error-icon.c-input-error-icon
+        //.field-body.has-text-left
           .field
             label.label(v-show="label") {{label}}
             .control.has-icons-right(:class="tooltipClass", :data-tooltip="errorMessage")
@@ -87,10 +86,6 @@ export default {
     },
 
     inputClass: function () {
-      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
-        console.log(`inputClass()`, this.element);
-      }
-
       var obj = { }
       let classesForElement = this.element['class']
       if (classesForElement) {
@@ -145,47 +140,26 @@ export default {
       return style
     },
 
-    // inputStyle: function (field) {
-    //   console.log(`inputStyle()`, field);
-    //   // return { }
-    //   return {
-    //     //'background-color': 'red',
-    //     //color: 'white',
-    //     left: `${field.x}px`,
-    //     top: `${field.y}px`,
-    //   }
-    // },
-
-    attribute: {
-      get () {
-
-        //ZZZZZ
-        // console.error(`FormInput.attribute.get(): this.context=`, this.context);
-
-        let attribute = this.element['attribute'] ? this.element['attribute'] : this.element['field']
-        return attribute
-      }
+    attribute: function () {
+      let attribute = this.element['attribute'] ? this.element['attribute'] : this.element['field']
+      return attribute
     },
 
-    label: {
-      get () {
-        let label = this.element['label'] ? this.element['label'] : ''
-        return label
-      }
+    label: function () {
+      let label = this.element['label'] ? this.element['label'] : ''
+      return label
     },
 
-    tabIndex: {
-      get () {
-        let value = this.element['tabIndex'] ? this.element['tabIndex'] : ''
-        let index = parseInt(value)
-        if (index === NaN) {
-          return null
-        }
-	if (index <= 0) {
-          index = 1
-        }
-        return index
+    tabIndex: function () {
+      let value = this.element['tabIndex'] ? this.element['tabIndex'] : ''
+      let index = parseInt(value)
+      if (index === NaN) {
+        return null
       }
+      if (index <= 0) {
+        index = 1
+      }
+      return index
     },
 
     placeholder: {
@@ -420,7 +394,7 @@ export default {
 //        padding-top: 0px;
 //        padding-bottom: 0px;
 //        color: $c-input-default-color;
-//        background-color: $c-input-default-background-color;
+//        background: $c-input-default-background;
 //        margin-bottom: 4px;
 //      }
 //      &.form-input-borderless {
@@ -444,7 +418,7 @@ export default {
 //        font-weight: $c-input-default-font-weight;
 //        font-size: $c-input-default-font-size;
 //        color: $c-input-default-color;
-//        background-color: $c-input-default-background-color;
+//        background: $c-input-default-background;
 //      }
 //      &.form-input-borderless {
 //        input {
@@ -470,9 +444,9 @@ export default {
 //        font-weight: $c-input-default-font-weight;
 //        font-size: $c-input-default-font-size;
 //        color: $c-input-default-color;
-//        background-color: $c-input-default-background-color;
+//        background: $c-input-default-background;
 //        &.c-is-empty {
-//          background-color:$c-input-empty-background-color;
+//          background: $c-input-empty-background;
 //        }
 //        &.error-level-warning {
 //          background-color: $c-input-warning-color;
@@ -499,4 +473,25 @@ export default {
 //
 //    }//- live mode
 //  }
+
+// .c-form-input {
+//   //background-color: pink;
+//   //margin-top: -3px;
+//
+//   .my-label {
+//     display: block;
+//   }
+//
+//   input.my-input {
+//     border: none;
+//     background-color: transparent;
+//     //background-color: rgba(4, 149, 149, 0.1);
+//
+//     &.c-is-empty {
+//       //background-color: rgba(4, 149, 149, 0.1);
+//       background-color: red;
+//     }
+//
+//   }
+//}
 </style>

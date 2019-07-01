@@ -1,0 +1,67 @@
+
+.c-form-checkbox {
+  $bg-default: #ffffe0;
+  $border-color-default: #ccc;
+
+  $bg-borderless: #ffff00;
+  $border-color-borderless: #ccc;
+
+  text-align: left;
+
+  input.form-checkbox-default {
+    font-size: 9px;
+    background-color: pink;
+  }
+  label.form-checkbox-default {
+    background-color: none;
+    font-family: Arial;
+    font-weight: bold;
+    font-size: 10px;
+  }
+  $frame-color: pink;
+  $text-color: #700;
+
+
+  .c-layout-mode-heading {
+    // This overrides the definition in content-editor.scss
+    background-color: $frame-color;
+    color: $text-color;
+  }
+
+  .my-checkbox {
+    display: inline-block;
+    position: relative;
+
+    .my-box {
+      display: inline-block;
+      //position: relative;
+      width: 16px;
+      height: 16px;
+      border: solid 1px #333;
+      padding: 0px;
+      cursor: pointer;
+
+      .my-selected {
+        position: absolute;
+        top: -2px;
+        left: 4px;
+        font-family: Courier;
+        font-size: 15px;
+        font-color: black;
+      }
+    }
+    .my-label {
+      display: inline-block;
+      position: absolute;
+      top: 2px;
+      left: 22px;
+      text-align: left;
+      color: #333;
+      font-family: Arial;
+      font-weight: normal;
+      font-size: 12px;
+      line-height: 130%;
+      white-space: nowrap;
+    }
+  }
+}

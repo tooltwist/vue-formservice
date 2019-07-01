@@ -1,26 +1,29 @@
 <template lang="pug">
 
-  .c-content-formline(:class="editModeClass")
+  //div(style="background-color:red")
+  .c-form-line(:class="editModeClass", :style="componentStyle")
     span(v-if="extraDebug")
       | &lt;form-line&gt;
       br
 
-    // Debug mode
-    //.my-design-mode(v-if="isDesignMode && false", @click.stop="selectThisElement")
-      //.c-layout-mode-heading
-        edit-bar-icons(:element="element")
-        | label
-      .my-label(:style="myStyle", :class="myClass")
-        span(v-html="label")
-
     // Editing
     template(v-if="isDesignMode || isEditMode")
-      //span.my-label(:style="myStyle", :class="myClass", v-html="label", @click.stop="selectThisElement")
-      .my-line(:style="myStyle", :class="myClass", @click.stop="selectThisElement")
+      svg.my-svg-edit.highlight-when-selected(:style="svgStyle", :viewBox="viewBox", xmlns="http://www.w3.org/2000/svg", @click.stop="selectThisElement")
+        line(v-if="lineType==='dotted'", x1="0", y1="0", :x2="width", :y2="height", :stroke="lineColor", stroke-dasharray="2", :stroke-width="lineWidth")
+        line(v-else-if="lineType==='dashed'", x1="0", y1="0", :x2="width", :y2="height", :stroke="lineColor", stroke-dasharray="4 1", :stroke-width="lineWidth")
+        line(v-else, x1="0", y1="0", :x2="width", :y2="height", :stroke="lineColor", :stroke-width="lineWidth")
+        //line(v-else, x1="1", y1="1", :x2="9", :y2="9", stroke="black", :stroke-width="lineWidth")
+        //line(v-else, :style="lineStyle", x1="3", y1="0", :x2="width", :y2="height")
 
     // Live mode
     template(v-else)
-      .my-line(:style="myStyle", :class="myClass")
+      svg.my-svg-live(:style="svgStyle", :viewBox="viewBox", xmlns="http://www.w3.org/2000/svg")
+        line(v-if="lineType==='dotted'", x1="0", y1="0", :x2="width", :y2="height", :stroke="lineColor", stroke-dasharray="2", :stroke-width="lineWidth")
+        line(v-else-if="lineType==='dashed'", x1="0", y1="0", :x2="width", :y2="height", :stroke="lineColor", stroke-dasharray="4 1", :stroke-width="lineWidth")
+        //line(v-else, x1="0", y1="0", :x2="width", :y2="height", :stroke="lineColor", :stroke-width="lineWidth")
+        //line(v-else, x1="1", y1="1", :x2="9", :y2="9", stroke="black", :stroke-width="lineWidth")
+        line(v-else, x1="0", y1="0", :x2="width", :y2="height", :style="`stroke:${lineColor};stroke-width:${lineWidth};`", stroke-linecap="round")
+        //line(v-else, x1="0", y1="0", :x2="width", :y2="height", :style="`stroke:rgb(255,0,0);stroke-width:2;`")
 </template>
 
 <script>
@@ -53,49 +56,109 @@ export default {
       // }
     },
 
-    myClass: function () {
-      if (this.element.placeholder && this.element.placeholder.startsWith('tEntryTime')) {
-        console.log(`inputClass()`, this.element);
-      }
-
-      var obj = { }
-      let classesForElement = this.element['class']
-      if (classesForElement) {
-        // console.log(`classesForElement=${classesForElement}`);
-        classesForElement.split(' ').forEach(clas => {
-          // console.log(`-- ${clas}`);
-          let classname = clas.trim()
-          if (classname) {
-            obj[classname] = true
-          }
-        })
-      } else {
-        obj['form-line-default'] = true
-      }
-      return obj
+    x: function () {
+      let value = this.element['x']
+      return value ? value : 0
     },
 
-    myStyle: function ( ) {
-      let style = this.element['style'] + ';'
-      // width
-      try {
-        let num = parseInt(this.element['width'])
-        if (num < 1) {
-          num = 1
-        }
-        style += `width:${num}px;`
-      } catch (e) { }
+    y: function () {
+      let value = this.element['y']
+      return value ? value : 0
+    },
 
-      // height
-      try {
-        let num = parseInt(this.element['height'])
-        if (num < 1) {
-          num = 1
+    width: function () {
+      let value = this.element['width']
+      console.log(`SLOB ${value}, ${typeof(value)}`);
+      if (typeof(value) === 'string') {
+        console.log(`SLOC is STRING`);
+        value = parseInt(value)
+        if (isNaN(value)) {
+          value = 20
         }
-        style += `height:${num}px;`
-      } catch (e) { }
-      console.log(`inputStyle=`, style)
-      return style
+      }
+      console.log(`SLOD ${value}, ${typeof(value)}`);
+      return value
+    },
+
+    height: function () {
+      let value = this.element['height']
+      if (typeof(value) === 'string') {
+        value = parseInt(value)
+        if (isNaN(value)) {
+          value = 20
+        }
+      }
+      return value
+    },
+
+    lineType: function () {
+      let value = this.element['lineType']
+      switch (value) {
+        case 'dotted':
+        case 'dashed':
+          return value
+        default:
+          return 'solid'
+      }
+    },
+
+    lineColor: function () {
+      // return '#8f8f8f'
+      let value = this.element['lineColor']
+      return value ? value : 'black'
+    },
+
+    lineWidth: function () {
+      //return 1
+      let value = this.element['lineWidth']
+      let lineWidth = 1
+      if (typeof(value) === 'string') {
+        let num = parseInt(value)
+        if (!isNaN(num) && num > 0) {
+          lineWidth = num
+        }
+      }
+      return lineWidth
+    },
+
+    componentStyle: function ( ) {
+      // return {
+      //   width: this.lineWidth + this.width + this.lineWidth,
+      //   height: this.lineWidth + this.height + this.lineWidth,
+      // }
+      const w = this.lineWidth + this.width + this.lineWidth
+      const h = this.lineWidth + this.height + this.lineWidth
+      return `position:relative; top:0px; left:0px; width:${w}px; height:${h}px;`
+    },
+
+    svgStyle: function ( ) {
+      const top = -this.lineWidth
+      const left = -this.lineWidth
+      const w = this.lineWidth + this.width + this.lineWidth
+      const h = this.lineWidth + this.height + this.lineWidth
+      console.log(`&& svgStyle(${this.lineWidth} + ${this.width} + ${this.lineWidth})`);
+      return `position:absolute;top:${top};left:${left};width:${w}px;height:${h}px;`
+    },
+
+    lineStyle: function ( ) {
+      return `stroke:rgb(255,0,0);stroke-width:2;`
+    },
+
+    // Return the coordinates to use for the svg. We'll leave dimensions
+    // unscaled (i.e. still pixels), but the width of the line means it can
+    // display above and left of the (0, 0) position. Similarly it can extend
+    // beyond (width, height). To allow those overshoots to display we add
+    // extra space around the sides and re-position the box so the line is
+    // still in the correct position. We could use a half line width, but
+    // we'll use a whole line width to avoid risk of maths artifacts.
+    // Note this makes 0,0 slightly offset from top and left.
+    viewBox: function ( ) {
+      const left = -this.lineWidth
+      const top = -this.lineWidth
+      const viewableWidth = this.lineWidth + this.width + this.lineWidth
+      const viewableHeight = this.lineWidth + this.height + this.lineWidth
+      console.log(`### viewBox{ ${left}, ${top}, ${viewableWidth}, ${viewableHeight}`);
+      return `${left} ${top} ${viewableWidth} ${viewableHeight}`
     },
 
   }
@@ -107,51 +170,24 @@ export default {
 <style lang="scss" scoped>
   @import '../../assets/css/content-variables.scss';
 
-  .c-content-formline {
-    // $edit-frame-color: lightblue;
-    // $text-color: darkblue;
-    $linecolor: #333;
-
-    // .c-layout-mode-heading {
-    //   // This overrides the definition in content-editor.scss
-    //   background-color: $edit-frame-color;
-    //   color: $text-color;
-    // }
-
-    // .c-label {
-    //   position: absolute;
-    //   //background-color: pink;
-    // }
-
-    .form-line-default {
-      background-color: $linecolor;
-      border-top: solid 1px $linecolor;
-      border-left: solid 1px $linecolor;
-    }
-
-    .my-line {
-      min-width: 1px;
-      min-height: 1px;
-    }
+  .c-form-line {
 
     /*
-     *  Design mode
+     *  Edit and debug modes
      */
-    &.c-edit-mode-debug {
-      .my-label {
-        display: block;
-        text-align: left;
-        border: solid 1px red;
-      }
-    }
+    &.c-edit-mode-debug, &.c-edit-mode-edit {
+      display: block;
+      position: relative;
+      top: 0px;
+      left: 0px;
+      cursor: pointer;
+      border: none;
 
-    /*
-     *  Edit mode
-     */
-    &.c-edit-mode-edit {
-      .my-label {
-        display: block;
-        text-align: left;
+
+      .my-svg-edit {
+        position: absolute;
+        background-color: rgba(255, 215, 0, 0.4);// orange
+        border: none;
       }
     }
 
@@ -159,9 +195,14 @@ export default {
      *  Live mode
      */
     &.c-edit-mode-view {
-      .my-label {
-        display: block;
-        text-align: left;
+      display: block;
+      position: relative;
+      top: 0px;
+      left: 0px;
+
+      .my-svg-live {
+        position: absolute;
+        border: none;
       }
     }
   }

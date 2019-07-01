@@ -1,0 +1,38 @@
+.c-form-image {
+  $edit-bg-color: lightblue;
+
+  .my-image {
+    min-width: 50px;
+    min-height: 30px;
+  }
+
+  /*
+   *  Design mode
+   */
+  &.c-edit-mode-debug {
+    .my-image {
+      display: block;
+      text-align: left;
+      background-color: $edit-bg-color;
+      border: solid 1px $edit-bg-color;
+    }
+  }
+
+  /*
+   *  Edit mode
+   */
+  &.c-edit-mode-edit {
+    .my-image {
+      display: block;
+      text-align: left;
+      background-color: $edit-bg-color;
+      // border: solid 1px $edit-bg-color;
+    }
+  }
+
+  /*
+   *  Live mode
+   */
+  &.c-edit-mode-view {
+  }
+}

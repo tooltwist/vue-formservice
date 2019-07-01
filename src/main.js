@@ -36,7 +36,7 @@ import InspectionReport from './testapp/InspectionReport.vue'
 require('font-awesome/css/font-awesome.min.css')
 require('bulma/css/bulma.min.css')
 require('@tooltwist/vue-contentservice/dist/vue-contentservice.css')
-require('@/assets/css/content-editor.scss')
+require('@/assets/css/vue-formservice.scss')
 // require('vue-contentservice/dist/vue-contentservice.css')
 
 

@@ -24,6 +24,8 @@ import FormElementPosition from './widgets/FormElementPosition.vue'
 import FormElementPositionProps from './widgets/FormElementPositionProps.vue'
 import FixedPositionForm from './widgets/FixedPositionForm.vue'
 import FixedPositionFormProps from './widgets/FixedPositionFormProps.vue'
+import FormBorder from './widgets/FormBorder.vue'
+import FormBorderProps from './widgets/FormBorderProps.vue'
 import FormLabel from './widgets/FormLabel.vue'
 import FormLabelProps from './widgets/FormLabelProps.vue'
 import FormLine from './widgets/FormLine.vue'
@@ -133,6 +135,7 @@ function install (Vue, options) {
 
   // 'formservice' Widget
   // WARNING: This is for backwards compatibility only. Use fixedform instead.
+  /*
   $content.registerWidget(Vue, {
     name: 'formservice',
     label: 'Fixed form',
@@ -156,6 +159,9 @@ function install (Vue, options) {
       }
     }
   })
+  */
+  $content.registerLayoutType(Vue, 'formservice', 'content-formservice-obsolete', FixedPositionForm, FixedPositionFormProps)
+
   $content.registerWidget(Vue, {
     name: 'fixedform',
     label: 'Fixed form',
@@ -176,6 +182,35 @@ function install (Vue, options) {
       layout: {
         type: 'fixedform',
         children: []
+      }
+    }
+  })
+
+  $content.registerWidget(Vue, {
+    name: 'formborder',
+    label: 'Border',
+    category: 'Application',
+    iconClass: 'c-toolbox-icon-label',
+    dragtype: 'component',
+
+    // Register native Vue templates
+    componentName: 'content-formborder',
+    component: FormBorder,
+    propertyComponent: FormBorderProps,
+
+    // Identical structure to a CUT or COPY from edit mode.
+    data: {
+      type: "contentservice.io",
+      version: "1.0",
+      source: "toolbox",
+      layout: {
+        type: 'formborder',
+        "_fixed": true,
+        "_fixed_x": 5,
+        "_fixed_y": 5,
+        right: 5,
+        bottom: 5,
+        children: [ ]
       }
     }
   })

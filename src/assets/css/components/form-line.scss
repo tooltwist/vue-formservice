@@ -1,0 +1,9 @@
+.c-form-line {
+  &.c-edit-mode-edit.c-selected {
+    .highlight-when-selected {
+      -webkit-box-shadow: $c-selected-shadow;
+      -moz-box-shadow: $c-selected-shadow;
+      box-shadow: $c-selected-shadow;
+    }
+  }
+}

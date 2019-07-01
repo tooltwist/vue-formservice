@@ -187,31 +187,4 @@ export default {
 <style lang="scss">
   @import '../../assets/css/content-variables.scss';
 
-  $frame-color: pink;
-  $text-color: #700;
-
-  .c-form-submit {
-    &.c-edit-mode-debug {
-      border-top: $c-input-layout-border-color-1;
-      border-left: $c-input-layout-border-color-1;
-      background-color: $c-input-layout-frame-color;
-      border-bottom: $c-input-layout-border-color-2;
-      border-right: $c-input-layout-border-color-2;
-
-      margin: 1px;
-      padding: 3px;
-
-      .container {
-        width: 90% !important;
-      }
-    }
-
-    .c-layout-mode-heading {
-      // This overrides the definition in content-editor.scss
-      // border-left: solid 1px #ffc0c0;
-      background-color: $frame-color;
-      color: $text-color;
-    }
-  }
-
 </style>

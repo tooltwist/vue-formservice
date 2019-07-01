@@ -34,14 +34,14 @@
         //-   label.checkbox(disabled)
         //-     input(type="checkbox", :style="mInputStyle", :class="mInputClass", @click.stop="selectThisElement")
         //-     | &nbsp; {{ label }}
-        .my-option(:style="mInputStyle", :class="mInputClass", @click.stop="selectThisElement")
-          .my-box
+        .my-option(:style="mInputStyle", :class="inputClass", @click.stop="selectThisElement")
+          .my-box.highlight-when-selected
           .my-label(v-if="label")
             | {{label}}
 
       // Live mode
       template(v-else)
-        .my-option
+        .my-option(:style="mInputStyle", :class="inputClass")
           .my-box(@click.stop="clickOnOption")
             .my-selected(v-if="checked")
               | X
@@ -101,6 +101,22 @@ export default {
         })
       } else {
         obj['form-option-default'] = true
+      }
+
+      // Set .c-is-empty if there is no current value
+      let recordPath = this.context.formservice.dataPath
+      let attribute = this.element['attribute']
+
+      console.log(`option.get(), ${recordPath}, ${attribute}`);
+
+      if (attribute) {
+        let path = `${recordPath}.${attribute}`
+        let defaultValue = ''
+        let {data, error} = this.$formservice.getData(path, defaultValue)
+        console.log(`option.get(), ${data}`);
+        if (!data) {
+          obj['c-is-empty'] = true
+        }
       }
       return obj
     },
@@ -224,96 +240,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
-  $bg-default: #ffffe0;
-  $border-color-default: #ccc;
-
-  $bg-borderless: #ffff00;
-  $border-color-borderless: #ccc;
-
-  .c-form-option {
-    text-align: left;
-
-    input.form-option-default {
-      font-size: 9px;
-      background-color: pink;
-    }
-    label.form-option-default {
-      background-color: none;
-      font-family: Arial;
-      font-weight: bold;
-      font-size: 10px;
-    }
-  }
-</style>
-
-
 <style lang="scss" scoped>
   @import '../../assets/css/content-variables.scss';
-
-  $frame-color: pink;
-  $text-color: #700;
-
-
-  .c-layout-mode-heading {
-    // This overrides the definition in content-editor.scss
-    background-color: $frame-color;
-    color: $text-color;
-  }
-
-  // .my-edit-mode {
-  //   input {
-  //     font-size: 10px;
-  //   }
-  // }
-  //
-  // .my-design-mode {
-  //   input {
-  //     font-size: 10px;
-  //   }
-  // }
-  //
-  // .my-live-mode {
-  //   input {
-  //     font-size: 10px;
-  //   }
-  // }
-
-  .my-option {
-    display: inline-block;
-    position: relative;
-
-    .my-box {
-      display: inline-block;
-      //position: relative;
-      width: 16px;
-      height: 16px;
-      border: solid 1px #333;
-      padding: 0px;
-
-      .my-selected {
-        position: absolute;
-        top: -2px;
-        left: 4px;
-        font-family: Courier;
-        font-size: 15px;
-        font-color: black;
-      }
-    }
-    .my-label {
-      display: inline-block;
-      position: absolute;
-      top: 2px;
-      left: 22px;
-      text-align: left;
-      color: #333;
-      font-family: Arial;
-      font-weight: normal;
-      font-size: 12px;
-      line-height: 130%;
-      white-space: nowrap;
-    }
-  }
-
 
 </style>

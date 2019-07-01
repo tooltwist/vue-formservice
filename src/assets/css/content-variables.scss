@@ -33,15 +33,31 @@ $f-widget-bottom-right-color: #999;
 // $c-input-default-background-color: #FFF7AE;
 
 // ADL forms colors
+// See https://www.w3schools.com/colors/colors_picker.asp
 $c-input-default-color: black;
 $c-input-default-font-size: 16px;
 $c-input-default-font-family: 'Times New Roman' Arial;
 $c-input-default-font-weight: bold;
-$c-input-default-background-color: #c5dfe2;
-$c-input-empty-background-color: #a0e1e8;
+
+//$c-input-default-background: rgba(179, 223, 226, 0.5);
+$c-input-default-background: rgba(255, 255, 155, 0.4);
+//$c-input-empty-background: rgba(255, 255, 204, 0.4);
+$c-input-empty-background: rgba(179, 223, 226, 0.5);
 
 // Defaults while editing
 $c-input-layout-font-size: 13px;
 $c-input-layout-border-color-1: solid 1px #d1b9a3;
 $c-input-layout-frame-color: #ffe9d5;
 $c-input-layout-border-color-2: solid 1px #8c7b6c;
+
+// Color for highlighting the selected object while editing.
+$c-selected-object-color1: red;
+$c-selected-object-background1: rgba(255, 100, 100, 0.5);
+$c-selected-shadow: 0px 0px 9px 0px rgba(221,0,56,0.90) !default;
+
+// Font for displaying on pdf
+$c-pdf-font-family: 'Courier New';
+$c-pdf-font-size: 13px;
+$c-pdf-font-weight: 700;
+$c-pdf-font-style: normal;
+$c-pdf-color: #000020;

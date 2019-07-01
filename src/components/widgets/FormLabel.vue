@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .c-content-formlabel(:class="editModeClass")
+  .c-form-label(:class="editModeClass")
     span(v-if="extraDebug")
       | &lt;form-label&gt;
       br
@@ -15,10 +15,10 @@
 
     // Editing
     template(v-if="isDesignMode || isEditMode")
-      .my-prefix-and-label(v-if="indent > 0", :style="myStyle", :class="myClass", @click.stop="selectThisElement")
+      .my-prefix-and-label.highlight-when-selected(v-if="indent > 0", :style="myStyle", :class="myClass", @click.stop="selectThisElement")
         span.my-prefix(v-html="prefix", :style="{ width: `${indent}px` }")
         span.my-label-with-prefix(v-html="label", :style="{ left: `${indent}px` }")
-      span.my-label-without-prefix(v-else, :style="myStyle", :class="myClass", v-html="label", @click.stop="selectThisElement")
+      span.my-label-without-prefix.highlight-when-selected(v-else, :style="myStyle", :class="myClass", v-html="label", @click.stop="selectThisElement")
       //span.my-label(:style="myStyle", :class="myClass", v-html="label", @click.stop="selectThisElement")
 
     // Live mode
@@ -141,32 +141,32 @@ export default {
 function convertLabel(v, tabStop) {
   // console.log(`convertLabel(${v}, ${tabStop})`);
 
-  // See if we are using tabs
-  if (v.startsWith('^T8~')) {
-    tabStop = 8
-    v = v.substring(4)
-  } else if (v.startsWith('^T6~')) {
-    tabStop = 6
-    v = v.substring(4)
-  } else if (v.startsWith('^T4~')) {
-    tabStop = 4
-    v = v.substring(4)
-  }
-
-  if (
-    v.startsWith('^H4~')
-    || v.startsWith('^H6~')
-    || v.startsWith('^H8~')
-    // v.startsWith('^H4~')
-  ) {
-    // Not sure what to do with this
-    v = v.substring(4)
-  }
-
-  if (v.startsWith('^P159~')) {
-    // Not sure what to do with this
-    v = v.substring(6)
-  }
+  // // See if we are using tabs
+  // if (v.startsWith('^T8~')) {
+  //   tabStop = 8
+  //   v = v.substring(4)
+  // } else if (v.startsWith('^T6~')) {
+  //   tabStop = 6
+  //   v = v.substring(4)
+  // } else if (v.startsWith('^T4~')) {
+  //   tabStop = 4
+  //   v = v.substring(4)
+  // }
+  //
+  // if (
+  //   v.startsWith('^H4~')
+  //   || v.startsWith('^H6~')
+  //   || v.startsWith('^H8~')
+  //   // v.startsWith('^H4~')
+  // ) {
+  //   // Not sure what to do with this
+  //   v = v.substring(4)
+  // }
+  //
+  // if (v.startsWith('^P159~')) {
+  //   // Not sure what to do with this
+  //   v = v.substring(6)
+  // }
 
   // Convert the label
   // ^B...^b   (bold)
@@ -266,102 +266,4 @@ function findFirstString(string, patterns /*[String]*/) {
 
 <style lang="scss" scoped>
   @import '../../assets/css/content-variables.scss';
-
-  .c-content-formlabel {
-    $frame-color: lightblue;
-    $text-color: darkblue;
-
-    // .c-edit-mode-debug {
-    //   border-left: dashed 2px $frame-color;
-    //   border-bottom: dashed 2px $frame-color;
-    //   border-right: dashed 2px $frame-color;
-    //   margin: 1px;
-    //
-    //   .container {
-    //     width: 90% !important;
-    //   }
-    // }
-
-    .c-layout-mode-heading {
-      // This overrides the definition in content-editor.scss
-      background-color: $frame-color;
-      color: $text-color;
-    }
-
-
-    .c-label {
-      position: absolute;
-      //background-color: pink;
-    }
-
-    .form-label-default {
-      //color: #000000;
-      color: #333;
-      font-family: Arial;
-      font-weight: normal;
-      font-size: 12px;
-      line-height: 110%;
-    }
-
-    .form-label-bold-default {
-      //color: #000000;
-      color: #333;
-      font-family: Arial;
-      font-weight: bold;
-      font-size: 12px;
-      line-height: 110%;
-    }
-
-    /*
-     *  Design mode
-     */
-    &.c-edit-mode-debug {
-      .my-label-with-prefix {
-        border: solid 1px red;
-      }
-      .my-label-without-prefix {
-        border: solid 1px red;
-      }
-    }
-
-    /*
-     *  Edit mode
-     */
-    &.c-edit-mode-edit {
-    }
-
-    /*
-     *  Live mode
-     */
-    &.c-edit-mode-view {
-    }
-
-    .my-label-without-prefix {
-      display: block;
-      padding-top: 1px;
-      padding-left: 2px;
-      padding-right: 2px;
-      text-align: left;
-      word-wrap: break-word;
-    }
-    .my-prefix-and-label {
-      display: block;
-      position: relative;
-      // background-color: yellow;
-      .my-prefix {
-        display: inline-block;
-        // background-color: pink;
-        //float: left;
-        overflow-x: visible;
-        position: absolute;
-        top: 0px;
-      }
-      .my-label-with-prefix {
-        display: inline-block;
-        // background-color: green;
-        position: absolute;
-        top: 0px;
-      }
-    }
-  }
 </style>

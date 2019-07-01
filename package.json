@@ -1,6 +1,6 @@
 {
   "name": "@tooltwist/vue-formservice",
-  "version": "0.1.91",
+  "version": "0.2.1",
   "private": false,
   "scripts": {
     "dev": "vue-cli-service serve --open",
@@ -9,7 +9,7 @@
     "test": "vue-cli-service build",
     "e2e": "vue-cli-service e2e",
     "lint": "vue-cli-service lint",
-    "build-bundle": "vue-cli-service build --target lib --name vue-formservice ./src/components/index.js",
+    "build-bundle": "vue-cli-service build --target lib --formats commonjs --name vue-formservice ./src/components/index.js",
     "e2e:open": "vue-cli-service e2e:open",
     "patch-release": "npm version patch && npm publish --registry=https://registry.npmjs.org/ --access public  && git push --follow-tags",
     "p1": "npm version patch",
@@ -58,7 +58,8 @@
     "pug": "^2.0.3",
     "pug-plain-loader": "^1.0.0",
     "sass-loader": "^7.0.3",
-    "vue-template-compiler": "^2.5.16"
+    "vue-template-compiler": "^2.5.16",
+    "webpack-node-externals": "^1.7.2"
   },
   "eslintConfig": {
     "root": true,
