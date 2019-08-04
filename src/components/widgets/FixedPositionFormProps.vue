@@ -34,6 +34,10 @@
           .c-property-label Style
           .c-property-value
             input.input(v-model="style")
+        .tt-property
+          .c-property-label Class
+          .c-property-value
+            input.input(v-model="clas")
 
         fixed-position-properties(:element="element")
 </template>
@@ -122,6 +126,15 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'style', value })
+      }
+    },
+    clas: {
+      get () {
+        let value = this.element['class']
+        return value ? value : ''
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'class', value })
       }
     },
   },

@@ -12,7 +12,7 @@
         edit-bar-icons(:element="element")
         | fixed form - {{absoluteDataPath}}
 
-      drop.formservice-box.droparea.Zmy-design-mode(:style="boxStyle", @drop="handleDrop(form, ...arguments)")
+      drop.formservice-box.droparea.Zmy-design-mode(:style="boxStyle", :class="boxClass", @drop="handleDrop(form, ...arguments)")
         div(v-if="element.children", v-for="(child, index) in element.children")
           drag.my-drag(:transfer-data="child", @dragstart="dragStart")
             .fixed-position(:class="positionClass(child)", :style="positionStyle(child)", @mousedown="mouseDown")
@@ -20,7 +20,7 @@
 
     // Editing
     div(v-else-if="isEditMode", @click.stop="selectThisElement")
-      drop.formservice-box.droparea.Zmy-edit-mode(:style="boxStyle", @drop="handleDrop(form, ...arguments)")
+      drop.formservice-box.droparea.Zmy-edit-mode(:style="boxStyle", :class="boxClass", @drop="handleDrop(form, ...arguments)")
         div(v-if="element.children", v-for="(child, index) in element.children")
           drag.my-drag(:transfer-data="child", @dragstart="dragStart")
             .fixed-position(:class="positionClass(child)", :style="positionStyle(child)", @mousedown="mouseDown")
@@ -28,7 +28,7 @@
 
     // Live mode
     template(v-else)
-      .formservice-box.my-live-mode(:style="boxStyle")
+      .formservice-box.my-live-mode(:style="boxStyle", :class="boxClass")
         template(v-if="element.children", v-for="(child, index) in element.children")
             .fixed-position(:class="positionClass(child)", :style="positionStyle(child)")
               component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child", :context="newContext")
@@ -184,6 +184,22 @@ export default {
       } catch (e) { }
       //console.log(`boxStyle=`, style)
       return style
+    },//- boxStyle
+
+    boxClass: function () {
+      var obj = { }
+      let classesForElement = this.element['class']
+      if (classesForElement) {
+        // console.log(`classesForElement=${classesForElement}`);
+        classesForElement.split(' ').forEach(clas => {
+          // console.log(`-- ${clas}`);
+          let classname = clas.trim()
+          if (classname) {
+            obj[classname] = true
+          }
+        })
+      }
+      return obj
     },
   },//- computed
 
