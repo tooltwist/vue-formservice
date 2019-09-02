@@ -1,6 +1,11 @@
 <template lang="pug">
   .c-fixed-position-properties(:class="propertyClass")
     .my-heading Position and Size
+    .c-element-properties(v-show="isExpandedElement")
+        .tt-property
+          .c-property-label Container Class
+          .c-property-value
+            input.input(v-model="containerClass")
     div
       table.big-table
         tr
@@ -76,15 +81,36 @@ export default {
     },
   },
   computed: {
+    sizeUnit: {
+      get () {
+        let value = this.element['sizeUnit']
+        return value ? value : 'px'
+      }, 
+      set (value) {
+        if (!(value && value !== '')) {
+          value = 'px'
+        }
+        this.$content.setProperty({ vm: this, element: this.element, name: 'sizeUnit', value})
+      }
+    },
+    containerClass: {
+      get () {
+        let value = this.element['containerClass']
+        return value ? value : ''
+      }, 
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'containerClass', value})
+      }
+    },
     x: {
       get () {
         let value = this.element['_fixed_x']
         return value ? value : ''
       },
       set (value) {
-        if (value >= 0) {
+        // if (value >= 0) {
           this.$content.setProperty({ vm: this, element: this.element, name: '_fixed_x', value })
-        }
+        // }
       }
     },
     y: {
@@ -93,9 +119,9 @@ export default {
         return value ? value : ''
       },
       set (value) {
-        if (value >= 0) {
+        // if (value >= 0) {
           this.$content.setProperty({ vm: this, element: this.element, name: '_fixed_y', value })
-        }
+        // }
       }
     },
     width: {
