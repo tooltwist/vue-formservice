@@ -15,7 +15,7 @@
       drop.formservice-box.droparea.Zmy-design-mode(:style="boxStyle", :class="boxClass", @drop="handleDrop(form, ...arguments)")
         div(v-if="element.children", v-for="(child, index) in element.children")
           drag.my-drag(:transfer-data="child", @dragstart="dragStart")
-            .fixed-position(:class="positionClass(child) + ' ' + containerClass(child)", :style="positionStyle(child) + boxSize", @mousedown="mouseDown")
+            .fixed-position(:class="positionClass(child) + ' ' + containerClass(child)", :style="positionStyle(child, boxSize)" :sample-attribute="positionStyle(child) + boxSize", @mousedown="mouseDown")
               component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child", :context="newContext")
 
     // Editing
@@ -23,14 +23,14 @@
       drop.formservice-box.droparea.Zmy-edit-mode(:style="boxStyle", :class="boxClass", @drop="handleDrop(form, ...arguments)")
         div(v-if="element.children", v-for="(child, index) in element.children")
           drag.my-drag(:transfer-data="child", @dragstart="dragStart")
-            .fixed-position(:class="positionClass(child) + ' ' + containerClass(child)", :style="positionStyle(child) + boxSize", @mousedown="mouseDown")
+            .fixed-position(:class="positionClass(child) + ' ' + containerClass(child)", :style="positionStyle(child, boxSize)", @mousedown="mouseDown")
               component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child", :context="newContext")
 
     // Live mode
     template(v-else)
       .formservice-box.my-live-mode(:style="boxStyle", :class="boxClass")
         template(v-if="element.children", v-for="(child, index) in element.children")
-            .fixed-position(:class="positionClass(child) + ' ' + containerClass(child)", :style="positionStyle(child) + boxSize")
+            .fixed-position(:class="positionClass(child) + ' ' + containerClass(child)", :style="positionStyle(child, boxSize)")
               component.my-component(v-if="componentNameForElement(child)", v-bind:is="componentNameForElement(child)", :element="child", :context="newContext")
 </template>
 

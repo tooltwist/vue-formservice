@@ -209,7 +209,7 @@ export default {
       return ''
     },
 
-    positionStyle: function (element) {
+    positionStyle: function (element, additionalStyles) {
       // console.log(`positionStyle()`, element);
       // return { }
 
@@ -227,6 +227,15 @@ export default {
         top: `${y}px`,
       }
       // console.log(`style=`, style)
+
+      if (additionalStyles) {
+        _addStyles = additionalStyles.split(';').forEach(style => {
+          var key = style.split(':')[0].trim()
+          var value = style.split(':')[1].trim()
+          style[key] = value
+        })
+      }
+
       return style
     },
 
