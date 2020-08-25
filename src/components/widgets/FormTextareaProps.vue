@@ -26,6 +26,10 @@
           .c-property-label Style
           .c-property-value
             input.input(v-model="style")
+        .tt-property
+          .c-property-label Enable Sentence Casing?
+          .c-property-value
+            input.c-checkbox(type="checkbox" v-model="enableSentenceCase")
 
         fixed-position-properties(:element="element")
 </template>
@@ -92,6 +96,15 @@ export default {
       },
       set (value) {
         this.$content.setProperty({ vm: this, element: this.element, name: 'style', value })
+      }
+    },
+    enableSentenceCase: {
+      get () {
+        let value = this.element['enableSentenceCase']
+        return value ? value : false
+      },
+      set (value) {
+        this.$content.setProperty({ vm: this, element: this.element, name: 'enableSentenceCase', value })
       }
     },
   },

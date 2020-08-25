@@ -35,7 +35,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control.has-icons-right(:class="tooltipClass", :data-tooltip="errorMessage")
-              textarea.textarea(:style="inputStyle", :class="inputClass", :placeholder="cPlaceholder", v-model="actualData", :tabindex="tabIndex", :readonly="readonly")
+              textarea.textarea(:style="inputStyle", :class="inputClass", :placeholder="cPlaceholder", v-model="actualData", :tabindex="tabIndex", :readonly="readonly", @input="(enableSentenceCase ? formatSentenceCase($event) : '')")
               .icon.is-small.is-right(v-if="errorMessage")
                 i.my-error-icon.c-input-error-icon
 </template>
@@ -277,8 +277,30 @@ export default {
         return 'tooltip'
       }
     },
-
-  }
+    enableSentenceCase: {
+      get() { 
+        let enableSentenceCase = this.element['enableSentenceCase']
+        return enableSentenceCase ? enableSentenceCase: false
+      }
+    },
+  },
+  methods: {
+    formatSentenceCase(e) {
+      var data = e.target;
+      let returnString = [];
+      // splitting the value string for multiple line sentence casing
+      data.value.split('\n').forEach(line => {
+        //find white space occurences
+        let validatedLine = line.search(/\S|$/);
+        if(validatedLine > 0){
+          return returnString.push(line.substring(0,validatedLine) + line.charAt(validatedLine).toUpperCase() + line.substring(validatedLine+1).toLowerCase())
+        }
+        //format first character of the line
+        return returnString.push( line.charAt(0).toUpperCase() + line.substring(1).toLowerCase());
+      });
+      data.value = returnString.join('\n');
+    }
+  },
 }
 </script>
 
