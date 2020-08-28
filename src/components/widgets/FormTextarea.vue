@@ -35,7 +35,7 @@
           .field
             label.label(v-show="label") {{label}}
             .control.has-icons-right(:class="tooltipClass", :data-tooltip="errorMessage")
-              textarea.textarea(:style="inputStyle", :class="inputClass", :placeholder="cPlaceholder", v-model="actualData", :tabindex="tabIndex", :readonly="readonly", @input="(enableSentenceCase ? formatSentenceCase($event) : '')")
+              textarea.textarea(:style="inputStyle", :class="inputClass", :placeholder="cPlaceholder", v-model="actualData", :tabindex="tabIndex", :readonly="readonly")
               .icon.is-small.is-right(v-if="errorMessage")
                 i.my-error-icon.c-input-error-icon
 </template>
@@ -261,6 +261,8 @@ export default {
 
           if (attribute) {
             let path = `${recordPath}.${attribute}`
+            // apply sentence casing here to save the formatted value instead of the default value
+            value =  this.enableSentenceCase ? this.formatSentenceCase(value) : value;
 
             // Save the value
             this.$formservice.save({ vm: this, path, updatePath: true, value, debug: false })
@@ -285,11 +287,10 @@ export default {
     },
   },
   methods: {
-    formatSentenceCase(e) {
-      var data = e.target;
+    formatSentenceCase(data) {
       let returnString = [];
       // splitting the value string for multiple line sentence casing
-      data.value.split('\n').forEach(line => {
+      data.split('\n').forEach(line => {
         //find white space occurences
         let validatedLine = line.search(/\S|$/);
         if(validatedLine > 0){
@@ -298,7 +299,7 @@ export default {
         //format first character of the line
         return returnString.push( line.charAt(0).toUpperCase() + line.substring(1).toLowerCase());
       });
-      data.value = returnString.join('\n');
+      return returnString.join('\n');
     }
   },
 }
