@@ -30,7 +30,7 @@
     "query-string": "^6.0.0",
     "v-clipboard": "^2.0.1",
     "v-hotkey": "^0.2.0",
-    "vue": "^2.5.16",
+    "vue": "^3.0.0",
     "vue-awesome": "^3.0.3",
     "vue-date-pick": "^1.1.0",
     "vue-drag-drop": "^1.1.2",
