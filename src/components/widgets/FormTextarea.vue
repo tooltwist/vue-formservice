@@ -261,6 +261,8 @@ export default {
 
           if (attribute) {
             let path = `${recordPath}.${attribute}`
+            // apply sentence casing here to save the formatted value instead of the default value
+            value =  this.enableSentenceCase ? this.formatSentenceCase(value) : value;
 
             // Save the value
             this.$formservice.save({ vm: this, path, updatePath: true, value, debug: false })
@@ -277,8 +279,29 @@ export default {
         return 'tooltip'
       }
     },
-
-  }
+    enableSentenceCase: {
+      get() { 
+        let enableSentenceCase = this.element['enableSentenceCase']
+        return enableSentenceCase ? enableSentenceCase: false
+      }
+    },
+  },
+  methods: {
+    formatSentenceCase(data) {
+      let returnString = [];
+      // splitting the value string for multiple line sentence casing
+      data.split('\n').forEach(line => {
+        //find white space occurences
+        let validatedLine = line.search(/\S|$/);
+        if(validatedLine > 0){
+          return returnString.push(line.substring(0,validatedLine) + line.charAt(validatedLine).toUpperCase() + line.substring(validatedLine+1).toLowerCase())
+        }
+        //format first character of the line
+        return returnString.push( line.charAt(0).toUpperCase() + line.substring(1).toLowerCase());
+      });
+      return returnString.join('\n');
+    }
+  },
 }
 </script>
 
